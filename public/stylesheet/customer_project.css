@@ -57,7 +57,9 @@ button:hover {
     height: 35px;
     margin-left: 10px;
 }
-
+#searchInput {
+    width: 150px;
+}
 .close-btn {
     position: absolute;
     top: 10px;
@@ -84,43 +86,4 @@ table, th, td {
 th, td {
     padding: 8px;
     text-align: center;
-}
-
-/* Flexbox layout for search bar, button, and add project button */
-#searchContainer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 20px;
-}
-
-#searchContainer input[type="text"] {
-    width: 300px; /* Adjust the width as needed */
-    margin-right: 10px;
-}
-
-#searchContainer button {
-    width: 100px; /* Adjust the width as needed */
-    height: 35px;
-}
-
-/* Style for the form elements */
-.form-popup form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.form-popup form label,
-.form-popup form input,
-.form-popup form select {
-    width: 100%; /* Adjust the width of form elements */
-    margin-bottom: 10px;
-}
-
-.form-popup form button[type="submit"] {
-    width: auto; /* Adjust the width of submit button */
-    margin-top: 10px; /* Add some space above the submit button */
-    align-self: center; /* Center the submit button */
-    box-sizing: border-box; /* Include padding and border in the element's total width */
 }
