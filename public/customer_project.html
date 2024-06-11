@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Project Details</title>
+    <link rel="stylesheet" href="./stylesheet/customer_project.css" />
+</head>
+<body>
+    <h1>Customer Project Details</h1>
+    <div class="container">
+        
+        <input type="text" id="searchInput" placeholder="Enter Quotation ID" />
+        <button id="searchBtn">Search</button>
+        <button id="addProjectBtn">Add Project</button>
+        <form id="projectForm" class="form-popup">
+            <button type="button" class="close-btn" id="closeFormBtn">X</button>
+            <label for="customer_name">Customer Name:</label>
+            <select id="customer_name" name="customer_name" required></select>
+
+            <label for="quotation_id">Quotation ID:</label>
+            <input type="text" id="quotation_id" name="quotation_id" readonly>
+
+            <label for="project_name">Project Name:</label>
+            <input type="text" id="project_name" name="project_name" required>
+
+            <label for="project_type">Project Type:</label>
+            <select id="project_type" name="project_type" required>
+                <option value="fast_moving">Fast Moving</option>
+                <option value="non_fast_moving">Non Fast Moving</option>
+            </select>
+
+            <label for="category">Category:</label>
+            <select id="category" name="category" required></select>
+
+            <label for="subcategory">Subcategory:</label>
+            <select id="subcategory" name="subcategory" required></select>
+
+            <button type="submit">Submit</button>
+        </form>
+        <table id="projectTable">
+            <thead>
+                <tr>
+                    <th>Customer Name</th>
+                    <th>Quotation ID</th>
+                    <th>Project Name</th>
+                    <th>Project Type</th>
+                    <th>Category</th>
+                    <th>Subcategory</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="projectTableBody">
+                <!-- Project rows will be dynamically added here -->
+            </tbody>
+        </table>
+    </div>
+    <script src="./stylesheet/customer_project.js"></script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+h1{
+   color: #30479e; 
+   
+   text-transform: uppercase;
+}
+body{
+    background-color: #214b6c;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+.header-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px; /* Set the desired height */
+    background-color: #f2f2f2; 
+    gap: 1rem;
+}
+.logo-class {
+    width: 70px; /* Adjust as needed */
+    height: auto; /* Maintain aspect ratio */
+    margin-left: 10px; /* Adjust as needed */
+}
+
+.container{
+    height: 65vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+}   
+.customer{
+    flex: 1;
+    max-width: 80px;
+    padding: 30px;
+    background-color: #ce3333;
+    text-align: center;
+    color: white;
+    text-transform: capitalize;
+    border-radius: 10%;
+    font-weight: bold;
+}    
+.second-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+}  
+a{
+    color: white;
+    font-weight: bold;
+    
+} 

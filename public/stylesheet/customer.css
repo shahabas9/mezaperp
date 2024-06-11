@@ -1,0 +1,99 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #e5eaee;
+}
+.container {
+  margin: 20px;
+}
+#addButton {
+  float: right;
+  margin-bottom: 10px;
+  width: 70px;
+  height: 35px;
+  margin-top: 10px;
+  margin-left: 10px;
+}
+.search-container {
+  display: flex;
+  align-items: center;
+}
+#searchInput {
+  padding: 8px;
+  margin-right: 10px;
+}
+#searchButton {
+  padding: 8px 12px;
+}  
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+}
+table, th, td {
+  border: 1px solid black;
+}
+th, td {
+  padding: 8px;
+  text-align: center;
+}
+
+
+h1{
+  text-align: center;
+}
+.action-buttons {
+  display: flex;
+  gap: 5px;
+}
+
+.action-buttons .btn {
+  padding: 5px;
+  margin: 0;
+  width: auto;
+}
+
+.popup {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0,0,0);
+  background-color: rgba(0,0,0,0.4);
+}
+
+.popup-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #45a049;
+}

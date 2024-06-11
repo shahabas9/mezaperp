@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Details</title>
+    <link rel="stylesheet" href="./stylesheet/customer.css">
+</head>
+<body>
+    <h1>Customer Details</h1>
+    <div class="container">
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search by customer name">
+            <button id="searchButton">Search</button>
+            <button id="addButton">Add</button>
+        </div>
+        
+    </div>
+    <div>
+        <table id="customerTable">
+            <thead>
+                <tr>
+                    <th>Customer ID</th>
+                    <th>Customer Name</th>
+                    <th>Mobile No</th>
+                    <th>Email</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="customerTableBody">
+                <!-- Table rows will be dynamically added here -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Popup form for adding/editing customer -->
+    <div id="formPopup" class="popup">
+        <div class="popup-content">
+            <span id="closeButton" class="close">&times;</span>
+            <h2 id="formTitle">Add Customer</h2>
+            <form id="customerForm">
+                <label for="customer_name">Customer Name:</label>
+                <input type="text" id="customer_name" name="customer_name" required>
+                <label for="mobile_no">Mobile No:</label>
+                <input type="text" id="mobile_no" name="mobile_no" required>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+    <script src="./stylesheet/customer.js"></script>
+</body>
+</html>
