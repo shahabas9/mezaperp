@@ -54,10 +54,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         const projectType = projectTypeSelect.value;
         categorySelect.innerHTML = '';
 
-        if (projectType === 'fast_moving') {
-            addOption(categorySelect, 'supply', 'Supply');
-            addOption(categorySelect, 'supply_installation', 'Supply & Installation');
-        } else if (projectType === 'non_fast_moving') {
+        if (projectType === 'Fast Moving') {
+            addOption(categorySelect, 'Supply', 'Supply');
+            addOption(categorySelect, 'Supply & Installation', 'Supply & Installation');
+        } else if (projectType === 'Non Fast Moving') {
             addOption(categorySelect, 'villa', 'Villa');
         }
 
@@ -68,11 +68,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         const category = categorySelect.value;
         subcategorySelect.innerHTML = '';
 
-        if (category === 'supply') {
+        if (category === 'Supply') {
             ['Option 1', 'Option 2', 'Option 3', 'Option 4', 'Option 5'].forEach(optionText => {
                 addOption(subcategorySelect, optionText.toLowerCase().replace(/ /g, '_'), optionText);
             });
-        } else if (category === 'supply_installation') {
+        } else if (category === 'Supply & Installation') {
             ['Option 1', 'Option 2', 'Option 3', 'Option 4', 'Option 5', 'Option 6'].forEach(optionText => {
                 addOption(subcategorySelect, optionText.toLowerCase().replace(/ /g, '_'), optionText);
             });
