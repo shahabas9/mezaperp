@@ -181,14 +181,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Handle search button click
     searchBtn.addEventListener('click', async () => {
         const quotationId = searchInput.value;
-        if (quotationId) {
+        if (quotationId !== '') {
             const projects = await fetch(`/projects?quotation_id=${quotationId}`).then(response => response.json());
             projectTableBody.innerHTML = ''; // Clear existing rows
             projects.forEach(project => {
                 appendProjectRow(project);
             });
+        } else {
+            // If no quotationId is provided, fetch all projects
+            await fetchProjects();
         }
     });
+    
 
     // Function to append a project row to the table
     function appendProjectRow(project) {
