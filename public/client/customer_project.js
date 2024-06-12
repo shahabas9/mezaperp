@@ -69,15 +69,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         subcategorySelect.innerHTML = '';
 
         if (category === 'Supply') {
-            ['Option 1', 'Option 2', 'Option 3', 'Option 4', 'Option 5'].forEach(optionText => {
+            ['Duct', 'VRF', 'Option 3'].forEach(optionText => {
                 addOption(subcategorySelect, optionText.toLowerCase().replace(/ /g, '_'), optionText);
             });
         } else if (category === 'Supply & Installation') {
-            ['Option 1', 'Option 2', 'Option 3', 'Option 4', 'Option 5', 'Option 6'].forEach(optionText => {
+            ['Cassette', 'Duct', 'Split', 'FloorStand', 'Split&FloorStand'].forEach(optionText => {
                 addOption(subcategorySelect, optionText.toLowerCase().replace(/ /g, '_'), optionText);
             });
         } else if (category === 'villa') {
-            ['Villa Option 1', 'Villa Option 2', 'Villa Option 3'].forEach(optionText => {
+            ['Duct', 'Split', 'VRF','Duct&Split','Warehouse'].forEach(optionText => {
                 addOption(subcategorySelect, optionText.toLowerCase().replace(/ /g, '_'), optionText);
             });
         }
