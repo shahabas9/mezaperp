@@ -206,6 +206,29 @@ app.get('/projects/:projectId', async (req, res) => {
   }
 });
 
+// Endpoint to get customers
+app.get('/api/customers', async (req, res) => {
+  try {
+    const customerResult = await pool.query('SELECT customer_id, customer_name FROM customer');
+    res.json(customerResult.rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Server error');
+  }
+});
+
+// Endpoint to get quotations by customer ID
+app.get('/api/quotations/:customerId', async (req, res) => {
+  const { customerId } = req.params;
+  try {
+    const quotationResult = await pool.query('SELECT quotation_id FROM project WHERE customer_id = $1', [customerId]);
+    res.json(quotationResult.rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Server error');
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });

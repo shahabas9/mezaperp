@@ -140,3 +140,42 @@ function updateTotal(element) {
     
     totalInput.value = (unitPrice * quantity).toFixed(2); // Calculate and set the total tonnage
 }
+
+async function initializeDataOptions() {
+    try {
+      const response = await fetch('/api/customers');
+      const customers = await response.json();
+  
+      populateDropdown('customer', customers, 'customer_id', 'customer_name');
+  
+      document.getElementById('customer').addEventListener('change', updateQuotationDropdown);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  }
+  
+  async function updateQuotationDropdown() {
+    const customerId = this.value;
+    try {
+      const response = await fetch(`/api/quotations/${customerId}`);
+      const quotations = await response.json();
+  
+      populateDropdown('quotation', quotations, 'quotation_id', 'quotation_id');
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  }
+  
+  function populateDropdown(dropdownId, items, valueKey, textKey) {
+    const dropdown = document.getElementById(dropdownId);
+    dropdown.innerHTML = ''; // Clear existing options
+    items.forEach(item => {
+      const option = document.createElement('option');
+      option.value = item[valueKey];
+      option.text = item[textKey];
+      dropdown.add(option);
+    });
+  }
+  
+  window.onload = initializeDataOptions;
+  
