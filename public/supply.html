@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>supply</title>
+    <link rel="stylesheet" href="./stylesheet/supply.css" />
+</head>
+<body onload="initializeModelOptions" onload="initializeTonOptions">
+    <h1>Adding Details Only for Supply</h1>
+    <div>
+        <label for="customer">Customer Name:</label>
+        <select name="customer" id="customer"></select>
+
+        <label for="quotation">Quotation ID:</label>
+        <select name="quotation" id="quotation"></select>
+    </div>
+    <div>
+        <table id="supplyTable">
+            <thead>
+              <tr>
+                <th>Description</th>
+                <th>Model Inoor/Outdoor</th>
+                <th>TON</th>
+                <th>Quantity</th>
+                <th>Unit Price</th>
+                <th>Total Price</th>
+                <th></th> <!-- Added a new column for action buttons -->
+              </tr>
+            </thead>
+            
+            <tbody>
+                <tr>
+                    <td>
+                        <select name="Type[]" onchange="updateModelOptions(this)">
+                        <option value="duct split">Duct Split</option>
+                        <option value="split">Split</option>
+                        <option value="vrf">VRF</option>
+                        </select>  
+                    </td> <!-- Use input fields for user input -->
+                    <td><select name="Model Inoor/Outdoor[]" onchange="updateTonOptions(this)"></select></td>
+                    <td>
+                        <select name="TON[]">
+                        </select> 
+                    </td>
+                    <td>
+                        <input type="number" name="Quantity[]" oninput="updateTotal(this)">
+                    </td>
+                    <td><input type="number" name="Unit Price[]" oninput="updateTotal(this)"></td> <!-- Total field is read-only -->
+                    <td><input type="number" name="Total Price[]" readonly></td>
+                    
+                    <td>
+                    <button onclick="addRow(this)">+</button>
+                    </td> <!-- Button to add a new row -->
+                </tr>
+                </tbody>
+            </table>
+    </div>
+    <script src="./client/supply.js"></script>  
+</body>
+</html>

@@ -1,0 +1,35 @@
+h1{
+    color: #30479e; 
+    background-color: beige;
+    text-transform: uppercase;
+    text-align: center;
+ }
+
+body {
+font-family: Arial, sans-serif;
+background-color: #e5eaee;
+}
+
+select {
+width: 200px;  /* Adjust the width as desired (e.g., 200px, 25%) */
+padding: 5px;
+border: 1px solid #ccc;
+border-radius: 4px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    text-align: center;
+}
+
+table, th, td {
+    border: 1px solid black;
+    text-align: center;
+}
+
+th, td {
+    padding: 8px;
+    text-align: center;
+}
