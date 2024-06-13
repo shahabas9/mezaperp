@@ -206,10 +206,15 @@ app.get('/projects/:projectId', async (req, res) => {
   }
 });
 
-// Endpoint to get customers
+/// Endpoint to get customers with "Supply" projects
 app.get('/api/customers', async (req, res) => {
   try {
-    const customerResult = await pool.query('SELECT customer_id, customer_name FROM customer');
+    const customerResult = await pool.query(`
+      SELECT DISTINCT c.customer_id, c.customer_name
+      FROM customer c
+      JOIN project p ON c.customer_id = p.customer_id
+      WHERE p.category = 'Supply'
+    `);
     res.json(customerResult.rows);
   } catch (error) {
     console.error(error);
@@ -217,11 +222,15 @@ app.get('/api/customers', async (req, res) => {
   }
 });
 
-// Endpoint to get quotations by customer ID
+// Endpoint to get quotations by customer ID and "Supply" category
 app.get('/api/quotations/:customerId', async (req, res) => {
   const { customerId } = req.params;
   try {
-    const quotationResult = await pool.query('SELECT quotation_id FROM project WHERE customer_id = $1', [customerId]);
+    const quotationResult = await pool.query(`
+      SELECT quotation_id
+      FROM project
+      WHERE customer_id = $1 AND category = 'Supply'
+    `, [customerId]);
     res.json(quotationResult.rows);
   } catch (error) {
     console.error(error);
