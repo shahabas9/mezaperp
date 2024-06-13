@@ -1,17 +1,16 @@
 function updateButtons() {
-    var rows = document.querySelectorAll('#customerTable tbody tr');
+    var rows = document.querySelectorAll('#supplyTable tbody tr');
     rows.forEach(function(row, index) {
         var actionCell = row.querySelector('td:last-child');
         actionCell.innerHTML = '';
         
-        if (index === 0) {
-            // First row
+        if (rows.length === 1) {
+            actionCell.innerHTML = '<button onclick="addRow(this)">+</button>';
+        } else if (index === 0) {
             actionCell.innerHTML = '<button onclick="addRow(this)">+</button>';
         } else if (index === rows.length - 1) {
-            // Last row
             actionCell.innerHTML = '<button onclick="addRow(this)">+</button> <button onclick="deleteRow(this)">-</button>';
         } else {
-            // Middle rows
             actionCell.innerHTML = '<button onclick="deleteRow(this)">-</button>';
         }
     });
@@ -36,7 +35,7 @@ function addRow(button) {
     var cell6 = newRow.insertCell(5);
     var cell7 = newRow.insertCell(6);
 
-    cell1.innerHTML = '<select name="Type[]" onchange="updateModelOptions"><option value="duct split">Duct Split</option><option value="split">Split</option><option value="vrf">VRF</option></select> ';
+    cell1.innerHTML = '<select name="Type[]" onchange="updateModelOptions(this)"><option value="duct split">Duct Split</option><option value="split">Split</option><option value="vrf">VRF</option></select>';
     cell2.innerHTML = '<select name="Model Inoor/Outdoor[]" onchange="updateTonOptions(this)"></select>';
     cell3.innerHTML = '<select name="TON[]"></select>';
     cell4.innerHTML = '<input type="number" name="Quantity[]" oninput="updateTotal(this)">';
@@ -48,10 +47,6 @@ function addRow(button) {
     updateModelOptions(newRow.querySelector('select[name="Type[]"]'));
     updateTonOptions(newRow.querySelector('select[name="Model Inoor/Outdoor[]"]'));
 
-    var rows = table.getElementsByTagName('tr');
-    for (var i = 0; i < rows.length - 1; i++) {
-        rows[i].cells[6].innerHTML = '';
-    }
     updateButtons();
 }
 
