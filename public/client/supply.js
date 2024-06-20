@@ -173,4 +173,76 @@ async function initializeDataOptions() {
   }
   
   window.onload = initializeDataOptions;
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+
+    const customerId = document.getElementById('customer').value;
+    const quotationId = document.getElementById('quotation').value;
+    const tableRows = document.querySelectorAll('#supplyTable tbody tr');
+
+    const supplyData = [];
+
+    tableRows.forEach((row, index) => {
+        const typeElement = row.querySelector('select[name="Type[]"]');
+        const modelElement = row.querySelector('select[name="Model Inoor/Outdoor[]"]');
+        const tonElement = row.querySelector('select[name="TON[]"]');
+        const quantityElement = row.querySelector('input[name="Quantity[]"]');
+        const unitPriceElement = row.querySelector('input[name="Unit Price[]"]');
+        const totalPriceElement = row.querySelector('input[name="Total Price[]"]');
+
+        // Debugging output
+        console.log(`Row ${index}:`, {
+            typeElement,
+            modelElement,
+            tonElement,
+            quantityElement,
+            unitPriceElement,
+            totalPriceElement
+        });
+
+        // Ensure all elements are found before accessing their values
+        if (typeElement && modelElement && tonElement && quantityElement && unitPriceElement && totalPriceElement) {
+            supplyData.push({
+                type: typeElement.value,
+                model: modelElement.value,
+                ton: tonElement.value,
+                quantity: quantityElement.value,
+                unit_price: unitPriceElement.value,
+                total_price: totalPriceElement.value
+            });
+        } else {
+            console.error(`Error: Missing elements in row ${index}`);
+        }
+    });
+
+    const payload = {
+        customer_id: customerId,
+        quotation_id: quotationId,
+        supply_data: supplyData
+    };
+
+    console.log('Submitting payload:', payload); // Debugging output
+
+    try {
+        const response = await fetch('/api/supply', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const result = await response.json();
+        alert('Data submitted successfully');
+    } catch (error) {
+        console.error('Error submitting form:', error);
+        alert('Failed to submit data');
+    }
+}
+
   

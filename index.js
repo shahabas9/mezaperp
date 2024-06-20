@@ -238,6 +238,46 @@ app.get('/api/quotations/:customerId', async (req, res) => {
   }
 });
 
+
+app.post('/api/supply', async (req, res) => {
+  const { customer_id, quotation_id, supply_data } = req.body;
+
+  console.log('Received payload:', req.body); // Debugging output
+
+  try {
+      await pool.query('BEGIN');
+
+      const insertSupplyQuery = `
+          INSERT INTO supply (customer_id, quotation_id, type, model, ton, quantity, unit_price, total_price)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      `;
+
+      for (const item of supply_data) {
+          const values = [
+              customer_id,
+              quotation_id,
+              item.type,
+              item.model,
+              item.ton,
+              item.quantity,
+              item.unit_price,
+              item.total_price,
+          ];
+
+          console.log('Inserting item:', values); // Debugging output
+          await pool.query(insertSupplyQuery, values);
+      }
+
+      await pool.query('COMMIT');
+      res.status(201).json({ message: 'Data submitted successfully' });
+  } catch (error) {
+      await pool.query('ROLLBACK');
+      console.error('Error inserting data:', error);
+      res.status(500).json({ error: 'Failed to submit data' });
+  }
+});
+
+
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });
