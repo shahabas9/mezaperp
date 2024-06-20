@@ -8,6 +8,7 @@ const { Pool } = pkg;
 
 const app = express();
 const port = 3000;
+const host = '0.0.0.0';
 
 // Get the directory name of the current module
 const __filename = fileURLToPath(import.meta.url);
@@ -30,6 +31,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, './public', 'Dashboard.html'));
 });
+
+//Customer page
 
 // Handle form submission
 app.post('/add-customer', async (req, res) => {
@@ -100,7 +103,7 @@ app.get('/customers', async (req, res) => {
   }
 });
 
-
+//customer project page
 
 // Fetch quotation ID for a given customer
 app.get('/customers/:customerId', async (req, res) => {
@@ -206,6 +209,8 @@ app.get('/projects/:projectId', async (req, res) => {
   }
 });
 
+// supply addition data page
+
 /// Endpoint to get customers with "Supply" projects
 app.get('/api/customers', async (req, res) => {
   try {
@@ -276,6 +281,9 @@ app.post('/api/supply', async (req, res) => {
       res.status(500).json({ error: 'Failed to submit data' });
   }
 });
+
+
+// supply quotation generation page
 
 
 app.listen(port, () => {
