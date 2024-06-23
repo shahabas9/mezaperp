@@ -1,0 +1,60 @@
+.logo-class {
+    width: 105px; /* Adjust as needed */
+    height: auto; /* Maintain aspect ratio */
+     /* Adjust as needed */
+}
+
+.header-container{
+    display: flex;
+    justify-content: center;
+    align-items: normal;
+    height: 100px; /* Set the desired height */
+    gap: 3rem;
+    
+}
+hr {
+    border: 0;
+    height: 5px;
+    background: red;
+}
+.second-container{
+    margin-top: 50px;
+}
+.mits-class{
+    width: 170px; /* Adjust as needed */
+    height: auto;
+    margin-left: 46%;
+}
+.third-container{
+    display: flex;
+    justify-content: space-between;
+    align-items: normal;
+    height: 100px; /* Set the desired height */
+    gap: 1rem;
+}
+.fourth-container{
+    margin-top: 70px;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+  }
+  table, th, td {
+    border: 1px solid black;
+  }
+  th, td {
+    padding: 8px;
+    text-align: center;
+  }
+  .sig-class{
+    width: 170px; /* Adjust as needed */
+    height: auto;
+  }
+  .fifth-container{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    height: 100px; /* Set the desired height */
+    gap: 0rem;
+  }

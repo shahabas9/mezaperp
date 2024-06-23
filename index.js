@@ -3,6 +3,9 @@ import bodyParser from 'body-parser';
 import pkg from 'pg';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { PDFDocument, rgb } from 'pdf-lib';
+import fs from 'fs';
+import fetch from 'node-fetch';
 
 const { Pool } = pkg;
 
@@ -284,7 +287,76 @@ app.post('/api/supply', async (req, res) => {
 
 
 // supply quotation generation page
+app.get('/api/quotations_supply', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT c.customer_name, p.quotation_id, p.subcategory
+      FROM customer c
+      JOIN project p ON c.customer_id = p.customer_id
+      WHERE p.category = 'Supply'
+    `);
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    res.status(500).json({ error: 'Failed to fetch data' });
+  }
+});
 
+// Endpoint to fetch data for a specific quotation
+app.get('/api/quotation_data/:quotationId', async (req, res) => {
+  const { quotationId } = req.params;
+
+  try {
+      const result = await pool.query(`
+          SELECT c.customer_name,c.mobile_no, c.email, p.quotation_id, p.project_name, p.project_type, p.category, p.subcategory, s.type, s.model, s.ton, s.quantity, s.unit_price, s.total_price
+          FROM customer c
+          JOIN project p ON c.customer_id = p.customer_id
+          JOIN supply s ON p.quotation_id = s.quotation_id
+          WHERE p.quotation_id = $1
+      `, [quotationId]);
+
+      if (result.rows.length === 0) {
+          return res.status(404).json({ error: 'Quotation not found' });
+      }
+
+      res.json(result.rows);
+  } catch (error) {
+      console.error('Error fetching data:', error);
+      res.status(500).json({ error: 'Failed to fetch data' });
+  }
+});
+
+
+app.get('/api/quotation_data/:id', async (req, res) => {
+  const quotationId = req.params.id;
+  try {
+      const customerResult = await pool.query(`
+          SELECT c.customer_name, p.project_name, c.mobile_no, c.email, p.quotation_id
+          FROM customer c
+          JOIN project p ON c.customer_id = p.customer_id
+          WHERE p.quotation_id = $1
+      `, [quotationId]);
+
+      const supplyResult = await pool.query(`
+          SELECT type, model, ton, quantity, unit_price, total_price
+          FROM supply
+          WHERE quotation_id = $1
+      `, [quotationId]);
+
+      const customerData = customerResult.rows[0];
+      const supplyData = supplyResult.rows;
+
+      const data = supplyData.map(supplyItem => ({
+          ...customerData,
+          ...supplyItem
+      }));
+
+      res.json(data);
+  } catch (error) {
+      console.error('Error fetching data:', error);
+      res.status(500).json({ error: 'Failed to fetch data' });
+  }
+});
 
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);

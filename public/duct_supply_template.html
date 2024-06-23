@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>supply_duct_template</title>
+    <link rel="stylesheet" href="./stylesheet/supply_duct.css" />
+</head>
+<body>
+    <div class="header-container">
+        <div><h2>Mezab Air Conditioning</h2>
+            T:+974 44929438 </br>
+            Email: Sales@mezabco.com</br>
+            P.O. Box 24180 Doha, Qatar
+        </div>
+        <div><img class="logo-class" src="./images/Mezab.png" alt="Logo"></div>
+        <div>
+            <h2>شركة ميزاب للتكييف</h2>
+            + 974 44929438 ‫هـ‬ </br>
+            Sales@mezabco.com ‫إيميل‬ </br>
+            ‫قطر‬ ،‫الدوحة‬ 24180 ‫ب‬.‫ص‬
+        </div>
+    </div>
+    <div class="second-container">
+        <hr>
+    </div>
+    <div>
+        <img class="mits-class" src="./images/Mitsubishi.png" alt="Logo"></div>
+    </div>
+    <div class="third-container">
+        <div>
+            <p><b>To</b></p> 
+            <p><b>Attn</b></p>  
+            <p><b>Mob</b></p> 
+            <p><b>Email</b></p> 
+        </div>
+        <div>
+            <p><b><span id="customerName">Field 1</span></b></p>
+            <p><b><span id="projectName">Field 2</span></b></p>
+            <p><b><span id="customerMob">Field 3</span></b></p>
+            <p><b><span id="customerEmail">Field 4</span></b></p>
+        </div>
+        <div>
+            <p><b>From</b></p> 
+            <p><b>Mob</b></p>  
+            <p><b>Ref No</b></p> 
+            <p><b>Date</b></p> 
+        </div>
+        <div>
+            <p><b><span id="fromName">Field 1</span></b></p>
+            <p><b><span id="fromMob">Field 2</span></b></p>
+            <p><b><span id="refNo">Field 3</span></b></p>
+            <p><b><span id="date">Field 4</span></b></p>
+        </div>
+    </div>
+    <div class="fourth-container">
+        <p>
+            <b>A.Scope of work:</b>
+        </p>
+        <p>
+            Supply only of <b>Air Conditioning</b> Units of brand name <b>Mitsubishi Electric</b> :
+        </p>
+        <table id="supplyTable">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Model Indoor/Outdoor</th>
+                    <th>TON</th>
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Total Price</th>
+                </tr>
+            </thead>
+            <tbody id="supplyTableBody">
+                <!-- Table rows will be dynamically added here -->
+            </tbody>
+        </table>
+        <p>
+            <b>B.Payments:</b>
+        </p>
+        <p>
+            <ol><li><b>100%</b> Advance payment</li></ol>
+            
+        </p>
+        <p>
+            <b>C.Payments Method:</b>
+        </p>
+        <p>
+            <ol><li><b> Cheque or Cash or Bank Transfer only</b></li></ol>
+            
+        </p>
+        <p>
+            <b>D.Validity:</b>
+        </p>
+        <p>
+            <ul><li>This offer is valid for 15 days only.</li></ul>
+            
+        </p>
+        <p>
+            <b>E.Exclusions:</b>
+        </p>
+        <p>
+            <ol><li>Crane, safe storing</li></ol>
+             
+        </p>
+        <p>
+            <b>F.Warranty</b>
+        </p>
+        <p>
+            <ul>
+                <p><li>
+                    The equipment is warranted against manufacturing defect for a period of <b>1 Year</b> from the
+                    date of supply by repairing or replacing the parts without labor charge.
+                </li></p>
+                <li>
+                    <b>5 Years</b> on the compressors from the beginning of previous mentioned period against
+                    manufacturing defect without labor charge.
+                </li>
+            </ul>
+        </p>
+        <p><b>THANK YOU</b></p>
+        
+    </div>
+    <div class="fifth-container">
+       <div>
+        <img class="sig-class" src="./images/signature.png" alt="Logo">
+       </div> 
+       <div>
+        <b>Mezab Air Conditioning Co.</b>
+       </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const quotationId = urlParams.get('quotationId');
+
+            try {
+                const response = await fetch(`/api/quotation_data/${quotationId}`);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                populateQuotationDetails(data);
+            } catch (error) {
+                console.error('Error fetching quotation data:', error);
+            }
+        });
+
+        function populateQuotationDetails(data) {
+            if (data.length > 0) {
+                const customerData = data[0];
+                document.getElementById('customerName').textContent = customerData.project_name;
+                document.getElementById('projectName').textContent = customerData.customer_name;
+                document.getElementById('customerMob').textContent = customerData.mobile_no;
+                document.getElementById('customerEmail').textContent = customerData.email;
+                document.getElementById('fromName').textContent = 'Mezab Air Conditioning Co.';
+                document.getElementById('fromMob').textContent = '+974 44929438';
+                document.getElementById('refNo').textContent = customerData.quotation_id;
+                document.getElementById('date').textContent = new Date().toLocaleDateString();
+
+                const tableBody = document.getElementById('supplyTableBody');
+                data.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.type}</td>
+                        <td>${item.model}</td>
+                        <td>${item.ton}</td>
+                        <td>${item.quantity}</td>
+                        <td>${item.unit_price}</td>
+                        <td>${item.total_price}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+        }
+    </script>
+</body>
+</html>
