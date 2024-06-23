@@ -6,10 +6,10 @@
 
 .header-container{
     display: flex;
-    justify-content: center;
+    justify-content: space-evenly;
     align-items: normal;
     height: 100px; /* Set the desired height */
-    gap: 3rem;
+    gap: 2rem;
     
 }
 hr {
@@ -23,7 +23,7 @@ hr {
 .mits-class{
     width: 170px; /* Adjust as needed */
     height: auto;
-    margin-left: 46%;
+    margin-left: 45%;
 }
 .third-container{
     display: flex;
