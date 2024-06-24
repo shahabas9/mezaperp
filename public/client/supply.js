@@ -143,11 +143,21 @@ async function initializeDataOptions() {
   
       populateDropdown('customer', customers, 'customer_id', 'customer_name');
   
-      document.getElementById('customer').addEventListener('change', updateQuotationDropdown);
+      const customerDropdown = document.getElementById('customer');
+        
+        // Add event listener to the customer dropdown
+        customerDropdown.addEventListener('change', updateQuotationDropdown);
+        
+        // Trigger change event to populate the quotation dropdown
+        if (customerDropdown.options.length > 0) {
+            customerDropdown.selectedIndex = 0;  // Select the first customer by default
+            customerDropdown.dispatchEvent(new Event('change'));
+        }
     } catch (error) {
-      console.error('Error fetching data:', error);
+        console.error('Error fetching data:', error);
     }
-  }
+}
+
   
   async function updateQuotationDropdown() {
     const customerId = this.value;
