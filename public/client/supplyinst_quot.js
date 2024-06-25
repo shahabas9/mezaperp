@@ -45,3 +45,33 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     fetchQuotations();
 });
+
+function generateQuotation(quotationId, subcategory) {
+    console.log(`Quotation ID: ${quotationId}, Subcategory: ${subcategory}`); // Log the values
+    
+    let templatePage;
+    
+    switch (subcategory) {
+        case 'floorstand':
+            templatePage = 'floorstand_template_si.html';
+            break;
+        case 'duct':
+            templatePage = 'duct_template_si.html';
+            break;
+        case 'split':
+            templatePage = 'split_template_si.html';
+            break;
+        case 'cassette':
+            templatePage = 'cassette_template_si.html';
+            break;
+        case 'split&floorstand':
+            templatePage = 'split_floorstand_template_si.html';
+            break;
+        default:
+            console.error('Unknown subcategory');
+            return; // Exit the function if the subcategory is unknown
+    }
+
+    console.log(`Redirecting to: ${templatePage}`); // Log the redirection
+    window.location.href = `${templatePage}?quotationId=${quotationId}`;
+}
