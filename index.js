@@ -441,6 +441,21 @@ app.post('/api/supply_si', async (req, res) => {
   }
 });
 
+app.get('/api/quotations_supplyinst', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT c.customer_name, p.quotation_id, p.subcategory
+      FROM customer c
+      JOIN project p ON c.customer_id = p.customer_id
+      WHERE p.category = 'Supply & Installation'
+    `);
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    res.status(500).json({ error: 'Failed to fetch data' });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });
