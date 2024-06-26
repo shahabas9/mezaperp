@@ -74,4 +74,28 @@ table {
         display: none;
     }
   }
+
+  @media print {
+    body {
+        position: relative;
+        /* Ensure body has some content height to cover multiple pages */
+        min-height: 100vh;
+    }
+  
+    .watermark {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        width: 70%;
+        height: 70%;
+        transform: translate(-50%, -40%);
+        z-index: -1;
+        background-image: url('../images/Mezab.png');
+        background-size: contain;
+        background-repeat: no-repeat;
+        opacity: 0.2; /* Adjust the transparency */
+        pointer-events: none; /* Make sure it doesn't interfere with page content */
+    }
+  }
+  
  

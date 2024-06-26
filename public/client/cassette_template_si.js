@@ -42,7 +42,7 @@ function populateTable(data) {
         data.forEach(item => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${item.type}</td>
+                <td>${item.type.toUpperCase()}</td>
                 <td>${item.ton}</td>
                 <td>${item.quantity}</td>
                 <td>${item.unit_price.toLocaleString()}</td>
