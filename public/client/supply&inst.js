@@ -54,7 +54,7 @@ function updateTonOptions(selectElement) {
     
     tonSelect.innerHTML = ''; // Clear existing options
 
-    if (typeValue === 'duct split units') {
+    if (typeValue === 'ducted split units') {
         tonSelect.innerHTML = '<option value="1.5">1.5</option><option value="2.5">2.5</option><option value="2.75">2.75</option><option value="3">3</option><option value="4.26">4.26</option><option value="5">5</option><option value="6.66">6.66</option><option value="8.33">8.33</option>';
     } else if (typeValue === 'wall mounted split units') {
         tonSelect.innerHTML = '<option value="1">1</option><option value="1.5">1.5</option><option value="2">2</option><option value="2.5">2.5</option><option value="3">3</option>';
