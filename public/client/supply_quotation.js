@@ -48,7 +48,30 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 function generateQuotation(quotationId, subcategory) {
     console.log(`Quotation ID: ${quotationId}, Subcategory: ${subcategory}`); // Log the values
-    const templatePage = subcategory === 'duct' ? 'duct_supply_template.html' : 'vrf_template.html';
+    
+    let templatePage;
+    
+    switch (subcategory) {
+        case 'floorstand':
+            templatePage = 'floorstand_template.html';
+            break;
+        case 'duct':
+            templatePage = 'duct_supply_template.html';
+            break;
+        case 'split':
+            templatePage = 'duct_supply_template.html';
+            break;
+        case 'cassette':
+            templatePage = 'cassette_template_si.html';
+            break;
+        case 'vrf':
+            templatePage = 'vrf_template.html';
+            break;
+        default:
+            console.error('Unknown subcategory');
+            return; // Exit the function if the subcategory is unknown
+    }
+
     console.log(`Redirecting to: ${templatePage}`); // Log the redirection
     window.location.href = `${templatePage}?quotationId=${quotationId}`;
 }

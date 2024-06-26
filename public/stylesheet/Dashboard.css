@@ -52,3 +52,8 @@ a{
     font-weight: bold;
     
 } 
+.header{
+    background-color: antiquewhite;
+    text-align: center;
+    height: 70px;
+}

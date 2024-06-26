@@ -97,3 +97,14 @@ button {
 button:hover {
   background-color: #45a049;
 }
+
+.button-link {
+  text-decoration: none;
+  color: inherit;
+ 
+}
+#homebutton{
+  margin-left: 10px;
+  width: 70px;
+  height: 35px;
+}

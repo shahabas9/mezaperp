@@ -62,7 +62,9 @@ function updateModelOptions(selectElement) {
         modelSelect.innerHTML = '<option value="MS-GS13/ MU-GS13">MS-GS13/ MU-GS13</option><option value="MS-GS18/ MU-GS18">MS-GS18/ MU-GS18</option><option value="MS-GS24/ MU-GS24">MS-GS24/ MU-GS24</option><option value="MS-GS30/ MU-GS30">MS-GS30/ MU-GS30</option><option value="MS-GS36/ MU-GS36">MS-GS36/ MU-GS36</option>';
     } else if (typeValue === 'vrf') {
         modelSelect.innerHTML = '<option value="6.8">6.8</option><option value="9.1">9.1</option><option value="10">10</option><option value="13.65">13.65</option><option value="18.2">18.2</option><option value="20">20</option>';
-    } else {
+    } else if (typeValue === 'floorstand') {
+        modelSelect.innerHTML = '<option value="PSA-RP71GA">PSA-RP71GA</option><option value="PSA-RP100GA">PSA-RP100GA</option><option value="PSA-RP125GA">PSA-RP125GA</option><option value="PSA-RP140GA">PSA-RP140GA</option>'; 
+    }else {
         // Add default or other specific options based on type if necessary
         modelSelect.innerHTML = '<option value="Select Model">Select Model</option>';
     }
@@ -99,8 +101,17 @@ function updateTonOptions(selectElement) {
     } else if (typeValue === 'MS-GS30/ MU-GS30') {
         tonSelect.innerHTML = '<option value="2.5">2.5</option>';
     } else if (typeValue === 'MS-GS36/ MU-GS36') {
-        tonSelect.innerHTML = '<option value="3">3</option>';
-    } else {
+        tonSelect.innerHTML = '<option value="3">3</option>'; 
+    } else if (typeValue === 'PSA-RP71GA') {
+        tonSelect.innerHTML = '<option value="2.3">2.3</option>'; 
+    } else if (typeValue === 'PSA-RP100GA') {
+        tonSelect.innerHTML = '<option value="3.25">3.25</option>'; 
+    } else if (typeValue === 'PSA-RP125GA') {
+        tonSelect.innerHTML = '<option value="4">4</option>'; 
+    } else if (typeValue === 'PSA-RP140GA') {
+        tonSelect.innerHTML = '<option value="4.35">4.35</option>'; 
+    } 
+    else {
         // Add default or other specific options based on type if necessary
         tonSelect.innerHTML = '<option value="Select Model">Select Model</option>';
     }

@@ -374,6 +374,40 @@ app.get('/api/vrf_template', async (req, res) => {
   }
 });
 
+app.get('/api/floorstand_template', async (req, res) => {
+  const { quotationId } = req.query;
+
+  try {
+    const result = await pool.query(`
+      SELECT
+        p.project_name AS project_name,
+        c.customer_name,
+        c.mobile_no,
+        c.email,
+        p.quotation_id,
+        s.type,
+        s.model,
+        s.ton,
+        s.quantity,
+        s.unit_price,
+        s.total_price
+      FROM
+        customer c
+      JOIN
+        project p ON c.customer_id = p.customer_id
+      JOIN
+        supply s ON p.quotation_id = s.quotation_id
+      WHERE
+        p.quotation_id = $1 AND p.subcategory = 'floorstand'
+    `, [quotationId]);
+
+    res.json({ data: result.rows });
+  } catch (error) {
+    console.error('Error fetching data for floorstand template:', error);
+    res.status(500).json({ error: 'Failed to fetch data' });
+  }
+});
+
 app.get('/api/customers_si', async (req, res) => {
   try {
     const customerResult = await pool.query(`
@@ -566,7 +600,7 @@ app.get('/api/ductsi_template', async (req, res) => {
 
     res.json({ data: result.rows });
   } catch (error) {
-    console.error('Error fetching data for cassette template:', error);
+    console.error('Error fetching data for duct template:', error);
     res.status(500).json({ error: 'Failed to fetch data' });
   }
 });
@@ -607,7 +641,7 @@ app.get('/api/splitsi_template', async (req, res) => {
 
     res.json({ data: result.rows });
   } catch (error) {
-    console.error('Error fetching data for cassette template:', error);
+    console.error('Error fetching data for split template:', error);
     res.status(500).json({ error: 'Failed to fetch data' });
   }
 });
@@ -648,7 +682,7 @@ app.get('/api/splitfloorsi_template', async (req, res) => {
 
     res.json({ data: result.rows });
   } catch (error) {
-    console.error('Error fetching data for cassette template:', error);
+    console.error('Error fetching data for splitfloorstand template:', error);
     res.status(500).json({ error: 'Failed to fetch data' });
   }
 });
