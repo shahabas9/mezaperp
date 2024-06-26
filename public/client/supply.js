@@ -56,9 +56,9 @@ function updateModelOptions(selectElement) {
     
     modelSelect.innerHTML = ''; // Clear existing options
 
-    if (typeValue === 'duct split') {
+    if (typeValue === 'duct split units') {
         modelSelect.innerHTML = '<option value="PEY-P18JA / SUY-P18">PEY-P18JA / SUY-P18</option><option value="PEY-P24JA / SUY-P24">PEY-P24JA / SUY-P24</option><option value="PEY-P30JA / SUY-P30">PEY-P30JA / SUY-P30</option><option value="PEY-P36JA / SUY-P36">PEY-P36JA / SUY-P36</option><option value="PEY-P45JG / PUY-P45">PEY-P45JG / PUY-P45</option><option value="PEY-P60GAG / PUY-P60">PEY-P60GAG / PUY-P60</option><option value="PEV-P200 / PUV-P200">PEV-P200 / PUV-P200</option><option value="PEV-P250 / PUV-P250">PEV-P250 / PUV-P250</option>';
-    } else if (typeValue === 'split') {
+    } else if (typeValue === 'wall mounted split units') {
         modelSelect.innerHTML = '<option value="MS-GS13/ MU-GS13">MS-GS13/ MU-GS13</option><option value="MS-GS18/ MU-GS18">MS-GS18/ MU-GS18</option><option value="MS-GS24/ MU-GS24">MS-GS24/ MU-GS24</option><option value="MS-GS30/ MU-GS30">MS-GS30/ MU-GS30</option><option value="MS-GS36/ MU-GS36">MS-GS36/ MU-GS36</option>';
     } else if (typeValue === 'vrf') {
         modelSelect.innerHTML = '<option value="6.8">6.8</option><option value="9.1">9.1</option><option value="10">10</option><option value="13.65">13.65</option><option value="18.2">18.2</option><option value="20">20</option>';

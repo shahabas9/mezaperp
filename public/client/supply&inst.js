@@ -54,15 +54,15 @@ function updateTonOptions(selectElement) {
     
     tonSelect.innerHTML = ''; // Clear existing options
 
-    if (typeValue === 'duct split') {
+    if (typeValue === 'duct split units') {
         tonSelect.innerHTML = '<option value="1.5">1.5</option><option value="2.5">2.5</option><option value="2.75">2.75</option><option value="3">3</option><option value="4.26">4.26</option><option value="5">5</option><option value="6.66">6.66</option><option value="8.33">8.33</option>';
-    } else if (typeValue === 'split') {
+    } else if (typeValue === 'wall mounted split units') {
         tonSelect.innerHTML = '<option value="1">1</option><option value="1.5">1.5</option><option value="2">2</option><option value="2.5">2.5</option><option value="3">3</option>';
     } else if (typeValue === 'cassette') {
         tonSelect.innerHTML = '<option value="1.5">1.5</option><option value="2.5">2.5</option><option value="2.75">2.75</option><option value="3">3</option><option value="4">4</option><option value="4.25">4.25</option>';
     } else if (typeValue === 'floor stand') {
         tonSelect.innerHTML = '<option value="2.3">2.3</option><option value="3.25">3.25</option><option value="4">4</option><option value="4.35">4.35</option>';
-    } else if (typeValue === 'package unit') {
+    } else if (typeValue === 'package units') {
         tonSelect.innerHTML = '<option value="6.8">6.8</option><option value="9.1">9.1</option><option value="10">10</option><option value="13.65">13.65</option><option value="18.2">18.2</option><option value="20">20</option><option value="28.5">28.5</option>';
     }else {
         // Add default or other specific options based on type if necessary
