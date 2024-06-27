@@ -61,8 +61,8 @@ function generateQuotation(quotationId, subcategory) {
         case 'split':
             templatePage = 'duct_supply_template.html';
             break;
-        case 'cassette':
-            templatePage = 'cassette_template_si.html';
+        case 'package_units':
+            templatePage = 'packageunit_template.html';
             break;
         case 'vrf':
             templatePage = 'vrf_template.html';

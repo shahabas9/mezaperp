@@ -64,6 +64,8 @@ function updateModelOptions(selectElement) {
         modelSelect.innerHTML = '<option value="6.8">6.8</option><option value="9.1">9.1</option><option value="10">10</option><option value="13.65">13.65</option><option value="18.2">18.2</option><option value="20">20</option>';
     } else if (typeValue === 'floorstand') {
         modelSelect.innerHTML = '<option value="PSA-RP71GA">PSA-RP71GA</option><option value="PSA-RP100GA">PSA-RP100GA</option><option value="PSA-RP125GA">PSA-RP125GA</option><option value="PSA-RP140GA">PSA-RP140GA</option>'; 
+    } else if (typeValue === 'package unit') {
+        modelSelect.innerHTML = '<option value="PRC 200">PRC 200</option><option value="PRC 250">PRC 250</option><option value="PRC 300">PRC 300</option><option value="PRC 400">PRC 400</option><option value="PRC 500">PRC 500</option><option value="PRC 600">PRC 600</option><option value="PRC 900">PRC 900</option>'; 
     }else {
         // Add default or other specific options based on type if necessary
         modelSelect.innerHTML = '<option value="Select Model">Select Model</option>';
@@ -110,8 +112,21 @@ function updateTonOptions(selectElement) {
         tonSelect.innerHTML = '<option value="4">4</option>'; 
     } else if (typeValue === 'PSA-RP140GA') {
         tonSelect.innerHTML = '<option value="4.35">4.35</option>'; 
-    } 
-    else {
+    } else if (typeValue === 'PRC 200') {
+        tonSelect.innerHTML = '<option value="6.8">6.8</option>'; 
+    } else if (typeValue === 'PRC 250') {
+        tonSelect.innerHTML = '<option value="9.1">9.1</option>'; 
+    } else if (typeValue === 'PRC 300') {
+        tonSelect.innerHTML = '<option value="10">10</option>'; 
+    } else if (typeValue === 'PRC 400') {
+        tonSelect.innerHTML = '<option value="13.65">13.65</option>'; 
+    } else if (typeValue === 'PRC 500') {
+        tonSelect.innerHTML = '<option value="18.2">18.2</option>'; 
+    } else if (typeValue === 'PRC 600') {
+        tonSelect.innerHTML = '<option value="20">20</option>'; 
+    } else if (typeValue === 'PRC 900') {
+        tonSelect.innerHTML = '<option value="28.5">28.5</option>'; 
+    } else {
         // Add default or other specific options based on type if necessary
         tonSelect.innerHTML = '<option value="Select Model">Select Model</option>';
     }

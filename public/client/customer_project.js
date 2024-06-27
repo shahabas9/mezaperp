@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         subcategorySelect.innerHTML = '';
 
         if (category === 'Supply') {
-            ['Duct', 'VRF', 'FloorStand'].forEach(optionText => {
+            ['Duct', 'VRF', 'FloorStand','Package Units'].forEach(optionText => {
                 addOption(subcategorySelect, optionText.toLowerCase().replace(/ /g, '_'), optionText);
             });
         } else if (category === 'Supply & Installation') {

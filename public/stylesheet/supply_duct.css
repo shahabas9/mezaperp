@@ -67,6 +67,12 @@ table {
     background-color: rgb(50, 59, 37);
     color: beige;
   }
+
+  .no-border {
+    border: none;
+    outline: none;
+    
+}
   
   /* Ensure the button doesn't appear in the printout */
   @media print {
