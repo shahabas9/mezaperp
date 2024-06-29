@@ -11,6 +11,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const projectTypeSelect = document.getElementById('project_type');
     const categorySelect = document.getElementById('category');
     const subcategorySelect = document.getElementById('subcategory');
+    const salePersonSelect = document.getElementById('sales_person');
+    const contactSelect = document.getElementById('contact');
 
     // Fetch and display projects
     async function fetchProjects() {
@@ -49,6 +51,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Handle project type and category changes
     projectTypeSelect.addEventListener('change', updateCategories);
     categorySelect.addEventListener('change', updateSubcategories);
+    salePersonSelect.addEventListener('change', updateContact);
 
     function updateCategories() {
         const projectType = projectTypeSelect.value;
@@ -79,6 +82,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else if (category === 'villa') {
             ['Duct', 'Split', 'VRF','Duct&Split','Warehouse'].forEach(optionText => {
                 addOption(subcategorySelect, optionText.toLowerCase().replace(/ /g, '_'), optionText);
+            });
+        }
+    }
+
+    function updateContact() {
+        const contact = salePersonSelect.value;
+        contactSelect.innerHTML = '';
+
+        if (contact === 'Ahmad Khaled') {
+            ['+974 55666980'].forEach(optionText => {
+                addOption(contactSelect, optionText.toLowerCase(), optionText);
+            });
+        } else if (contact === 'Abdulrahman') {
+            ['+974 55666950'].forEach(optionText => {
+                addOption(contactSelect, optionText.toLowerCase(), optionText);
+            });
+        } else if (contact === 'Saad Alkhalil') {
+            ['+974 66222700'].forEach(optionText => {
+                addOption(contactSelect, optionText.toLowerCase(), optionText);
             });
         }
     }
@@ -116,6 +138,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             project_type: formData.get('project_type'),
             category: formData.get('category'),
             subcategory: formData.get('subcategory'),
+            sales_person: formData.get('sales_person'),
+            contact: formData.get('contact'),
             quotation_id: formData.get('quotation_id')
         };
 
@@ -205,6 +229,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             <td>${project.project_type}</td>
             <td>${project.category}</td>
             <td>${project.subcategory}</td>
+            <td>${project.sales_person}</td>
+            <td>${project.contact}</td>
             <td>
                 <button class="edit-btn" data-project-id="${project.project_id}">Edit</button>
                 <button class="delete-btn" data-project-id="${project.project_id}">Delete</button>
@@ -223,6 +249,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             <td>${project.project_type}</td>
             <td>${project.category}</td>
             <td>${project.subcategory}</td>
+            <td>${project.sales_person}</td>
+            <td>${project.contact}</td>
             <td>
                 <button class="edit-btn" data-project-id="${project.project_id}">Edit</button>
                 <button class="delete-btn" data-project-id="${project.project_id}">Delete</button>
@@ -239,6 +267,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('category').value = project.category;
         updateSubcategories();
         document.getElementById('subcategory').value = project.subcategory;
+        document.getElementById('sales_person').value = project.sales_person;
+        updateContact();
+        document.getElementById('contact').value = project.contact;
         document.getElementById('quotation_id').value = project.quotation_id;
 
         const customerOption = [...customerNameSelect.options].find(option => option.value === project.customer_id);
@@ -252,4 +283,5 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Initialize the categories and subcategories
     updateCategories();
+    updateContact();
 });
