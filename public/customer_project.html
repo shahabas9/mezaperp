@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Customer Project Details</title>
     <link rel="stylesheet" href="./stylesheet/customer_project.css" />
+
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- jQuery (required by Select2) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 </head>
 <body>
     <h1>Customer Project Details</h1>
@@ -17,7 +25,7 @@
         <form id="projectForm" class="form-popup">
             <button type="button" class="close-btn" id="closeFormBtn">X</button>
             <label for="customer_name">Customer Name:</label>
-            <select id="customer_name" name="customer_name" required></select>
+            <select id="customer_name" name="customer_name" class="select2" required></select>
 
             <label for="quotation_id">Quotation ID:</label>
             <input type="text" id="quotation_id" name="quotation_id" readonly>

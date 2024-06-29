@@ -19,6 +19,20 @@ input, select {
     width: calc(100% - 22px); /* Adjust the width of form elements */
     box-sizing: border-box; /* Include padding and border in the element's total width */
 }
+.select2-container {
+    width: calc(100% - 22px) !important; /* Ensure Select2 container matches the form element width */
+}
+.select2-container .select2-selection--single {
+    height: 60px; /* Match the height of the input fields */
+    padding: 0px; /* Match the padding of the input fields */
+    box-sizing: border-box;
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    padding: 0; /* Remove additional padding */
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 58px; /* Adjust the arrow height to align with the select input */
+}
 
 button {
     background-color: #4CAF50;

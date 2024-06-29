@@ -285,3 +285,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateCategories();
     updateContact();
 });
+
+$(document).ready(function() {
+    $('.select2').select2({
+        width: 'resolve' // Ensure the Select2 input matches the width of the original select
+    });
+});
