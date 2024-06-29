@@ -229,8 +229,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             <td>${project.project_type}</td>
             <td>${project.category}</td>
             <td>${project.subcategory}</td>
-            <td>${project.sales_person}</td>
-            <td>${project.contact}</td>
+            <td>${project.salesperson_name}</td>
+            <td>${project.salesperson_contact}</td>
             <td>
                 <button class="edit-btn" data-project-id="${project.project_id}">Edit</button>
                 <button class="delete-btn" data-project-id="${project.project_id}">Delete</button>
@@ -249,8 +249,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             <td>${project.project_type}</td>
             <td>${project.category}</td>
             <td>${project.subcategory}</td>
-            <td>${project.sales_person}</td>
-            <td>${project.contact}</td>
+            <td>${project.salesperson_name}</td>
+            <td>${project.salesperson_contact}</td>
             <td>
                 <button class="edit-btn" data-project-id="${project.project_id}">Edit</button>
                 <button class="delete-btn" data-project-id="${project.project_id}">Delete</button>
@@ -267,9 +267,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('category').value = project.category;
         updateSubcategories();
         document.getElementById('subcategory').value = project.subcategory;
-        document.getElementById('sales_person').value = project.sales_person;
+        document.getElementById('sales_person').value = project.salesperson_name;
         updateContact();
-        document.getElementById('contact').value = project.contact;
+        document.getElementById('contact').value = project.salesperson_contact;
         document.getElementById('quotation_id').value = project.quotation_id;
 
         const customerOption = [...customerNameSelect.options].find(option => option.value === project.customer_id);

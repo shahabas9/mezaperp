@@ -28,8 +28,8 @@ function populateTable(data) {
         document.getElementById('projectName').textContent = customerData.customer_name;
         document.getElementById('customerMob').textContent = customerData.mobile_no;
         document.getElementById('customerEmail').textContent = customerData.email;
-        document.getElementById('fromName').textContent = 'Mezab Air Conditioning Co.';
-        document.getElementById('fromMob').textContent = '+974 44929438';
+        document.getElementById('fromName').textContent = customerData.salesperson_name;
+        document.getElementById('fromMob').textContent = customerData.salesperson_contact;
         document.getElementById('refNo').textContent = customerData.quotation_id;
         document.getElementById('date').textContent = new Date().toLocaleDateString();
 

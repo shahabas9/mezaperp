@@ -122,11 +122,11 @@ app.get('/customers/:customerId', async (req, res) => {
 
 // Handle form submission for adding projects
 app.post('/add-project', async (req, res) => {
-  const { customer_id, project_name, project_type, category, subcategory } = req.body;
+  const { customer_id, project_name, project_type, category, subcategory,sales_person,contact } = req.body;
   try {
     const projectResult = await pool.query(
-      'INSERT INTO project (customer_id, project_name, project_type, category, subcategory) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-      [customer_id, project_name, project_type, category, subcategory]
+      'INSERT INTO project (customer_id, project_name, project_type, category, subcategory,salesperson_name,salesperson_contact) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+      [customer_id, project_name, project_type, category, subcategory,sales_person,contact]
     );
 
     const project = projectResult.rows[0];
@@ -140,11 +140,11 @@ app.post('/add-project', async (req, res) => {
 // Handle editing project details
 app.put('/edit-project/:id', async (req, res) => {
   const { id } = req.params;
-  const { customer_id, project_name, project_type, category, subcategory } = req.body;
+  const { customer_id, project_name, project_type, category, subcategory,sales_person,contact } = req.body;
   try {
     const result = await pool.query(
-      'UPDATE project SET customer_id = $1, project_name = $2, project_type = $3, category = $4, subcategory = $5 WHERE project_id = $6 RETURNING *',
-      [customer_id, project_name, project_type, category, subcategory, id]
+      'UPDATE project SET customer_id = $1, project_name = $2, project_type = $3, category = $4, subcategory = $5, salesperson_name = $6, salesperson_contact = $7 WHERE project_id = $8 RETURNING *',
+      [customer_id, project_name, project_type, category, subcategory,sales_person,contact, id]
     );
 
     const project = result.rows[0];
@@ -317,6 +317,8 @@ app.get('/api/duct_template', async (req, res) => {
         c.email,
         p.quotation_id,
         p.project_name, p.project_type, p.category,
+        p.salesperson_name,
+        p.salesperson_contact,
         s.type,
         s.model,
         s.ton,
@@ -351,6 +353,8 @@ app.get('/api/vrf_template', async (req, res) => {
         c.mobile_no,
         c.email,
         p.quotation_id,
+        p.salesperson_name,
+        p.salesperson_contact,
         s.type,
         s.model,
         s.ton,
@@ -385,6 +389,8 @@ app.get('/api/floorstand_template', async (req, res) => {
         c.mobile_no,
         c.email,
         p.quotation_id,
+        p.salesperson_name,
+        p.salesperson_contact,
         s.type,
         s.model,
         s.ton,
@@ -419,6 +425,8 @@ app.get('/api/packageunit_template', async (req, res) => {
         c.mobile_no,
         c.email,
         p.quotation_id,
+        p.salesperson_name,
+        p.salesperson_contact,
         s.type,
         s.ton,
         s.quantity,
@@ -534,6 +542,8 @@ app.get('/api/floorstandsi_template', async (req, res) => {
         c.mobile_no,
         c.email,
         p.quotation_id,
+        p.salesperson_name,
+        p.salesperson_contact,
         s.type,
         s.ton,
         s.quantity,
@@ -571,6 +581,8 @@ app.get('/api/cassettesi_template', async (req, res) => {
         c.mobile_no,
         c.email,
         p.quotation_id,
+        p.salesperson_name,
+        p.salesperson_contact,
         s.type,
         s.ton,
         s.quantity,
@@ -612,6 +624,8 @@ app.get('/api/ductsi_template', async (req, res) => {
         c.mobile_no,
         c.email,
         p.quotation_id,
+        p.salesperson_name,
+        p.salesperson_contact,
         s.type,
         s.ton,
         s.quantity,
@@ -653,6 +667,8 @@ app.get('/api/splitsi_template', async (req, res) => {
         c.mobile_no,
         c.email,
         p.quotation_id,
+        p.salesperson_name,
+        p.salesperson_contact,
         s.type,
         s.ton,
         s.quantity,
@@ -694,6 +710,8 @@ app.get('/api/splitfloorsi_template', async (req, res) => {
         c.mobile_no,
         c.email,
         p.quotation_id,
+        p.salesperson_name,
+        p.salesperson_contact,
         s.type,
         s.ton,
         s.quantity,
