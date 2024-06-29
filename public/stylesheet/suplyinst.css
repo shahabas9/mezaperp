@@ -1,16 +1,22 @@
 .logo-class {
-    width: 105px; /* Adjust as needed */
-    height: auto; /* Maintain aspect ratio */
-     /* Adjust as needed */
+  width: 140px; /* Adjust as needed */
+  height: 180; /* Maintain aspect ratio */
+   /* Adjust as needed */
 }
 
-.header-container{
-    display: flex;
-    justify-content: space-evenly;
-    align-items: normal;
-    height: 100px; /* Set the desired height */
-    gap: 2rem;
-    
+.header-container {
+display: flex;
+justify-content: space-between; /* Changed to space-between for better distribution */
+align-items: flex-start;
+height: 100px; /* Set the desired height */
+gap: 1rem;
+margin: 0; /* Ensure no margin is applied */
+width: 100%;
+padding: 0; /* Ensure no padding is applied */
+box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+.header-container .logo-class {
+margin-left: -10px; /* Adjust this value as needed */
 }
 hr {
     border: 0;
@@ -18,7 +24,7 @@ hr {
     background: red;
 }
 .second-container{
-    margin-top: 50px;
+    margin-top: 100px;
 }
 .mits-class{
     width: 170px; /* Adjust as needed */
@@ -109,3 +115,30 @@ table {
   }
 }
 
+body{
+  font-family: 'Times New Roman', Times, serif;
+}
+
+
+.left-content, .right-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.left-content p, .right-content p{
+  margin-bottom: 0px; /* Remove default margins */
+}
+
+.mezab-class {
+  margin-left: -10px; /* Adjust this value as needed */
+  margin-top: 30px;
+  height: 1.75cm;
+  width: 7.50 cm;
+}
+.arab-image{
+  height: 1.02cm;
+  width: 7.75cm;
+  margin-top: 43px;
+  margin-bottom: 10px;
+}
