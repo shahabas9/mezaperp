@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>villa quotation</title>
+    <link rel="stylesheet" href="./stylesheet/supply.css" />
+</head>
+<body onload="initializeDataOptions();">
+    <h1>Adding Details Only for Villa's and Projects</h1>
+    <form id="supplyForm" onsubmit="handleSubmit(event)">
+        <div>
+            <label for="customer">Customer Name:</label>
+            <input type="text" id="customerSearch" oninput="filterCustomers()" placeholder="Search for a customer">
+            <select name="customer" id="customer"></select>
+
+            <label for="quotation">Quotation ID:</label>
+            <select name="quotation" id="quotation"></select>
+        </div>
+        <div>
+            <table id="supplyInstTable">
+                <thead>
+                    <tr>
+                        <th>Location</th>
+                        <th>Serving Area</th>
+                        <th>Description</th>
+                        <th>TON</th>
+                        <th>Quantity</th>
+                        <th></th> <!-- Action buttons column -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <select name="Location[]">
+                                <option value="Ground Floor">Ground Floor</option>
+                                <option value="Basement">Basement</option>
+                                <option value="Mezzanine">Mezzanine</option>
+                                <option value="Penthouse">Penthouse</option>
+                                <option value="Out Majlis">Out Majlis</option>
+                                <option value="Out Kitchen">Out Kitchen</option>
+                                <option value="Outblock">Outblock</option>
+                            </select>
+                            
+                        </td>
+                        <td>
+                            <input type="text" name="Serving Area[]">
+                        </td>
+                        <td>
+                            <select name="Type[]" onchange="updateTonOptions(this)">
+                                <option value="ducted split">Ducted Split</option>
+                                <option value="wall mounted">Wall Mounted</option>
+                                <option value="cassette">Cassette</option>
+                                <option value="floor stand">Floor Stand</option>
+                                <option value="package units">Package Units</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select name="TON[]"></select>
+                        </td>
+                        <td>
+                            <input type="number" name="Quantity[]" oninput="updateTotal(this)">
+                        </td>
+                        
+                        <td>
+                            <button type="button" onclick="addRow(this)">+</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="center">
+            <div><button class="submit" type="submit">Submit</button></div>
+        </div>
+    </form>
+    <script src="./client/villa_quot.js"></script>
+</body>
+</html>
