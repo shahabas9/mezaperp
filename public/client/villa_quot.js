@@ -34,7 +34,7 @@ function addRow(button) {
     var cell5 = newRow.insertCell(4);
     var cell6 = newRow.insertCell(5);
 
-    cell1.innerHTML = '<select name="Location[]"><option value="Ground Floor">Ground Floor</option><option value="Basement">Basement</option><option value="Mezzanine">Mezzanine</option><option value="Penthouse">Penthouse</option><option value="Out Majlis">Out Majlis</option><option value="Out Kitchen">Out Kitchen</option><option value="Outblock">Outblock</option></select>';
+    cell1.innerHTML = '<select name="Location[]"><option value="Ground Floor">Ground Floor</option><option value="First Floor">First Floor</option><option value="Basement">Basement</option><option value="Mezzanine">Mezzanine</option><option value="Penthouse">Penthouse</option><option value="Out Majlis">Out Majlis</option><option value="Out Kitchen">Out Kitchen</option><option value="Outblock">Outblock</option></select>';
     cell2.innerHTML = '<input type="text" name="Serving Area[]">';
     cell3.innerHTML = '<select name="Type[]" onchange="updateTonOptions(this)"><option value="ducted split">Ducted Split</option><option value="wall mounted">Wall Mounted</option><option value="cassette">Cassette</option><option value="floor stand">Floor Stand</option><option value="package units">Package Unit</option></select>';
     cell4.innerHTML = '<select name="TON[]"></select>';
@@ -76,4 +76,139 @@ function initializeTonOptions() {
         updateTonOptions(typeSelect);
     });
     updateButtons();
+}
+
+async function initializeDataOptions() {
+    try {
+        const response = await fetch('/api/customers_vi');
+        const customers = await response.json();
+        
+        // Populate customer dropdown and set default value
+        populateDropdown('customer', customers, 'customer_id', 'customer_name');
+        
+        const customerDropdown = document.getElementById('customer');
+        
+        // Add event listener to the customer dropdown
+        customerDropdown.addEventListener('change', updateQuotationDropdown);
+        
+        // Trigger change event to populate the quotation dropdown
+        if (customerDropdown.options.length > 0) {
+            customerDropdown.selectedIndex = 0;  // Select the first customer by default
+            customerDropdown.dispatchEvent(new Event('change'));
+        }
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
+}
+
+async function updateQuotationDropdown() {
+    const customerId = this.value;
+    try {
+        const response = await fetch(`/api/quotations_vi/${customerId}`);
+        const quotations = await response.json();
+        console.log('Quotations fetched:', quotations); // Debugging log
+        populateDropdown('quotation', quotations, 'quotation_id', 'quotation_id');
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
+}
+
+function populateDropdown(dropdownId, items, valueKey, textKey) {
+    const dropdown = document.getElementById(dropdownId);
+    dropdown.innerHTML = ''; // Clear existing options
+    items.forEach(item => {
+        const option = document.createElement('option');
+        option.value = item[valueKey];
+        option.text = item[textKey];
+        dropdown.add(option);
+    });
+}
+
+function filterCustomers() {
+    const searchInput = document.getElementById('customerSearch');
+    const filter = searchInput.value.toUpperCase();
+    const dropdown = document.getElementById('customer');
+    const options = dropdown.getElementsByTagName('option');
+
+    for (let i = 0; i < options.length; i++) {
+      const customerName = options[i].text.toUpperCase();
+      if (customerName.includes(filter)) {
+        options[i].style.display = '';
+      } else {
+        options[i].style.display = 'none';
+      }
+    }
+  }
+
+// Initialize data when the window loads
+window.onload = initializeDataOptions;
+
+
+async function handleSubmit(event) {
+    event.preventDefault();
+
+    const customerId = document.getElementById('customer').value;
+    const quotationId = document.getElementById('quotation').value;
+    const tableRows = document.querySelectorAll('#supplyInstTable tbody tr'); // Changed the selector here
+
+    const villaData = [];
+
+    tableRows.forEach((row, index) => {
+        const locationElement = row.querySelector('select[name="Location[]"]');
+        const areaElement = row.querySelector('input[name="Serving Area[]"]');
+        const typeElement = row.querySelector('select[name="Type[]"]');
+        const tonElement = row.querySelector('select[name="TON[]"]');
+        const quantityElement = row.querySelector('input[name="Quantity[]"]');
+        
+
+        // Debugging output
+        console.log(`Row ${index}:`, {
+            locationElement,
+            areaElement,
+            typeElement,
+            tonElement,
+            quantityElement
+        });
+
+        // Ensure all elements are found before accessing their values
+        if (locationElement && areaElement && typeElement && tonElement && quantityElement ) {
+            villaData.push({
+                location: locationElement.value,
+                area: areaElement.value,
+                type: typeElement.value,
+                ton: tonElement.value,
+                quantity: quantityElement.value
+            });
+        } else {
+            console.error(`Error: Missing elements in row ${index}`);
+        }
+    });
+
+    const payload = {
+        customer_id: customerId,
+        quotation_id: quotationId,
+        supply_data: villaData
+    };
+
+    console.log('Submitting payload:', payload); // Debugging output
+
+    try {
+        const response = await fetch('/api/villa', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const result = await response.json();
+        alert('Data submitted successfully');
+    } catch (error) {
+        console.error('Error submitting form:', error);
+        alert('Failed to submit data');
+    }
 }

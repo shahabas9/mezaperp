@@ -739,6 +739,88 @@ app.get('/api/splitfloorsi_template', async (req, res) => {
   }
 });
 
+app.get('/api/customers_vi', async (req, res) => {
+  try {
+    const customerResult = await pool.query(`
+      SELECT DISTINCT c.customer_id, c.customer_name
+      FROM customer c
+      JOIN project p ON c.customer_id = p.customer_id
+      WHERE p.category = 'villa'
+    `);
+    res.json(customerResult.rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Server error');
+  }
+});
+
+app.get('/api/quotations_vi/:customerId', async (req, res) => {
+  const { customerId } = req.params;
+  try {
+    const quotationResult = await pool.query(`
+      SELECT quotation_id
+      FROM project
+      WHERE customer_id = $1 AND category = 'villa'
+    `, [customerId]);
+    res.json(quotationResult.rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Server error');
+  }
+});
+
+app.post('/api/villa', async (req, res) => {
+  const { customer_id, quotation_id, supply_data } = req.body;
+
+  console.log('Received payload:', req.body); // Debugging output
+
+  try {
+      await pool.query('BEGIN');
+
+      const insertSupplyQuery = `
+          INSERT INTO villa (customer_id, quotation_id, location, area, type, ton, quantity)
+          VALUES ($1, $2, $3, $4, $5, $6, $7)
+      `;
+
+      for (const item of supply_data) {
+          const values = [
+              customer_id,
+              quotation_id,
+              item.location,
+              item.area,
+              item.type,
+              item.ton,
+              item.quantity
+          ];
+
+          console.log('Inserting item:', values); // Debugging output
+          await pool.query(insertSupplyQuery, values);
+      }
+
+      await pool.query('COMMIT');
+      res.status(201).json({ message: 'Data submitted successfully' });
+  } catch (error) {
+      await pool.query('ROLLBACK');
+      console.error('Error inserting data:', error);
+      res.status(500).json({ error: 'Failed to submit data' });
+  }
+});
+
+app.get('/api/quotations_villa', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT c.customer_name, p.quotation_id, p.subcategory
+      FROM customer c
+      JOIN project p ON c.customer_id = p.customer_id
+      WHERE p.category = 'villa'
+    `);
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    res.status(500).json({ error: 'Failed to fetch data' });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });
