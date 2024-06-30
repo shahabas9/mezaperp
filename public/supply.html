@@ -5,13 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Supply</title>
     <link rel="stylesheet" href="./stylesheet/supply.css" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- jQuery (required by Select2) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 </head>
 <body onload="initializeDataOptions();">
     <h1>Adding Details Only for Supply</h1>
     <form id="supplyForm" onsubmit="handleSubmit(event)">
         <div>
             <label for="customer">Customer Name:</label>
-            <select name="customer" id="customer"></select>
+            <input type="text" id="customerSearch" oninput="filterCustomers()" placeholder="Search for a customer">
+            <select name="customer" id="customer" ></select>
+            
 
             <label for="quotation">Quotation ID:</label>
             <select name="quotation" id="quotation"></select>

@@ -162,41 +162,41 @@ function updateTotal(element) {
     totalInput.value = (unitPrice * quantity); // Calculate and set the total tonnage
 }
 
+// Fetch and populate the customer dropdown on page load
 async function initializeDataOptions() {
     try {
       const response = await fetch('/api/customers');
       const customers = await response.json();
-  
-      populateDropdown('customer', customers, 'customer_id', 'customer_name');
-  
-      const customerDropdown = document.getElementById('customer');
-        
-        // Add event listener to the customer dropdown
-        customerDropdown.addEventListener('change', updateQuotationDropdown);
-        
-        // Trigger change event to populate the quotation dropdown
-        if (customerDropdown.options.length > 0) {
-            customerDropdown.selectedIndex = 0;  // Select the first customer by default
-            customerDropdown.dispatchEvent(new Event('change'));
-        }
-    } catch (error) {
-        console.error('Error fetching data:', error);
-    }
-}
 
-  
+      populateDropdown('customer', customers, 'customer_id', 'customer_name');
+
+      const customerDropdown = document.getElementById('customer');
+
+      // Add event listener to the customer dropdown
+      customerDropdown.addEventListener('change', updateQuotationDropdown);
+
+      // Trigger change event to populate the quotation dropdown
+      if (customerDropdown.options.length > 0) {
+        customerDropdown.selectedIndex = 0; // Select the first customer by default
+        customerDropdown.dispatchEvent(new Event('change'));
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  }
+
   async function updateQuotationDropdown() {
     const customerId = this.value;
     try {
       const response = await fetch(`/api/quotations/${customerId}`);
       const quotations = await response.json();
-  
+
       populateDropdown('quotation', quotations, 'quotation_id', 'quotation_id');
     } catch (error) {
       console.error('Error fetching data:', error);
     }
   }
-  
+
   function populateDropdown(dropdownId, items, valueKey, textKey) {
     const dropdown = document.getElementById(dropdownId);
     dropdown.innerHTML = ''; // Clear existing options
@@ -207,7 +207,23 @@ async function initializeDataOptions() {
       dropdown.add(option);
     });
   }
-  
+
+  function filterCustomers() {
+    const searchInput = document.getElementById('customerSearch');
+    const filter = searchInput.value.toUpperCase();
+    const dropdown = document.getElementById('customer');
+    const options = dropdown.getElementsByTagName('option');
+
+    for (let i = 0; i < options.length; i++) {
+      const customerName = options[i].text.toUpperCase();
+      if (customerName.includes(filter)) {
+        options[i].style.display = '';
+      } else {
+        options[i].style.display = 'none';
+      }
+    }
+  }
+
   window.onload = initializeDataOptions;
 
   async function handleSubmit(event) {
@@ -280,5 +296,6 @@ async function initializeDataOptions() {
         alert('Failed to submit data');
     }
 }
+
 
   

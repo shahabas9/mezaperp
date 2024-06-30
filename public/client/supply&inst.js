@@ -137,6 +137,22 @@ function populateDropdown(dropdownId, items, valueKey, textKey) {
     });
 }
 
+function filterCustomers() {
+    const searchInput = document.getElementById('customerSearch');
+    const filter = searchInput.value.toUpperCase();
+    const dropdown = document.getElementById('customer');
+    const options = dropdown.getElementsByTagName('option');
+
+    for (let i = 0; i < options.length; i++) {
+      const customerName = options[i].text.toUpperCase();
+      if (customerName.includes(filter)) {
+        options[i].style.display = '';
+      } else {
+        options[i].style.display = 'none';
+      }
+    }
+  }
+
 // Initialize data when the window loads
 window.onload = initializeDataOptions;
 

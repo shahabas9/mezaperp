@@ -239,6 +239,7 @@ app.get('/api/quotations/:customerId', async (req, res) => {
       FROM project
       WHERE customer_id = $1 AND category = 'Supply'
     `, [customerId]);
+    console.log('Fetched quotations for customer', customerId, ':', quotationResult.rows); // Debugging
     res.json(quotationResult.rows);
   } catch (error) {
     console.error(error);
