@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Duct villa</title>
-    <link rel="stylesheet" href="./stylesheet/supply_duct.css" />
+    <link rel="stylesheet" href="./stylesheet/villa_duct.css" />
 </head>
 <body>
     <div class="watermark"></div>
@@ -62,77 +62,122 @@
         <p>
             Supply and Installation of <b>Air Conditioning</b> Units of brand name <b style="color:red;">Mitsubishi Electric</b> Made in Thailand as follows :
         </p>
-        <table id="groundTable">
-            <thead>
+        <div id="tables-container">
+            <div id="basementWrapper">
+                <h3><b><u>Basement Floor:</u></b></h3>
+                <table id="basementTable">
+                    <thead>
+                        <tr>
+                            <th class="serving-area">Serving Area</th>
+                            <th class="quantity">Quantity</th>
+                            <th class="ton">TON</th>
+                            <th class="description">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody id="basementTableBody"></tbody>
+                </table>
+            </div>
+            <div id="mezzanineWrapper">
+                <h3><b><u>Mezzanine Floor:</u></b></h3>
+                <table id="mezzanineTable">
+                    <thead>
+                        <tr>
+                            <th class="serving-area">Serving Area</th>
+                            <th class="quantity">Quantity</th>
+                            <th class="ton">TON</th>
+                            <th class="description">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody id="mezzanineTableBody"></tbody>
+                </table>
+            </div>
+            <div id="groundWrapper">
                 <h3><b><u>Ground Floor:</u></b></h3>
-                <tr>
-                    <th>Serving Area</th>
-                    <th>Quantity</th>
-                    <th>TON</th>
-                    <th>Description</th>
-                </tr>
-            </thead>
-            <tbody id="groundTableBody">
-                <!-- Table rows will be dynamically added here -->
-            </tbody>
-        </table>
-        <table id="firstFloorTable">
-            <thead>
+                <table id="groundTable">
+                    <thead>
+                        <tr>
+                            <th class="serving-area">Serving Area</th>
+                            <th class="quantity">Quantity</th>
+                            <th class="ton">TON</th>
+                            <th class="description">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody id="groundTableBody"></tbody>
+                </table>
+            </div>
+            <div id="firstWrapper">
                 <h3><b><u>First Floor:</u></b></h3>
-                <tr>
-                    <th>Serving Area</th>
-                    <th>Quantity</th>
-                    <th>TON</th>
-                    <th>Description</th>
-                </tr>
-            </thead>
-            <tbody id="firstTableBody">
-                <!-- Table rows will be dynamically added here -->
-            </tbody>
-        </table>
-        <table id="penthousefloorTable">
-            <thead>
+                <table id="firstTable">
+                    <thead>
+                        <tr>
+                            <th class="serving-area">Serving Area</th>
+                            <th class="quantity">Quantity</th>
+                            <th class="ton">TON</th>
+                            <th class="description">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody id="firstTableBody"></tbody>
+                </table>
+            </div>
+            <div id="penthouseWrapper">
                 <h3><b><u>Penthouse Floor:</u></b></h3>
-                <tr>
-                    <th>Serving Area</th>
-                    <th>Quantity</th>
-                    <th>TON</th>
-                    <th>Description</th>
-                </tr>
-            </thead>
-            <tbody id="penthouseTableBody">
-                <!-- Table rows will be dynamically added here -->
-            </tbody>
-        </table>
-        <table id="outmajlisfloorTable">
-            <thead>
+                <table id="penthouseTable">
+                    <thead>
+                        <tr>
+                            <th class="serving-area">Serving Area</th>
+                            <th class="quantity">Quantity</th>
+                            <th class="ton">TON</th>
+                            <th class="description">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody id="penthouseTableBody"></tbody>
+                </table>
+            </div>
+            <div id="outmajlisWrapper">
                 <h3><b><u>Out Majlis:</u></b></h3>
-                <tr>
-                    <th>Serving Area</th>
-                    <th>Quantity</th>
-                    <th>TON</th>
-                    <th>Description</th>
-                </tr>
-            </thead>
-            <tbody id="outmajlisTableBody">
-                <!-- Table rows will be dynamically added here -->
-            </tbody>
-        </table>
-        <table id="outkitchenfloorTable">
-            <thead>
+                <table id="outmajlisTable">
+                    <thead>
+                        <tr>
+                            <th class="serving-area">Serving Area</th>
+                            <th class="quantity">Quantity</th>
+                            <th class="ton">TON</th>
+                            <th class="description">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody id="outmajlisTableBody"></tbody>
+                </table>
+            </div>
+            <div id="outkitchenWrapper">
                 <h3><b><u>Out Kitchen:</u></b></h3>
-                <tr>
-                    <th>Serving Area</th>
-                    <th>Quantity</th>
-                    <th>TON</th>
-                    <th>Description</th>
-                </tr>
-            </thead>
-            <tbody id="outkitchenTableBody">
-                <!-- Table rows will be dynamically added here -->
-            </tbody>
-        </table>
-        <div id="totalSumContainer" style="font-weight: bold; margin-top: 20px;text-align: right;"></div>
+                <table id="outkitchenTable">
+                    <thead>
+                        <tr>
+                            <th class="serving-area">Serving Area</th>
+                            <th class="quantity">Quantity</th>
+                            <th class="ton">TON</th>
+                            <th class="description">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody id="outkitchenTableBody"></tbody>
+                </table>
+            </div>
+            <div id="outblockWrapper">
+                <h3><b><u>Out Block:</u></b></h3>
+                <table id="outblockTable">
+                    <thead>
+                        <tr>
+                            <th class="serving-area">Serving Area</th>
+                            <th class="quantity">Quantity</th>
+                            <th class="ton">TON</th>
+                            <th class="description">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody id="outblockTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+        
+        
         <p>
             <b><u>Note:</u></b>
         </p>
@@ -235,5 +280,16 @@
         <p><b>THANK YOU</b></p>
         
     </div>
+    <div class="fifth-container">
+        <div>
+         <img class="sig-class" src="./images/signature.png" alt="Logo">
+        </div> 
+        <div>
+         <b>Mezab Air Conditioning Co.</b>
+        </div>
+     </div>
+ 
+     <button id="printButton" onclick="window.print()">Print</button>
+     <script src="./client/split_villa.js"></script>
 </body>
 </html>
