@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function normalizeLocation(location) {
-    return location.toLowerCase().replace(' ', '');
+    return location.toLowerCase().replace(/\s+/g, '');
 }
 
 function populateTable(data) {
@@ -48,11 +48,20 @@ function populateTable(data) {
             outblock: document.getElementById('outblockTableBody')
         };
 
+        const totals = {};
+
         data.forEach(item => {
             console.log('Item:', item);
             const normalizedLocation = normalizeLocation(item.location);
             const tableBody = tables[normalizedLocation];
             if (tableBody) {
+                // Calculate totals
+                if (!totals[normalizedLocation]) {
+                    totals[normalizedLocation] = { quantity: 0, ton: 0.0 };
+                }
+                totals[normalizedLocation].quantity += item.quantity;
+                totals[normalizedLocation].ton += parseFloat(item.ton);
+
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td class="serving-area">${item.area.toUpperCase()}</td>
@@ -63,6 +72,20 @@ function populateTable(data) {
                 tableBody.appendChild(row);
             } else {
                 console.warn(`No table found for location: ${item.location}`);
+            }
+        });
+
+        // Add total row for each table
+        Object.keys(tables).forEach(location => {
+            if (totals[location]) {
+                const totalRow = document.createElement('tr');
+                totalRow.innerHTML = `
+                    <td><strong>Total</strong></td>
+                    <td><strong>${totals[location].quantity}</strong></td>
+                    <td><strong>${totals[location].ton.toFixed(2)}</strong></td>
+                    <td></td>
+                `;
+                tables[location].appendChild(totalRow);
             }
         });
 
@@ -77,4 +100,3 @@ function populateTable(data) {
         });
     }
 }
-
