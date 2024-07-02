@@ -1,136 +1,173 @@
 .logo-class {
-    width: 140px; /* Adjust as needed */
-    height: 180; /* Maintain aspect ratio */
-     /* Adjust as needed */
+  width: 140px; /* Adjust as needed */
+  height: 180px; /* Maintain aspect ratio */
 }
 
 .header-container {
+display: flex;
+justify-content: space-between; /* Changed to space-between for better distribution */
+align-items: flex-start;
+height: 100px; /* Set the desired height */
+gap: 1rem;
+margin: 0; /* Ensure no margin is applied */
+width: 100%;
+padding: 0; /* Ensure no padding is applied */
+box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+.header-container .logo-class {
+margin-left: -10px; /* Adjust this value as needed */
+}
+
+hr {
+  border: 0;
+  height: 5px;
+  background: red;
+  width: 100%;
+  margin-right: 0;
+}
+
+.second-container {
+  margin-top: 100px;
+}
+
+.mits-class {
+  width: 170px; /* Adjust as needed */
+  height: auto;
+  margin-left: 42%;
+}
+
+.third-container {
   display: flex;
-  justify-content: space-between; /* Changed to space-between for better distribution */
-  align-items: flex-start;
+  justify-content: space-between;
+  align-items: normal;
   height: 100px; /* Set the desired height */
   gap: 1rem;
-  margin: 0; /* Ensure no margin is applied */
-  width: 100%;
-  padding: 0; /* Ensure no padding is applied */
-  box-sizing: border-box; /* Include padding and border in the element's total width and height */
 }
-.header-container .logo-class {
-  margin-left: -10px; /* Adjust this value as needed */
+
+.fourth-container {
+  margin-top: 70px;
 }
-hr {
-    border: 0;
-    height: 5px;
-    background: red;
-    width: 100%;
-    margin-right: 0;
-}
-.second-container{
-    margin-top: 100px;
-}
-.mits-class{
-    width: 170px; /* Adjust as needed */
-    height: auto;
-    margin-left: 42%;
-}
-.third-container{
-    display: flex;
-    justify-content: space-between;
-    align-items: normal;
-    height: 100px; /* Set the desired height */
-    gap: 1rem;
-}
-.fourth-container{
-    margin-top: 70px;
-}
+
 table {
-    width: 100%;
-    border-collapse: collapse;
+  width: 100%;
+  border-collapse: collapse;
 }
 
 th, td {
-    border: 1px solid #000;
-    padding: 8px;
-    text-align: center;
+  border: 1px solid #000;
+  padding: 8px;
+  text-align: center;
 }
 
 .serving-area {
-    width: 40%;
+  width: 40%;
 }
 
 .quantity {
-    width: 15%;
+  width: 15%;
 }
 
 .ton {
-    width: 15%;
+  width: 15%;
 }
 
 .description {
-    width: 30%;
+  width: 30%;
 }
 
-  .sig-class{
-    width: 170px; /* Adjust as needed */
-    height: auto;
-  }
-  .fifth-container{
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    height: 100px; /* Set the desired height */
-    gap: 0rem;
-  }
+.total-price {
+  width: 20%;
+}
+
+.unit-price {
+  width: 25%;
+  text-align: center;
+}
+
+.unit{
+  border: none;
+  text-align: center;
+  background-color: none;
+}
+
+.total-price-strike {
+  text-decoration: line-through;
+  font-weight: bold;
+  direction: rtl;
+}
+
+.sig-class {
+  width: 170px; /* Adjust as needed */
+  height: auto;
+}
+
+.fifth-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  height: 100px; /* Set the desired height */
+  gap: 0rem;
+}
+
+#printButton {
+  display: block;
+  margin: 20px auto; /* Center the button horizontally */
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: rgb(50, 59, 37);
+  color: beige;
+}
+
+.no-border {
+  border: none;
+  outline: none;
+}
+
+/* Ensure the button doesn't appear in the printout */
+@media print {
   #printButton {
-    display: block;
-    margin: 20px auto; /* Center the button horizontally */
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    background-color: rgb(50, 59, 37);
-    color: beige;
+      display: none;
   }
-
-  .no-border {
-    border: none;
-    outline: none;
-    
 }
-  
-  /* Ensure the button doesn't appear in the printout */
-  @media print {
-    #printButton {
-        display: none;
-    }
+
+@media print {
+  @page {
+      margin-top: 3mm; /* Default margin for all pages */
   }
 
-  @media print {
-    body {
-        position: relative;
-        /* Ensure body has some content height to cover multiple pages */
-        min-height: 100vh;
-    }
-  
-    .watermark {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        width: 70%;
-        height: 70%;
-        transform: translate(-50%, -40%);
-        z-index: -1;
-        background-image: url('../images/Mezab.png');
-        background-size: contain;
-        background-repeat: no-repeat;
-        opacity: 0.2; /* Adjust the transparency */
-        pointer-events: none; /* Make sure it doesn't interfere with page content */
-    }
+  @page:first {
+      margin-top: 0; /* No margin for the first page */
+  }
+}
+
+@media print {
+  body {
+      position: relative;
+      /* Ensure body has some content height to cover multiple pages */
+      min-height: 100vh;
   }
 
-body{
+  .watermark {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: 70%;
+      height: 70%;
+      transform: translate(-50%, -40%);
+      z-index: -1;
+      background-image: url('../images/Mezab.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      opacity: 0.2; /* Adjust the transparency */
+      pointer-events: none; /* Make sure it doesn't interfere with page content */
+  }
+}
+
+body {
   font-family: 'Times New Roman', Times, serif;
 }
-
 
 .left-content, .right-content {
   display: flex;
@@ -138,7 +175,7 @@ body{
   justify-content: center;
 }
 
-.left-content p, .right-content p{
+.left-content p, .right-content p {
   margin-bottom: 0px; /* Remove default margins */
 }
 
@@ -146,15 +183,16 @@ body{
   margin-left: -10px; /* Adjust this value as needed */
   margin-top: 30px;
   height: 1.75cm;
-  width: 7.50 cm;
+  width: 7.50cm;
 }
-.arab-image{
+
+.arab-image {
   height: 1.02cm;
   width: 7.75cm;
   margin-top: 43px;
   margin-bottom: 10px;
 }
-h3{
-    margin: 0;
+
+h3 {
+  margin: 0;
 }
- 
