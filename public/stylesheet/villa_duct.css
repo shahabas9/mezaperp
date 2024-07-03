@@ -1,22 +1,23 @@
 .logo-class {
   width: 140px; /* Adjust as needed */
   height: 180px; /* Maintain aspect ratio */
+  margin-top: 15px;
 }
 
 .header-container {
-display: flex;
-justify-content: space-between; /* Changed to space-between for better distribution */
-align-items: flex-start;
-height: 100px; /* Set the desired height */
-gap: 1rem;
-margin: 0; /* Ensure no margin is applied */
-width: 100%;
-padding: 0; /* Ensure no padding is applied */
-box-sizing: border-box; /* Include padding and border in the element's total width and height */
+  display: flex;
+  justify-content: space-between; /* Changed to space-between for better distribution */
+  align-items: flex-start;
+  height: 100px; /* Set the desired height */
+  gap: 1rem;
+  margin: 0; /* Ensure no margin is applied */
+  width: 100%;
+  padding: 0; /* Ensure no padding is applied */
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
 }
 
 .header-container .logo-class {
-margin-left: -10px; /* Adjust this value as needed */
+  margin-left: -10px; /* Adjust this value as needed */
 }
 
 hr {
@@ -88,7 +89,7 @@ th, td {
 .unit{
   border: none;
   text-align: center;
-  background-color: none;
+  background-color: transparent;
 }
 
 .total-price-strike {

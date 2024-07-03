@@ -58,10 +58,10 @@ function populateTable(data) {
             if (tableBody) {
                 // Calculate totals
                 if (!totals[normalizedLocation]) {
-                    totals[normalizedLocation] = { quantity: 0, ton: 0.0 };
+                    totals[normalizedLocation] = { quantity: 0, totalTonQuantity: 0.0 };
                 }
                 totals[normalizedLocation].quantity += item.quantity;
-                totals[normalizedLocation].ton += parseFloat(item.ton);
+                totals[normalizedLocation].totalTonQuantity += parseFloat(item.ton) * item.quantity;
 
                 const row = document.createElement('tr');
                 row.innerHTML = `
@@ -77,18 +77,15 @@ function populateTable(data) {
         });
 
         let totalQuantity = 0;
-        let totalTon = 0.0;
+        let totalTonQuantity = 0.0;
 
         Object.values(totals).forEach(locationTotal => {
             totalQuantity += locationTotal.quantity;
-            totalTon += locationTotal.ton;
+            totalTonQuantity += locationTotal.totalTonQuantity;
         });
 
         document.getElementById('totalQuantityContainer').textContent = `Total Quantity: ${totalQuantity}`;
-        document.getElementById('totalTonContainer').textContent = `Total Ton: ${totalTon.toFixed(2)} Ton`;
-
-        
-
+        document.getElementById('totalTonContainer').textContent = `Total Ton: ${totalTonQuantity.toFixed(2)} Ton`;
 
         // Add total row for each table
         Object.keys(tables).forEach(location => {
@@ -98,7 +95,7 @@ function populateTable(data) {
                 totalRow.innerHTML = `
                     <td><strong>Total</strong></td>
                     <td><strong>${totals[location].quantity}</strong></td>
-                    <td><strong>${totals[location].ton.toFixed(2)}</strong></td>
+                    <td><strong>${totals[location].totalTonQuantity.toFixed(2)}</strong></td>
                     <td></td>
                 `;
                 tables[location].appendChild(totalRow);
@@ -116,6 +113,7 @@ function populateTable(data) {
         });
     }
 }
+
 
 function mergeDescriptionCells(tableBody) {
     const rows = tableBody.getElementsByTagName('tr');
@@ -235,10 +233,6 @@ function generateSummaryTable(data) {
     }
 }
 
-
-
-
-
 // CSS to center the description text
 const style = document.createElement('style');
 style.textContent = `
@@ -248,4 +242,6 @@ style.textContent = `
     }
 `;
 document.head.append(style);
+
+
 
