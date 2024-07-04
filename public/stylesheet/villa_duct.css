@@ -197,3 +197,29 @@ body {
 h3 {
   margin: 0;
 }
+
+.container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-weight: bold;
+  font-size: 20px;
+  margin-top: 20px;
+  text-align: right;
+  direction: ltr;
+}
+.amount-input {
+  height: 20px;
+  font-size: 18px;
+  font-weight: bold;
+  width: 70px;
+  border: none;
+  padding-top: 0;
+  text-align: left;
+  margin-left: 4px;
+  margin-top: 7px;
+}
+.currency {
+  font-size: 20px;
+  margin-right: 2px; /* Adjust margin as necessary */
+}

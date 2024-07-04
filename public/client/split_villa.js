@@ -93,10 +93,10 @@ function populateTable(data) {
             if (totals[location]) {
                 const totalRow = document.createElement('tr');
                 totalRow.innerHTML = `
-                    <td><strong>Total</strong></td>
+                    <td><strong></strong></td>
                     <td><strong>${totals[location].quantity}</strong></td>
                     <td><strong>${totals[location].totalTonQuantity.toFixed(2)}</strong></td>
-                    <td></td>
+                    <td><strong>‫المجموع</strong></td>
                 `;
                 tables[location].appendChild(totalRow);
             }
@@ -203,7 +203,7 @@ function generateSummaryTable(data) {
         <td></td>
         <td><b>${totalQuantity}</b></td>
         <td></td>
-        <td><b>Total</b></td>
+        <td><b>‫المجموع</b></td>
     `;
     summaryTableBody.appendChild(totalRow);
 
