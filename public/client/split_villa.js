@@ -87,13 +87,24 @@ function populateTable(data) {
         document.getElementById('totalQuantityContainer').textContent = `Total Quantity: ${totalQuantity}`;
         document.getElementById('totalTonContainer').textContent = `Total Ton: ${totalTonQuantity.toFixed(2)} Ton`;
 
+        const locationNames = {
+            basement: 'الطابق السفلي',
+            mezzanine: 'طابق الميزانين',
+            groundfloor: 'الطابق الأرضي',
+            firstfloor: 'الطابق الأول',
+            penthouse: 'طابق السقيفة',
+            outmajlis: 'أرضية خارج المجلس',
+            outkitchen: 'أرضية المطبخ',
+            outblock: 'أرضية خارجية'
+        };
+
         // Add total row for each table
         Object.keys(tables).forEach(location => {
             mergeDescriptionCells(tables[location]);
             if (totals[location]) {
                 const totalRow = document.createElement('tr');
                 totalRow.innerHTML = `
-                    <td><strong></strong></td>
+                    <td><strong>${locationNames[location]}</strong></td>
                     <td><strong>${totals[location].quantity}</strong></td>
                     <td><strong>${totals[location].totalTonQuantity.toFixed(2)}</strong></td>
                     <td><strong>‫المجموع</strong></td>
@@ -113,7 +124,6 @@ function populateTable(data) {
         });
     }
 }
-
 
 function mergeDescriptionCells(tableBody) {
     const rows = tableBody.getElementsByTagName('tr');
