@@ -208,6 +208,16 @@ h3 {
   text-align: right;
   direction: ltr;
 }
+.amount-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 20px;
+  margin-top: 20px;
+  text-align: right;
+  direction: ltr;
+}
 .amount-input {
   height: 20px;
   font-size: 18px;

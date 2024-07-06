@@ -51,6 +51,11 @@ function populateTable(data) {
 
         const totals = {};
 
+        const descriptionMapping = {
+            "WALL MOUNTED": "‫وحدات تكييف معلق على الحائط سبلت <span style='color: red;'>(Wall Mounted)</span>",
+            "DUCTED SPLIT": "وحدات‬ تكييف سقف‬‬ ‫مخفي‬ بمجاري هواء‬‬ ‫ ‫<span style='color: red;'>(Ducted Split)</span>"
+        };
+
         data.forEach(item => {
             console.log('Item:', item);
             const normalizedLocation = normalizeLocation(item.location);
@@ -62,13 +67,13 @@ function populateTable(data) {
                 }
                 totals[normalizedLocation].quantity += item.quantity;
                 totals[normalizedLocation].totalTonQuantity += parseFloat(item.ton) * item.quantity;
-
+                const descriptionText = descriptionMapping[item.type.toUpperCase()] || item.type.toUpperCase();
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td class="serving-area">${item.area.toUpperCase()}</td>
                     <td class="quantity">${item.quantity}</td>
                     <td class="ton">${item.ton}</td>
-                    <td class="description">${item.type.toUpperCase()}</td>
+                    <td class="description"><strong>${descriptionText}</strong></td>
                 `;
                 tableBody.appendChild(row);
             } else {
@@ -191,7 +196,7 @@ function generateSummaryTable(data) {
                     <td><input type="text" class="unit" data-ton="${summary[key].ton}" /></td>
                     <td>${summary[key].quantity}</td> 
                     <td>${summary[key].ton}</td>
-                    <td rowspan="${Object.keys(summary).filter(k => summary[k].quantity > 0).length}" class="description-cell">WALL MOUNTED</td>
+                    <td rowspan="${Object.keys(summary).filter(k => summary[k].quantity > 0).length}" class="description-cell"><strong>‫وحدات تكييف معلق على الحائط سبلت <span style='color: red;'>(Wall Mounted)</span></strong></td>
                 `;
                 descriptionAdded = true;
             } else {
@@ -252,6 +257,22 @@ style.textContent = `
     }
 `;
 document.head.append(style);
+
+const amountInput = document.getElementById('amountInput');
+
+    amountInput.addEventListener('blur', formatAmount);
+    amountInput.addEventListener('input', clearFormatting);
+
+    function clearFormatting() {
+        this.value = this.value.replace(/,/g, '');
+    }
+
+    function formatAmount() {
+        const value = parseFloat(this.value.replace(/,/g, ''));
+        if (!isNaN(value)) {
+            this.value = value.toLocaleString();
+        }
+    }
 
 
 
