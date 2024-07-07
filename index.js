@@ -3,7 +3,6 @@ import bodyParser from 'body-parser';
 import pkg from 'pg';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { PDFDocument, rgb } from 'pdf-lib';
 import fs from 'fs';
 import fetch from 'node-fetch';
 
