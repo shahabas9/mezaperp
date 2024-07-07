@@ -228,6 +228,7 @@ h3 {
   text-align: left;
   margin-left: 4px;
   margin-top: 7px;
+  background-color: transparent;
 }
 .currency {
   font-size: 20px;
