@@ -22,8 +22,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function populateTable(data) {
-    
     if (data.length > 0) {
+        console.log("Customer Data: ", data[0]);
         const customerData = data[0];
         document.getElementById('customerName').textContent = customerData.project_name;
         document.getElementById('projectName').textContent = customerData.customer_name;
@@ -35,20 +35,43 @@ function populateTable(data) {
         document.getElementById('date').textContent = new Date().toLocaleDateString();
 
         const tableBody = document.getElementById('supplyTableBody');
+        const descriptions = {};
+
         data.forEach(item => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${item.type.toUpperCase()}</td>
-                <td>${item.model}</td>
-                <td>${item.ton}</td>
-                <td>${item.quantity}</td>
-                <td>${item.unit_price.toLocaleString()}</td>
-                <td>${item.total_price.toLocaleString()}</td>
-            `;
-            tableBody.appendChild(row);
+            console.log("Item: ", item);
+            const description = item.type.toUpperCase();
+            if (!descriptions[description]) {
+                descriptions[description] = { count: 0, rows: [] };
+            }
+            descriptions[description].count++;
+            descriptions[description].rows.push(item);
+        });
+
+        Object.keys(descriptions).forEach(description => {
+            const { count, rows } = descriptions[description];
+            rows.forEach((item, index) => {
+                const row = document.createElement('tr');
+                if (index === 0) {
+                    const descriptionCell = document.createElement('td');
+                    descriptionCell.setAttribute('rowspan', count);
+                    descriptionCell.className = 'merged-cell';
+                    descriptionCell.innerHTML = `<b><span style="color:black;">Supply Only of</span></b><br><b style="color:red;"> ${description}</b>`;
+                    row.appendChild(descriptionCell);
+                }
+                row.innerHTML += `
+                    <td>${item.model}</td>
+                    <td>${item.ton}</td>
+                    <td>${item.quantity}</td>
+                    <td>${item.unit_price.toLocaleString()}</td>
+                    <td>${item.total_price.toLocaleString()}</td>
+                `;
+                console.log("Row HTML: ", row.innerHTML);
+                tableBody.appendChild(row);
+            });
         });
     }
 }
+
 
 function displayTotalSum(data) {
     const totalSum = data.reduce((sum, row) => sum + parseFloat(row.total_price), 0);
