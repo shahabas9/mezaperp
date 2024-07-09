@@ -63,7 +63,6 @@ function populateTable(data) {
                     row.appendChild(descriptionCell);
                 }
                 row.innerHTML += `
-                    
                     <td>${item.ton}</td>
                     <td>${item.quantity}</td>
                     <td>${item.unit_price.toLocaleString()}</td>

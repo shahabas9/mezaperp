@@ -952,6 +952,72 @@ app.get('/api/duct_split_villa_template', async (req, res) => {
   }
 });
 
+app.get('/api/customers_amc', async (req, res) => {
+  try {
+    const customerResult = await pool.query(`
+      SELECT DISTINCT c.customer_id, c.customer_name
+      FROM customer c
+      JOIN project p ON c.customer_id = p.customer_id
+      WHERE p.subcategory = 'AMC'
+    `);
+    res.json(customerResult.rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Server error');
+  }
+});
+
+app.get('/api/quotations_amc/:customerId', async (req, res) => {
+  const { customerId } = req.params;
+  try {
+    const quotationResult = await pool.query(`
+      SELECT quotation_id
+      FROM project
+      WHERE customer_id = $1 AND subcategory = 'AMC'
+    `, [customerId]);
+    res.json(quotationResult.rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Server error');
+  }
+});
+
+app.post('/api/amc', async (req, res) => {
+  const { customer_id, quotation_id, supply_data } = req.body;
+
+  console.log('Received payload:', req.body); // Debugging output
+
+  try {
+      await pool.query('BEGIN');
+
+      const insertSupplyQuery = `
+          INSERT INTO amc (customer_id, quotation_id, type, quantity)
+          VALUES ($1, $2, $3, $4)
+      `;
+
+      for (const item of supply_data) {
+          const values = [
+              customer_id,
+              quotation_id,
+             
+              item.type,
+             
+              item.quantity
+          ];
+
+          console.log('Inserting item:', values); // Debugging output
+          await pool.query(insertSupplyQuery, values);
+      }
+
+      await pool.query('COMMIT');
+      res.status(201).json({ message: 'Data submitted successfully' });
+  } catch (error) {
+      await pool.query('ROLLBACK');
+      console.error('Error inserting data:', error);
+      res.status(500).json({ error: 'Failed to submit data' });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });

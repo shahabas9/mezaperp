@@ -60,8 +60,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (projectType === 'Fast Moving') {
             addOption(categorySelect, 'Supply', 'Supply');
             addOption(categorySelect, 'Supply & Installation', 'Supply & Installation');
+            addOption(categorySelect, 'other', 'other');
         } else if (projectType === 'Non Fast Moving') {
             addOption(categorySelect, 'villa', 'Villa');
+            addOption(categorySelect, 'Other', 'Other');
         }
 
         updateSubcategories(); // Update subcategories based on initial category
@@ -82,6 +84,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else if (category === 'villa') {
             ['Duct', 'Split', 'VRF','Duct&Split','Warehouse'].forEach(optionText => {
                 addOption(subcategorySelect, optionText.toLowerCase().replace(/ /g, '_'), optionText);
+            });
+        }
+        else if (category === 'Other') {
+            ['AMC','Fan'].forEach(optionText => {
+                addOption(subcategorySelect, optionText.replace(/ /g, '_'), optionText);
+            });
+        }
+        else if (category === 'other') {
+            ['BOQ','Spare Parts'].forEach(optionText => {
+                addOption(subcategorySelect, optionText.replace(/ /g, '_'), optionText);
             });
         }
     }
