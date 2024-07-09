@@ -31,7 +31,7 @@ function addRow(button) {
     var cell2 = newRow.insertCell(1);
     var cell3 = newRow.insertCell(2);
     
-    cell1.innerHTML = '<select name="Type[]"><option value="ducted split">Ducted Split Units</option><option value="wall mounted">Wall Mounted Split Units</option><option value="cassette">Cassette</option><option value="floor stand">Floor Stand</option><option value="package units">Package Units</option></select>';
+    cell1.innerHTML = '<select name="Type[]"><option value="ducted split units">Ducted Split Units</option><option value="wall mounted split units">Wall Mounted Split Units</option><option value="cassette">Cassette</option><option value="floor stand">Floor Stand</option><option value="package units">Package Units</option></select>';
     cell2.innerHTML = '<input type="number" name="Quantity[]">';
     cell3.innerHTML = '<button type="button" onclick="addRow(this)">+</button> <button type="button" onclick="deleteRow(this)">-</button>';
     
