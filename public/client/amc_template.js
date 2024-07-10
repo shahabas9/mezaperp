@@ -22,7 +22,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function populateTable(data) {
-    
     if (data.length > 0) {
         const customerData = data[0];
         document.getElementById('customerName').textContent = customerData.project_name;
@@ -35,14 +34,44 @@ function populateTable(data) {
         document.getElementById('date').textContent = new Date().toLocaleDateString();
 
         const tableBody = document.getElementById('supplyTableBody');
+        let totalQuantity = 0;
+
         data.forEach(item => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${item.quantity}</td>
-                <td>${item.type.toUpperCase()}</td>
-                
+                <td><strong>${item.quantity}</strong></td>
+                <td><strong>${item.type.toUpperCase()}</strong></td>
             `;
             tableBody.appendChild(row);
+            totalQuantity += parseFloat(item.quantity);
         });
+
+        // Add the total row
+        const totalRow = document.createElement('tr');
+        totalRow.innerHTML = `
+            <td><strong> ${totalQuantity}</strong></td>
+            <td><strong>‫المجموع</strong></td>
+        `;
+        tableBody.appendChild(totalRow);
     }
 }
+
+const amountInput = document.getElementById('amountInput');
+const discountInput = document.getElementById('discountInput');
+
+    amountInput.addEventListener('blur', formatAmount);
+    amountInput.addEventListener('input', clearFormatting);
+
+    discountInput.addEventListener('blur', formatAmount);
+    discountInput.addEventListener('input', clearFormatting);
+
+    function clearFormatting() {
+        this.value = this.value.replace(/,/g, '');
+    }
+
+    function formatAmount() {
+        const value = parseFloat(this.value.replace(/,/g, ''));
+        if (!isNaN(value)) {
+            this.value = value.toLocaleString();
+        }
+    }
