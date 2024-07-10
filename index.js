@@ -1033,6 +1033,47 @@ app.get('/api/quotations_amc', async (req, res) => {
   }
 });
 
+app.get('/api/amc_template', async (req, res) => {
+  const { quotationId } = req.query;
+
+  if (!quotationId) {
+    return res.status(400).json({ error: 'Quotation ID is required' });
+  }
+
+  try {
+    const result = await pool.query(`
+      SELECT
+        p.project_name AS project_name,
+        c.customer_name,
+        c.mobile_no,
+        c.email,
+        p.quotation_id,
+        p.salesperson_name,
+        p.salesperson_contact,
+        s.type,
+        s.quantity
+    
+      FROM
+        customer c
+      JOIN
+        project p ON c.customer_id = p.customer_id
+      JOIN
+        amc s ON p.quotation_id = s.quotation_id
+      WHERE
+        p.quotation_id = $1 AND p.subcategory = 'AMC'
+    `, [quotationId]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'No data found for the given quotation ID' });
+    }
+
+    res.json({ data: result.rows });
+  } catch (error) {
+    console.error('Error fetching data for amc template:', error);
+    res.status(500).json({ error: 'Failed to fetch data' });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });
