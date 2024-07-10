@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BOQ Quotation</title>
+    <link rel="stylesheet" href="./stylesheet/customer_project.css" />
+</head>
+<body>
+    <div class="container">
+        <input type="text" id="searchInput" placeholder="Enter Quotation ID" />
+        <button id="searchBtn">Search</button>
+        <table id="quotationTable">
+            <thead>
+                <tr>
+                    <th>Customer Name</th>
+                    <th>Quotation ID</th>
+                    <th>Subcategory</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="quotationTableBody">
+                <!-- Table rows will be dynamically added here -->
+            </tbody>
+        </table>
+    </div>
+    
+    <script src="./client/boq_quot.js"></script>
+</body>
+</html>

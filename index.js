@@ -1104,6 +1104,99 @@ app.get('/api/quotations_boq/:customerId', async (req, res) => {
   }
 });
 
+app.post('/api/boq', async (req, res) => {
+  const { customer_id, quotation_id, supply_data } = req.body;
+
+  console.log('Received payload:', req.body); // Debugging output
+
+  try {
+      await pool.query('BEGIN');
+
+      const insertSupplyQuery = `
+          INSERT INTO boq (customer_id, quotation_id, supply_amount, installation_amount,total_amount)
+          VALUES ($1, $2, $3, $4, $5)
+      `;
+
+      for (const item of supply_data) {
+          const values = [
+              customer_id,
+              quotation_id,
+             
+              item.supply,
+              item.installation,
+              item.total_price
+          ];
+
+          console.log('Inserting item:', values); // Debugging output
+          await pool.query(insertSupplyQuery, values);
+      }
+
+      await pool.query('COMMIT');
+      res.status(201).json({ message: 'Data submitted successfully' });
+  } catch (error) {
+      await pool.query('ROLLBACK');
+      console.error('Error inserting data:', error);
+      res.status(500).json({ error: 'Failed to submit data' });
+  }
+});
+
+app.get('/api/quotations_boq', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT c.customer_name, p.quotation_id, p.subcategory
+      FROM customer c
+      JOIN project p ON c.customer_id = p.customer_id
+      WHERE p.subcategory = 'BOQ'
+    `);
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    res.status(500).json({ error: 'Failed to fetch data' });
+  }
+});
+
+app.get('/api/boq_template', async (req, res) => {
+  const { quotationId } = req.query;
+
+  if (!quotationId) {
+    return res.status(400).json({ error: 'Quotation ID is required' });
+  }
+
+  try {
+    const result = await pool.query(`
+      SELECT
+        p.project_name AS project_name,
+        c.customer_name,
+        c.mobile_no,
+        c.email,
+        p.quotation_id,
+        p.salesperson_name,
+        p.salesperson_contact,
+        s.supply_amount,
+        s.installation_amount,
+        s.total_amount
+    
+      FROM
+        customer c
+      JOIN
+        project p ON c.customer_id = p.customer_id
+      JOIN
+        boq s ON p.quotation_id = s.quotation_id
+      WHERE
+        p.quotation_id = $1 AND p.subcategory = 'BOQ'
+    `, [quotationId]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'No data found for the given quotation ID' });
+    }
+
+    res.json({ data: result.rows });
+  } catch (error) {
+    console.error('Error fetching data for amc template:', error);
+    res.status(500).json({ error: 'Failed to fetch data' });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });

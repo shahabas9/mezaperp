@@ -24,7 +24,7 @@ function deleteRow(button) {
 }
 
 function addRow(button) {
-    var table = document.getElementById("supplyTable").getElementsByTagName('tbody')[0];
+    var table = document.getElementById("supplyInstTable").getElementsByTagName('tbody')[0];
     var newRow = table.insertRow(table.rows.length);
 
     var cell1 = newRow.insertCell(0);
@@ -120,7 +120,7 @@ async function initializeDataOptions() {
 
     const customerId = document.getElementById('customer').value;
     const quotationId = document.getElementById('quotation').value;
-    const tableRows = document.querySelectorAll('#supplyTable tbody tr');
+    const tableRows = document.querySelectorAll('#supplyInstTable tbody tr');
 
     const boqData = [];
 
