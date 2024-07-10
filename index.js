@@ -1074,6 +1074,36 @@ app.get('/api/amc_template', async (req, res) => {
   }
 });
 
+app.get('/api/customers_boq', async (req, res) => {
+  try {
+    const customerResult = await pool.query(`
+      SELECT DISTINCT c.customer_id, c.customer_name
+      FROM customer c
+      JOIN project p ON c.customer_id = p.customer_id
+      WHERE p.subcategory = 'BOQ'
+    `);
+    res.json(customerResult.rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Server error');
+  }
+});
+
+app.get('/api/quotations_boq/:customerId', async (req, res) => {
+  const { customerId } = req.params;
+  try {
+    const quotationResult = await pool.query(`
+      SELECT quotation_id
+      FROM project
+      WHERE customer_id = $1 AND subcategory = 'BOQ'
+    `, [customerId]);
+    res.json(quotationResult.rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Server error');
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });
