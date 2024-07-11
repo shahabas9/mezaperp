@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>spare parts</title>
+    <link rel="stylesheet" href="./stylesheet/supply.css" />
+    
+</head>
+<body onload="initializeDataOptions();">
+    <h1>Adding Details Only for Spare Parts</h1>
+    <form id="supplyForm" onsubmit="handleSubmit(event)">
+        <div>
+            <label for="customer">Customer Name:</label>
+            <input type="text" id="customerSearch" oninput="filterCustomers()" placeholder="Search for a customer">
+            <select name="customer" id="customer" ></select>
+            
+
+            <label for="quotation">Quotation ID:</label>
+            <select name="quotation" id="quotation"></select>
+        </div>
+        <div>
+            <table id="supplyTable">
+                <thead>
+                    <tr>
+                        <th>Description</th>
+                        <th>Model</th>
+                        <th>Quantity</th>
+                        <th>Unit Price</th>
+                        <th>Total Price</th>
+                        <th></th> <!-- Action buttons column -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <select name="Type[]" onchange="updateModelOptions(this)">
+                                <option value="Compressor">Compressor</option>
+                                <option value="INVERTER PCB">INVERTER PCB</option>
+                                <option value="Wireless Remote">Wireless Remote</option>
+                                <option value="Outdoor Motor Rewinding">Outdoor Motor Rewinding</option>
+                                <option value="Outdoor Motor Bearing">Outdoor Motor Bearing</option>
+                                <option value="Outdoor Motor Brush">Outdoor Motor Brush</option>
+                                <option value="Filter Drier">Filter Drier</option>
+                                <option value="Splite AC Blade">Splite AC Blade</option>
+                                <option value="Contractor">Contractor</option>
+                                <option value="Fan Belt">Fan Belt</option>
+                                <option value="Fan Motor Rewinding">Fan Motor Rewinding</option>
+                                <option value="PCB Board">PCB Board</option>
+                                <option value="Exhaust Fan">Exhaust Fan</option>
+                                <option value="Motor for Duct Split Unit">Motor for Duct Split Unit</option>
+                                <option value="Propeller Fan for Duct Split Unit">Propeller Fan for Duct Split Unit</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select name="Model[]"></select>
+                        </td>
+                        
+                        <td>
+                            <input type="number" name="Quantity[]" oninput="updateTotal(this)">
+                        </td>
+                        <td>
+                            <input type="number" name="Unit Price[]" oninput="updateTotal(this)">
+                        </td>
+                        <td>
+                            <input type="number" name="Total Price[]" readonly>
+                        </td>
+                        <td>
+                            <button type="button" onclick="addRow(this)">+</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="center">
+            <div><button class="submit" type="submit">Submit</button></div>
+        </div>
+    </form>
+    <script src="./client/spare_parts.js"></script>
+</body>
+</html>
