@@ -131,7 +131,7 @@ async function initializeDataOptions() {
 
     tableRows.forEach((row, index) => {
         const typeElement = row.querySelector('select[name="Type[]"]');
-        const locationElement = row.querySelector('select[name="Location[]"]');
+        const locationElement = row.querySelector('input[name="Location[]"]');
         const quantityElement = row.querySelector('input[name="Quantity[]"]');
         const unitPriceElement = row.querySelector('input[name="Unit Price[]"]');
         const totalPriceElement = row.querySelector('input[name="Total Price[]"]');

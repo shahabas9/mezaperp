@@ -1371,7 +1371,7 @@ app.post('/api/fans', async (req, res) => {
               item.location,
               item.quantity,
               item.unit_price,
-              item.total_price,
+              item.total_price
           ];
 
           console.log('Inserting item:', values); // Debugging output
@@ -1384,6 +1384,21 @@ app.post('/api/fans', async (req, res) => {
       await pool.query('ROLLBACK');
       console.error('Error inserting data:', error);
       res.status(500).json({ error: 'Failed to submit data' });
+  }
+});
+
+app.get('/api/quotations_fan', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT c.customer_name, p.quotation_id, p.subcategory
+      FROM customer c
+      JOIN project p ON c.customer_id = p.customer_id
+      WHERE p.subcategory = 'Fan'
+    `);
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    res.status(500).json({ error: 'Failed to fetch data' });
   }
 });
 
