@@ -7,8 +7,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('searchInput');
     const searchButton = document.getElementById('searchButton');
     const formTitle = document.getElementById('formTitle');
+    const paginationContainer = document.getElementById('pagination');
 
     let editingCustomerId = null;
+    let customers = []; // This should be filled with your customer data
+    const recordsPerPage = 10;
+    let currentPage = 1;
 
     addButton.addEventListener('click', () => {
         formPopup.style.display = 'block';
@@ -47,11 +51,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         if (response.ok) {
+            const newCustomer = await response.json();
             if (editingCustomerId) {
-                const updatedCustomer = await response.json();
-                updateCustomerInTable(updatedCustomer);
+                updateCustomerInTable(newCustomer);
             } else {
-                const newCustomer = await response.json();
                 addCustomerToTable(newCustomer);
             }
 
@@ -129,9 +132,101 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const response = await fetch(url);
-        const customers = await response.json();
+        customers = await response.json();
+
+        // Sort customers in descending order of customer_id
+        customers.sort((a, b) => b.customer_id - a.customer_id);
+
+        renderTable(currentPage);
+        renderPagination();
+    }
+
+    function renderTable(page) {
+        // Clear existing table data
         customerTableBody.innerHTML = '';
-        customers.forEach(addCustomerToTable);
+    
+        // Calculate the start and end indices for the records to be displayed
+        const start = (page - 1) * recordsPerPage;
+        const end = start + recordsPerPage;
+        const paginatedCustomers = customers.slice(start, end);
+    
+        // Render the table rows
+        paginatedCustomers.forEach(customer => {
+            const row = document.createElement('tr');
+            row.setAttribute('data-id', customer.customer_id);
+            row.innerHTML = `
+                <td>${customer.customer_id}</td>
+                <td>${customer.customer_name}</td>
+                <td>${customer.mobile_no}</td>
+                <td>${customer.email}</td>
+                <td class="action-buttons">
+                    <button class="btn edit-button">Edit</button>
+                    <button class="btn delete-button">Delete</button>
+                </td>
+            `;
+            customerTableBody.appendChild(row);
+    
+            row.querySelector('.edit-button').addEventListener('click', () => editCustomer(customer));
+            row.querySelector('.delete-button').addEventListener('click', () => deleteCustomer(customer.customer_id));
+        });
+    }
+
+    function renderPagination() {
+        // Clear existing pagination buttons
+        paginationContainer.innerHTML = '';
+    
+        // Calculate total pages
+        const totalPages = Math.ceil(customers.length / recordsPerPage);
+        const maxPagesToShow = 5; // Maximum number of pages to show directly
+    
+        let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+        let endPage = startPage + maxPagesToShow - 1;
+    
+        if (endPage > totalPages) {
+            endPage = totalPages;
+            startPage = Math.max(1, endPage - maxPagesToShow + 1);
+        }
+    
+        for (let i = startPage; i <= endPage; i++) {
+            const button = document.createElement('button');
+            button.textContent = i;
+            button.classList.add('pagination-button');
+            if (i === currentPage) {
+                button.classList.add('active');
+            }
+            button.addEventListener('click', () => {
+                currentPage = i;
+                renderTable(currentPage);
+                renderPagination();
+            });
+            paginationContainer.appendChild(button);
+        }
+    
+        // Previous Button
+        if (currentPage > 1) {
+            const prevButton = document.createElement('button');
+            prevButton.textContent = 'Previous';
+            prevButton.classList.add('pagination-button');
+            prevButton.addEventListener('click', () => {
+                currentPage--;
+                renderTable(currentPage);
+                renderPagination();
+            });
+            paginationContainer.insertBefore(prevButton, paginationContainer.firstChild);
+        }
+    
+        // Next Button
+        if (currentPage < totalPages) {
+            const nextButton = document.createElement('button');
+            nextButton.textContent = 'Next';
+            nextButton.classList.add('pagination-button');
+            nextButton.addEventListener('click', () => {
+                currentPage++;
+                renderTable(currentPage);
+                renderPagination();
+            });
+            paginationContainer.appendChild(nextButton);
+        }
     }
 
     searchButton.addEventListener('click', () => {
