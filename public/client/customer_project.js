@@ -27,9 +27,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const response = await fetch(url);
         projects = await response.json();
 
-        // Sort projects in descending order of quotation_id
         projects.sort((a, b) => parseInt(b.quotation_id.split(' ')[1]) - parseInt(a.quotation_id.split(' ')[1]));
-
         renderTable(currentPage);
         renderPagination();
     }
