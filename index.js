@@ -1539,6 +1539,93 @@ function generateNewQuotationId(quotationId) {
 }
 
 
+app.get('/api/supply_inst_data', async (req, res) => {
+  console.log('Fetching all supply data'); // Debugging line
+  try {
+      const result = await pool.query('SELECT * FROM supplyandinstallation');
+      console.log('Query result:', result.rows); // Debugging line
+      res.json(result.rows);
+  } catch (err) {
+      console.error('Error executing query:', err); // Debugging line
+      res.status(500).send(err.message);
+  }
+});
+
+// Get supply&installation data by quotation ID
+app.get('/api/supply_inst_data/:quotationId', async (req, res) => {
+  const { quotationId } = req.params;
+  console.log(`Fetching data for Quotation ID: ${quotationId}`); // Debugging line
+  try {
+      const result = await pool.query(
+          'SELECT * FROM supplyandinstallation WHERE quotation_id = $1',
+          [quotationId]
+      );
+      console.log('Query result:', result.rows); // Debugging line
+      res.json(result.rows);
+  } catch (err) {
+      console.error('Error executing query:', err); // Debugging line
+      res.status(500).send(err.message);
+  }
+});
+
+app.get('/api/supply_inst_edit/:quotationId', async (req, res) => {
+  const { quotationId } = req.params;
+  console.log('Fetching supply data for quotationId:', quotationId); // Debugging line
+  try {
+      const result = await pool.query('SELECT * FROM supplyandinstallation WHERE quotation_id = $1', [quotationId]);
+      console.log('Query result:', result.rows); // Debugging line
+      res.json(result.rows);
+  } catch (err) {
+      console.error('Error executing query:', err); // Debugging line
+      res.status(500).send(err.message);
+  }
+});
+
+app.post('/api/savesupplyinst', async (req, res) => {
+  const { quotation_id, customer_id, supply_data } = req.body;
+
+  console.log('Received payload:', req.body);
+
+  try {
+      const projectResult = await pool.query(`
+          SELECT customer_id, project_name, project_type, category, subcategory, salesperson_name, salesperson_contact
+          FROM project
+          WHERE quotation_id = $1
+      `, [quotation_id]);
+
+      if (projectResult.rows.length === 0) {
+          console.error('Original quotation ID not found');
+          return res.status(404).send('Original quotation ID not found');
+      }
+
+      const projectData = projectResult.rows[0];
+
+      const newQuotationId = generateNewQuotationId(quotation_id);
+
+      console.log('New Quotation ID:', newQuotationId);
+
+      await pool.query(`
+          INSERT INTO project (customer_id, quotation_id, project_name, project_type, category, subcategory, salesperson_name, salesperson_contact)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      `, [projectData.customer_id, newQuotationId, projectData.project_name, projectData.project_type, projectData.category, projectData.subcategory, projectData.salesperson_name, projectData.salesperson_contact]);
+
+      const supplyInsertPromises = supply_data.map(async (row) => {
+          const { type, ton, quantity, unit_price, total_price } = row;
+          return pool.query(`
+              INSERT INTO supplyandinstallation (customer_id, quotation_id, type, ton, quantity, unit_price, total_price)
+              VALUES ($1, $2, $3, $4, $5, $6, $7)
+          `, [customer_id, newQuotationId, type, ton, quantity, unit_price, total_price]);
+      });
+
+      await Promise.all(supplyInsertPromises);
+
+      res.status(200).send('Data saved successfully');
+  } catch (error) {
+      console.error('Error inserting data:', error);
+      res.status(500).send('Failed to save data');
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });

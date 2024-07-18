@@ -23,7 +23,6 @@ async function fetchSupplyData() {
     }
 }
 
-
 function populateForm(data) {
     const tableBody = document.getElementById('recordsTableBody');
     if (!tableBody) {
@@ -45,8 +44,6 @@ function populateForm(data) {
 
     updateButtons();
 }
-
-
 
 window.onload = fetchSupplyData;
 
@@ -336,9 +333,6 @@ async function handleSubmit(event) {
         alert('Failed to submit data');
     }
 }
-
-
-
 
 
 function generateNewQuotationId(quotationId) {
