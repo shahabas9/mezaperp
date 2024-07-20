@@ -1638,7 +1638,7 @@ app.get('/api/villa_data', async (req, res) => {
   }
 });
 
-// Get supply data by quotation ID
+// Get villa data by quotation ID
 app.get('/api/villa_data/:quotationId', async (req, res) => {
   const { quotationId } = req.params;
   console.log(`Fetching data for Quotation ID: ${quotationId}`); // Debugging line
@@ -1725,7 +1725,7 @@ app.get('/api/amc_data', async (req, res) => {
   }
 });
 
-// Get supply data by quotation ID
+// Get amc data by quotation ID
 app.get('/api/amc_data/:quotationId', async (req, res) => {
   const { quotationId } = req.params;
   console.log(`Fetching data for Quotation ID: ${quotationId}`); // Debugging line
@@ -1812,7 +1812,7 @@ app.get('/api/boq_data', async (req, res) => {
   }
 });
 
-// Get supply data by quotation ID
+// Get boq data by quotation ID
 app.get('/api/boq_data/:quotationId', async (req, res) => {
   const { quotationId } = req.params;
   console.log(`Fetching data for Quotation ID: ${quotationId}`); // Debugging line
@@ -1871,11 +1871,11 @@ app.post('/api/saveboq', async (req, res) => {
       `, [projectData.customer_id, newQuotationId, projectData.project_name, projectData.project_type, projectData.category, projectData.subcategory, projectData.salesperson_name, projectData.salesperson_contact]);
 
       const supplyInsertPromises = supply_data.map(async (row) => {
-          const {supply_amount, installation_amount, total_amount} = row;
+          const {supply, installation, total_price} = row;
           return pool.query(`
           INSERT INTO boq (customer_id, quotation_id, supply_amount, installation_amount, total_amount)
           VALUES ($1, $2, $3, $4,$5)
-      `, [customer_id, newQuotationId, supply_amount, installation_amount, total_amount]);
+      `, [customer_id, newQuotationId, supply, installation, total_price]);
       });
 
       await Promise.all(supplyInsertPromises);
