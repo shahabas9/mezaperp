@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fan_edit</title>
+    <link rel="stylesheet" href="./stylesheet/supply.css" />
+    
+</head>
+<body onload="fetchSupplyData();">
+    <h1>Editing Details Only for Fan</h1>
+    <form id="supplyForm" onsubmit="handleSubmit(event)">
+        <div>
+            <label for="customer">Customer id:</label>
+            <select name="customer" id="customer" ></select>
+            
+
+            <label for="quotation">Quotation ID:</label>
+            <select name="quotation" id="quotation"></select>
+        </div>
+        <div>
+            <table id="supplyTable">
+                <thead>
+                    <tr>
+                        <th>Description</th>
+                        <th>Location</th>
+                        <th>Quantity</th>
+                        <th>Unit Price</th>
+                        <th>Total Price</th>
+                        <th></th> <!-- Action buttons column -->
+                    </tr>
+                </thead>
+                <tbody id="recordsTableBody">
+                    <tr>
+                        <td>
+                            <select name="Type[]">
+                                <option value="VD-15">VD-15</option>
+                                <option value="VD-10">VD-10</option>
+                                <option value="lineo-100QVO">lineo-100QVO</option>
+                                <option value="CA-100MD">CA-100MD</option>
+                                
+                            </select>
+                        </td>
+                        <td>
+                            <input type="text" name="Location[]"></input>
+                        </td>
+                        
+                        <td>
+                            <input type="number" name="Quantity[]" oninput="updateTotal(this)">
+                        </td>
+                        <td>
+                            <input type="number" name="Unit Price[]" oninput="updateTotal(this)">
+                        </td>
+                        <td>
+                            <input type="number" name="Total Price[]" readonly>
+                        </td>
+                        <td>
+                            <button type="button" onclick="addRow(this)">+</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="center">
+            <div><button class="submit" type="submit">Submit</button></div>
+        </div>
+    </form>
+    <script src="./client/fan_edit.js"></script>
+</body>
+</html>

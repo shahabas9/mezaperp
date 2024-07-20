@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOQ Data View/Edit</title>
+    <title>Fan Data View/Edit</title>
     <link rel="stylesheet" href="./stylesheet/customer_project.css" />
 </head>
 <body>
@@ -14,9 +14,11 @@
             <thead>
                 <tr>
                     <th>Quotation ID</th>
-                    <th>Supply Cost</th>
-                    <th>Installation Cost</th>
-                    <th>Total Amount</th>
+                    <th>Description</th>
+                    <th>Location</th>
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Total Price</th>
                     <th>Action</th> <!-- Action buttons column -->
                 </tr>
             <tbody id="quotationTableBody">
@@ -26,6 +28,6 @@
         <div id="pagination" class="pagination"></div>
     </div>
     
-    <script src="./client/boq_data.js"></script>
+    <script src="./client/fan_data.js"></script>
 </body>
 </html>
