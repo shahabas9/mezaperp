@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMC Data View/Edit</title>
+    <link rel="stylesheet" href="./stylesheet/customer_project.css" />
+</head>
+<body>
+    <div class="container">
+        <input type="text" id="searchInput" placeholder="Enter Quotation ID" />
+        <button id="searchBtn">Search</button>
+        <table id="quotationTable">
+            <thead>
+                <tr>
+                    <th>Quotation ID</th>
+                    <th>Supply Cost</th>
+                    <th>Installation Cost</th>
+                    <th>Total Amount</th>
+                    <th>Action</th> <!-- Action buttons column -->
+                </tr>
+            <tbody id="quotationTableBody">
+                <!-- Table rows will be dynamically added here -->
+            </tbody>
+        </table>
+        <div id="pagination" class="pagination"></div>
+    </div>
+    
+    <script src="./client/boq_data.js"></script>
+</body>
+</html>
