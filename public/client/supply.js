@@ -57,20 +57,93 @@ function updateModelOptions(selectElement) {
     modelSelect.innerHTML = ''; // Clear existing options
 
     if (typeValue === 'ducted split units') {
-        modelSelect.innerHTML = '<option value="PEY-P18JA / SUY-P18">PEY-P18JA / SUY-P18</option><option value="PEY-P24JA / SUY-P24">PEY-P24JA / SUY-P24</option><option value="PEY-P30JA / SUY-P30">PEY-P30JA / SUY-P30</option><option value="PEY-P36JA / SUY-P36">PEY-P36JA / SUY-P36</option><option value="PEY-P45JG / PUY-P45">PEY-P45JG / PUY-P45</option><option value="PEY-P60GAG / PUY-P60">PEY-P60GAG / PUY-P60</option><option value="PEV-P200 / PUV-P200">PEV-P200 / PUV-P200</option><option value="PEV-P250 / PUV-P250">PEV-P250 / PUV-P250</option>';
+        modelSelect.innerHTML = `
+            <option value="PEY-P18JA / SUY-P18">PEY-P18JA / SUY-P18</option>
+            <option value="PEY-P24JA / SUY-P24">PEY-P24JA / SUY-P24</option>
+            <option value="PEY-P30JA / SUY-P30">PEY-P30JA / SUY-P30</option>
+            <option value="PEY-P36JA / SUY-P36">PEY-P36JA / SUY-P36</option>
+            <option value="PEY-P45JG / PUY-P45">PEY-P45JG / PUY-P45</option>
+            <option value="PEY-P60GAG / PUY-P60">PEY-P60GAG / PUY-P60</option>
+            <option value="PEV-P200 / PUV-P200">PEV-P200 / PUV-P200</option>
+            <option value="PEV-P250 / PUV-P250">PEV-P250 / PUV-P250</option>
+        `;
     } else if (typeValue === 'wall mounted split units') {
-        modelSelect.innerHTML = '<option value="MS-GS13/ MU-GS13">MS-GS13/ MU-GS13</option><option value="MS-GS18/ MU-GS18">MS-GS18/ MU-GS18</option><option value="MS-GS24/ MU-GS24">MS-GS24/ MU-GS24</option><option value="MS-GS30/ MU-GS30">MS-GS30/ MU-GS30</option><option value="MS-GS36/ MU-GS36">MS-GS36/ MU-GS36</option>';
-    } else if (typeValue === 'vrf') {
-        modelSelect.innerHTML = '<option value="6.8">6.8</option><option value="9.1">9.1</option><option value="10">10</option><option value="13.65">13.65</option><option value="18.2">18.2</option><option value="20">20</option>';
+        modelSelect.innerHTML = `
+            <option value="MS-GS13/ MU-GS13">MS-GS13/ MU-GS13</option>
+            <option value="MS-GS18/ MU-GS18">MS-GS18/ MU-GS18</option>
+            <option value="MS-GS24/ MU-GS24">MS-GS24/ MU-GS24</option>
+            <option value="MS-GS30/ MU-GS30">MS-GS30/ MU-GS30</option>
+            <option value="MS-GS36/ MU-GS36">MS-GS36/ MU-GS36</option>
+        `;
     } else if (typeValue === 'floorstand') {
-        modelSelect.innerHTML = '<option value="PSA-RP71GA">PSA-RP71GA</option><option value="PSA-RP100GA">PSA-RP100GA</option><option value="PSA-RP125GA">PSA-RP125GA</option><option value="PSA-RP140GA">PSA-RP140GA</option>'; 
+        modelSelect.innerHTML = `
+            <option value="PSA-RP71GA">PSA-RP71GA</option>
+            <option value="PSA-RP100GA">PSA-RP100GA</option>
+            <option value="PSA-RP125GA">PSA-RP125GA</option>
+            <option value="PSA-RP140GA">PSA-RP140GA</option>
+        `; 
     } else if (typeValue === 'package unit') {
-        modelSelect.innerHTML = '<option value="PRC 200">PRC 200</option><option value="PRC 250">PRC 250</option><option value="PRC 300">PRC 300</option><option value="PRC 400">PRC 400</option><option value="PRC 500">PRC 500</option><option value="PRC 600">PRC 600</option><option value="PRC 900">PRC 900</option>'; 
-    }else {
+        modelSelect.innerHTML = `
+            <option value="PRC 200">PRC 200</option>
+            <option value="PRC 250">PRC 250</option>
+            <option value="PRC 300">PRC 300</option>
+            <option value="PRC 400">PRC 400</option>
+            <option value="PRC 500">PRC 500</option>
+            <option value="PRC 600">PRC 600</option>
+            <option value="PRC 900">PRC 900</option>
+        `; 
+    } else if (typeValue === 'vrf indoor units') {
+        modelSelect.innerHTML = `
+            <option value="PEFY-P20VMAL-E">PEFY-P20VMAL-E</option>
+            <option value="PEFY-P25VMAL-E">PEFY-P25VMAL-E</option>
+            <option value="PEFY-P32VMAL-E">PEFY-P32VMAL-E</option>
+            <option value="PEFY-P40VMAL-E">PEFY-P40VMAL-E</option>
+            <option value="PEFY-P50VMAL-E">PEFY-P50VMAL-E</option>
+            <option value="PEFY-P63VMAL-E">PEFY-P63VMAL-E</option>
+            <option value="PEFY-P71VMAL-E">PEFY-P71VMAL-E</option>
+            <option value="PEFY-P80VMAL-E">PEFY-P80VMAL-E</option>
+            <option value="PEFY-P100VMAL-E">PEFY-P100VMAL-E</option>
+            <option value="PEFY-P125VMAL-E">PEFY-P125VMAL-E</option>
+            <option value="PEFY-P140VMAL-E">PEFY-P140VMAL-E</option>
+            <option value="PEFY-P200VMHS-E">PEFY-P200VMHS-E</option>
+            <option value="PEFY-P250VMHS-E">PEFY-P250VMHS-E</option>
+        `;
+    } else if (typeValue === 'vrf outdoor units') {
+        modelSelect.innerHTML = `
+            <option value="PUCY-P200YKA">PUCY-P200YKA</option>
+            <option value="PUCY-P250YKA">PUCY-P250YKA</option>
+            <option value="PUCY-P300YKA">PUCY-P300YKA</option>
+            <option value="PUCY-P350YKA">PUCY-P350YKA</option>
+            <option value="PUCY-P400YKA">PUCY-P400YKA</option>
+            <option value="PUCY-P450YKA">PUCY-P450YKA</option>
+            <option value="PUCY-P500YKA">PUCY-P500YKA</option>
+            <option value="PUCY-P550YSKA">PUCY-P550YSKA</option>
+            <option value="PUCY-P600YSKA">PUCY-P600YSKA</option>
+            <option value="PUCY-P650YSKA">PUCY-P650YSKA</option>
+            <option value="PUCY-P700YSKA">PUCY-P700YSKA</option>
+            <option value="PUCY-P750YSKA">PUCY-P750YSKA</option>
+            <option value="PUCY-P800YSKA">PUCY-P800YSKA</option>
+            <option value="PUCY-P850YSKA">PUCY-P850YSKA</option>
+            <option value="PUCY-P900YSKA">PUCY-P900YSKA</option>
+            <option value="PUCY-P950YSKA">PUCY-P950YSKA</option>
+            <option value="PUCY-P1000YSKA">PUCY-P1000YSKA</option>
+            <option value="PUCY-P1050YSKA">PUCY-P1050YSKA</option>
+            <option value="PUCY-P1100YSKA">PUCY-P1100YSKA</option>
+            <option value="PUCY-P1150YSKA">PUCY-P1150YSKA</option>
+            <option value="PUCY-P1200YSKA">PUCY-P1200YSKA</option>
+            <option value="PUCY-P1250YSKA">PUCY-P1250YSKA</option>
+            <option value="PUCY-P1300YSKA">PUCY-P1300YSKA</option>
+            <option value="PUCY-P1350YSKA">PUCY-P1350YSKA</option>
+            <option value="PUCY-P1400YSKA">PUCY-P1400YSKA</option>
+            <option value="PUCY-P1450YSKA">PUCY-P1450YSKA</option>
+            <option value="PUCY-P1500YSKA">PUCY-P1500YSKA</option>
+        `; 
+    } else {
         // Add default or other specific options based on type if necessary
         modelSelect.innerHTML = '<option value="Select Model">Select Model</option>';
     }
 }
+
 
 function updateTonOptions(selectElement) {
     var tonSelect = selectElement.parentNode.nextElementSibling.querySelector('select[name="TON[]"]');
@@ -126,6 +199,86 @@ function updateTonOptions(selectElement) {
         tonSelect.innerHTML = '<option value="20">20</option>'; 
     } else if (typeValue === 'PRC 900') {
         tonSelect.innerHTML = '<option value="28.5">28.5</option>'; 
+    } else if (typeValue === 'PEFY-P20VMAL-E') {
+        tonSelect.innerHTML = '<option value="2.2">2.2</option><option value="0.63">0.63</option>'; 
+    } else if (typeValue === 'PEFY-P25VMAL-E') {
+        tonSelect.innerHTML = '<option value="2.8">2.8</option><option value="0.80">0.80</option>'; 
+    } else if (typeValue === 'PEFY-P32VMAL-E') {
+        tonSelect.innerHTML = '<option value="3.6">3.6</option><option value="1.02">1.02</option>'; 
+    } else if (typeValue === 'PEFY-P40VMAL-E') {
+        tonSelect.innerHTML = '<option value="4.5">4.5</option><option value="1.28">1.28</option>'; 
+    } else if (typeValue === 'PEFY-P50VMAL-E') {
+        tonSelect.innerHTML = '<option value="5.6">5.6</option><option value="1.59">1.59</option>'; 
+    } else if (typeValue === 'PEFY-P63VMAL-E') {
+        tonSelect.innerHTML = '<option value="7.1">7.1</option><option value="2.02">2.02</option>'; 
+    } else if (typeValue === 'PEFY-P71VMAL-E') {
+        tonSelect.innerHTML = '<option value="8">8</option><option value="2.27">2.27</option>'; 
+    } else if (typeValue === 'PEFY-P80VMAL-E') {
+        tonSelect.innerHTML = '<option value="9">9</option><option value="2.56">2.56</option>'; 
+    } else if (typeValue === 'PEFY-P100VMAL-E') {
+        tonSelect.innerHTML = '<option value="11.2">11.2</option><option value="3.18">3.18</option>'; 
+    } else if (typeValue === 'PEFY-P125VMAL-E') {
+        tonSelect.innerHTML = '<option value="14">14</option><option value="3.98">3.98</option>'; 
+    } else if (typeValue === 'PEFY-P140VMAL-E') {
+        tonSelect.innerHTML = '<option value="16">16</option><option value="4.55">4.55</option>'; 
+    } else if (typeValue === 'PEFY-P200VMHS-E') {
+        tonSelect.innerHTML = '<option value="22.24">22.24</option><option value="6.37">6.37</option>'; 
+    } else if (typeValue === 'PEFY-P250VMHS-E') {
+        tonSelect.innerHTML = '<option value="28">28</option><option value="7.96">7.96</option>'; 
+    } else if (typeValue === 'PUCY-P200YKA') {
+        tonSelect.innerHTML = '<option value="22.24">22.24</option><option value="6.37">6.37</option>'; 
+    } else if (typeValue === 'PUCY-P250YKA') {
+        tonSelect.innerHTML = '<option value="28">28</option><option value="7.96">7.96</option>'; 
+    } else if (typeValue === 'PUCY-P300YKA') {
+        tonSelect.innerHTML = '<option value="33.5">33.5</option><option value="9.53">9.53</option>'; 
+    } else if (typeValue === 'PUCY-P350YKA') {
+        tonSelect.innerHTML = '<option value="40">40</option><option value="11.37">11.37</option>'; 
+    } else if (typeValue === 'PUCY-P400YKA') {
+        tonSelect.innerHTML = '<option value="44">44</option><option value="12.51">12.51</option>'; 
+    } else if (typeValue === 'PUCY-P450YKA') {
+        tonSelect.innerHTML = '<option value="48">48</option><option value="13.65">13.65</option>'; 
+    } else if (typeValue === 'PUCY-P500YKA') {
+        tonSelect.innerHTML = '<option value="56">56</option><option value="15.92">15.92</option>'; 
+    } else if (typeValue === 'PUCY-P550YSKA') {
+        tonSelect.innerHTML = '<option value="61.5">61.5</option><option value="17.49">17.49</option>'; 
+    } else if (typeValue === 'PUCY-P600YSKA') {
+        tonSelect.innerHTML = '<option value="68">68</option><option value="19.34">19.34</option>'; 
+    } else if (typeValue === 'PUCY-P650YSKA') {
+        tonSelect.innerHTML = '<option value="72">72</option><option value="20.47">20.47</option>'; 
+    } else if (typeValue === 'PUCY-P700YSKA') {
+        tonSelect.innerHTML = '<option value="76">76</option><option value="21.61">21.61</option>'; 
+    } else if (typeValue === 'PUCY-P750YSKA') {
+        tonSelect.innerHTML = '<option value="81.5">81.5</option><option value="23.17">23.17</option>'; 
+    } else if (typeValue === 'PUCY-P800YSKA') {
+        tonSelect.innerHTML = '<option value="88">88</option><option value="25.02">25.02</option>'; 
+    } else if (typeValue === 'PUCY-P850YSKA') {
+        tonSelect.innerHTML = '<option value="92">92</option><option value="26.16">26.16</option>'; 
+    } else if (typeValue === 'PUCY-P900YSKA') {
+        tonSelect.innerHTML = '<option value="96">96</option><option value="27.30">27.30</option>'; 
+    } else if (typeValue === 'PUCY-P950YSKA') {
+        tonSelect.innerHTML = '<option value="104">104</option><option value="29.57">29.57</option>'; 
+    } else if (typeValue === 'PUCY-P1000YSKA') {
+        tonSelect.innerHTML = '<option value="112">112</option><option value="31.85">31.85</option>'; 
+    } else if (typeValue === 'PUCY-P1050YSKA') {
+        tonSelect.innerHTML = '<option value="115">115</option><option value="32.70">32.70</option>'; 
+    } else if (typeValue === 'PUCY-P1100YSKA') {
+        tonSelect.innerHTML = '<option value="121.5">121.5</option><option value="34.55">34.55</option>'; 
+    } else if (typeValue === 'PUCY-P1150YSKA') {
+        tonSelect.innerHTML = '<option value="128">128</option><option value="36.40">36.40</option>'; 
+    } else if (typeValue === 'PUCY-P1200YSKA') {
+        tonSelect.innerHTML = '<option value="132">132</option><option value="37.53">37.53</option>'; 
+    } else if (typeValue === 'PUCY-P1250YSKA') {
+        tonSelect.innerHTML = '<option value="136">136</option><option value="38.67">38.67</option>'; 
+    } else if (typeValue === 'PUCY-P1300YSKA') {
+        tonSelect.innerHTML = '<option value="140">140</option><option value="39.81">39.81</option>'; 
+    } else if (typeValue === 'PUCY-P1350YSKA') {
+        tonSelect.innerHTML = '<option value="144">144</option><option value="40.95">40.95</option>'; 
+    } else if (typeValue === 'PUCY-P1400YSKA') {
+        tonSelect.innerHTML = '<option value="152">152</option><option value="43.22">43.22</option>'; 
+    } else if (typeValue === 'PUCY-P1450YSKA') {
+        tonSelect.innerHTML = '<option value="160">160</option><option value="45.50">45.50</option>'; 
+    } else if (typeValue === 'PUCY-P1500YSKA') {
+        tonSelect.innerHTML = '<option value="168">168</option><option value="47.77">47.77</option>'; 
     } else {
         // Add default or other specific options based on type if necessary
         tonSelect.innerHTML = '<option value="Select Model">Select Model</option>';
