@@ -54,20 +54,102 @@ function updateTonOptions(selectElement) {
     tonSelect.innerHTML = ''; // Clear existing options
 
     if (typeValue === 'ducted split') {
-        tonSelect.innerHTML = '<option value="1.5">1.5</option><option value="2.5">2.5</option><option value="2.75">2.75</option><option value="3">3</option><option value="4.26">4.26</option><option value="5">5</option><option value="6.66">6.66</option><option value="8.33">8.33</option>';
+        tonSelect.innerHTML = `
+            <option value="1.5">1.5</option>
+            <option value="2.5">2.5</option>
+            <option value="2.75">2.75</option>
+            <option value="3">3</option>
+            <option value="4.26">4.26</option>
+            <option value="5">5</option>
+            <option value="6.66">6.66</option>
+            <option value="8.33">8.33</option>
+        `;
     } else if (typeValue === 'wall mounted') {
-        tonSelect.innerHTML = '<option value="1">1</option><option value="1.5">1.5</option><option value="2">2</option><option value="2.5">2.5</option><option value="3">3</option>';
+        tonSelect.innerHTML = `
+            <option value="1">1</option>
+            <option value="1.5">1.5</option>
+            <option value="2">2</option>
+            <option value="2.5">2.5</option>
+            <option value="3">3</option>
+        `;
     } else if (typeValue === 'cassette') {
-        tonSelect.innerHTML = '<option value="1.5">1.5</option><option value="2.5">2.5</option><option value="2.75">2.75</option><option value="3">3</option><option value="4">4</option><option value="4.25">4.25</option>';
+        tonSelect.innerHTML = `
+            <option value="1.5">1.5</option>
+            <option value="2.5">2.5</option>
+            <option value="2.75">2.75</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="4.25">4.25</option>
+        `;
     } else if (typeValue === 'floor stand') {
-        tonSelect.innerHTML = '<option value="2.3">2.3</option><option value="3.25">3.25</option><option value="4">4</option><option value="4.35">4.35</option>';
+        tonSelect.innerHTML = `
+            <option value="2.3">2.3</option>
+            <option value="3.25">3.25</option>
+            <option value="4">4</option>
+            <option value="4.35">4.35</option>
+        `;
     } else if (typeValue === 'package units') {
-        tonSelect.innerHTML = '<option value="6.8">6.8</option><option value="9.1">9.1</option><option value="10">10</option><option value="13.65">13.65</option><option value="18.2">18.2</option><option value="20">20</option><option value="28.5">28.5</option>';
-    }else {
+        tonSelect.innerHTML = `
+            <option value="6.8">6.8</option>
+            <option value="9.1">9.1</option>
+            <option value="10">10</option>
+            <option value="13.65">13.65</option>
+            <option value="18.2">18.2</option>
+            <option value="20">20</option>
+            <option value="28.5">28.5</option>
+        `;
+    }  else if (typeValue === 'VRF ceiling concealed') {
+        tonSelect.innerHTML = `
+            <option value="0.63">0.63</option>
+            <option value="0.80">0.80</option>
+            <option value="1.02">1.02</option>
+            <option value="1.28">1.28</option>
+            <option value="1.59">1.59</option>
+            <option value="2.02">2.02</option>
+            <option value="2.27">2.27</option>
+            <option value="2.56">2.56</option>
+            <option value="3.18">3.18</option>
+            <option value="3.98">3.98</option>
+            <option value="4.55">4.55</option>
+            <option value="6.37">6.37</option>
+            <option value="7.96">7.96</option>
+        `;
+    } else if (typeValue === 'VRF outdoor') {
+        tonSelect.innerHTML = `
+            <option value="6.37">6.37</option>
+            <option value="7.96">7.96</option>
+            <option value="9.53">9.53</option>
+            <option value="11.37">11.37</option>
+            <option value="12.51">12.51</option>
+            <option value="13.65">13.65</option>
+            <option value="15.92">15.92</option>
+            <option value="17.49">17.49</option>
+            <option value="19.34">19.34</option>
+            <option value="20.47">20.47</option>
+            <option value="21.61">21.61</option>
+            <option value="23.17">23.17</option>
+            <option value="25.02">25.02</option>
+            <option value="26.16">26.16</option>
+            <option value="27.30">27.30</option>
+            <option value="29.57">29.57</option>
+            <option value="31.85">31.85</option>
+            <option value="32.70">32.70</option>
+            <option value="34.55">34.55</option>
+            <option value="36.40">36.40</option>
+            <option value="37.53">37.53</option>
+            <option value="38.67">38.67</option>
+            <option value="39.81">39.81</option>
+            <option value="40.95">40.95</option>
+            <option value="43.22">43.22</option>
+            <option value="45.50">45.50</option>
+            <option value="47.77">47.77</option>
+        `;
+    } else {
         // Add default or other specific options based on type if necessary
         tonSelect.innerHTML = '<option value="Select TON">Select TON</option>';
     }
 }
+
 
 function initializeTonOptions() {
     var rows = document.querySelectorAll('#supplyInstTable tbody tr');
