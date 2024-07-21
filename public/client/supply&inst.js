@@ -34,7 +34,7 @@ function addRow(button) {
     var cell5 = newRow.insertCell(4);
     var cell6 = newRow.insertCell(5);
 
-    cell1.innerHTML = '<select name="Type[]" onchange="updateTonOptions(this)"><option value="ducted split units">Ducted Split Units</option><option value="wall mounted split units">Wall Mounted Split Units</option><option value="cassette">Cassette</option><option value="floor stand">Floor Stand</option><option value="package units">Package Units</option></select>';
+    cell1.innerHTML = '<select name="Type[]" onchange="updateTonOptions(this)"><option value="ducted split units">Ducted Split Units</option><option value="wall mounted split units">Wall Mounted Split Units</option><option value="cassette">Cassette</option><option value="floor stand">Floor Stand</option><option value="package units">Package Units</option><option value="VRF ceiling concealed">VRF Ceiling Concealed</option>><option value="vrf outdoor units">VRF Outdoor Units</option></select>';
     cell2.innerHTML = '<select name="TON[]"></select>';
     cell3.innerHTML = '<input type="number" name="Quantity[]" oninput="updateTotal(this)">';
     cell4.innerHTML = '<input type="number" name="Unit Price[]" oninput="updateTotal(this)">';

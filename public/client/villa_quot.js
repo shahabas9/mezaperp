@@ -36,7 +36,7 @@ function addRow(button) {
 
     cell1.innerHTML = '<select name="Location[]"><option value="Ground Floor">Ground Floor</option><option value="First Floor">First Floor</option><option value="Basement">Basement</option><option value="Mezzanine">Mezzanine</option><option value="Penthouse">Penthouse</option><option value="Out Majlis">Out Majlis</option><option value="Out Kitchen">Out Kitchen</option><option value="Outblock">Outblock</option></select>';
     cell2.innerHTML = '<input type="text" name="Serving Area[]">';
-    cell3.innerHTML = '<select name="Type[]" onchange="updateTonOptions(this)"><option value="ducted split">Ducted Split</option><option value="wall mounted">Wall Mounted</option><option value="cassette">Cassette</option><option value="floor stand">Floor Stand</option><option value="package units">Package Unit</option></select>';
+    cell3.innerHTML = '<select name="Type[]" onchange="updateTonOptions(this)"><option value="ducted split">Ducted Split</option><option value="wall mounted">Wall Mounted</option><option value="cassette">Cassette</option><option value="floor stand">Floor Stand</option><option value="package units">Package Unit</option><option value="VRF ceiling concealed">VRF Ceiling Concealed</option>><option value="vrf outdoor units">VRF Outdoor Units</option></select>';
     cell4.innerHTML = '<select name="TON[]"></select>';
     cell5.innerHTML = '<input type="number" name="Quantity[]">';
     cell6.innerHTML = '<button type="button" onclick="addRow(this)">+</button> <button type="button" onclick="deleteRow(this)">-</button>';

@@ -35,7 +35,7 @@ function addRow(button) {
     var cell6 = newRow.insertCell(5);
     var cell7 = newRow.insertCell(6);
 
-    cell1.innerHTML = '<select name="Type[]" onchange="updateModelOptions(this)"><option value="duct split">Duct Split</option><option value="split">Split</option><option value="vrf">VRF</option></select>';
+    cell1.innerHTML = '<select name="Type[]" onchange="updateModelOptions(this)"><option value="duct split">Duct Split</option><option value="split">Split</option><option value="vrf indoor units">VRF Indoor Units</option><option value="vrf outdoor units">VRF Outdoor Units</option></select>';
     cell2.innerHTML = '<select name="Model Inoor/Outdoor[]" onchange="updateTonOptions(this)"></select>';
     cell3.innerHTML = '<select name="TON[]"></select>';
     cell4.innerHTML = '<input type="number" name="Quantity[]" oninput="updateTotal(this)">';
