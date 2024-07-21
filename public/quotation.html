@@ -3,65 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="./stylesheet/customer.css" />
+    <title>quotation type</title>
+    <link rel="stylesheet" href="../stylesheet/Dashboard.css" />
 </head>
-<body onload="initializeTonOptions()">
-  
-  <table id="customerTable">
-      <thead>
-        <tr>
-          <th>Location</th>
-          <th>Area</th>
-          <th>Type</th>
-          <th>TON</th>
-          <th>Quantity</th>
-          <th>Total TON</th>
-          <th></th> <!-- Added a new column for action buttons -->
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>
-              <select name="Location[]">
-              <option value="ground floor">Ground Floor</option>
-              <option value="basement">Basement</option>
-              <option value="first floor">First Floor</option>
-              <option value="second floor">Second Floor</option>
-              <option value="third floor">Third Floor</option>
-              <option value="penthouse">Penthouse</option>
-              <option value="outblock">Outblock</option>
-              </select>  
-          </td> <!-- Use input fields for user input -->
-          <td><input type="text" name="Area[]"></td>
-          <td>
-              <select name="Type[]" onchange="updateTonOptions(this)">
-                  <option value="duct">Duct</option>
-                  <option value="duct split">Duct Split</option>
-                  <option value="split">Split</option>
-
-              </select> 
-          </td>
-          <td>
-            <select name="TON[]" oninput="updateTotal(this)">
-                <!-- Default options can be added here if needed -->
-            </select>
-        </td>
-          <td><input type="number" name="Quantity[]" oninput="updateTotal(this)"></td> <!-- Total field is read-only -->
-          <td><input type="number" name="Total TON[]" readonly></td>
-          
-          <td>
-            <button onclick="addRow(this)">+</button>
-          </td> <!-- Button to add a new row -->
-        </tr>
-      </tbody>
-    </table>
-     
-
-<script src="./stylesheet/dashboard.js" charset="UTF-8"></script>  
+<body>
+    <h1 class="header">Quotation</h1>
+    <div class="container">
+       
+        <div class="customer">
+            <img src="./images/project.png" alt="project">
+            <a href="./customer_project.html">Quotation Project Data</a>
+        </div>
+        <div class="customer">
+            <img src="./images/quotation_details.png" alt="quotation_details">
+            <a href="./quotation_details.html">Quotation Data Addition</a>
+        </div>
+        <div class="customer">
+            <img src="./images/data_viewer.svg" alt="quotation_data_view">
+            <a href="./data_viewing.html">Quotation Data View/Edit</a>
+        </div>
+        <div class="customer">
+            <img src="./images/Get Quotes.png" alt="quotation_generation">
+            <a href="./quotation_generation.html">Quotation Generation</a>
+        </div>
+       </div> 
+    
 </body>
 </html>
-
-
-
-
