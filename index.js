@@ -1986,7 +1986,7 @@ app.get('/api/fan_data', async (req, res) => {
   }
 });
 
-// Get spare parts data by quotation ID
+// Get fan data by quotation ID
 app.get('/api/fan_data/:quotationId', async (req, res) => {
   const { quotationId } = req.params;
   console.log(`Fetching data for Quotation ID: ${quotationId}`); // Debugging line
