@@ -125,8 +125,8 @@ function generateQuotation(quotationId, subcategory) {
         case 'duct&split':
             templatePage = 'duct_split_villa.html';
             break;
-        case 'cassette':
-            templatePage = 'cassette_template_si.html';
+        case 'vrf':
+            templatePage = 'vrf_template_villa.html';
             break;
         default:
             console.error('Unknown subcategory');
