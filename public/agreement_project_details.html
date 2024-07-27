@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agreement Project Details</title>
+    <link rel="stylesheet" href="./stylesheet/customer_project.css" />
+
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- jQuery (required by Select2) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+</head>
+<body>
+    <h1>Agreement Project Details</h1>
+    <div class="container">
+        
+        <input type="text" id="searchInput" placeholder="Enter Agreement ID" />
+        <button id="searchBtn">Search</button>
+        <button id="addProjectBtn">Add AGR</button>
+        <button id="homebutton"><a href="./Dashboard.html"  class="button-link">Home</a></button>
+        <form id="projectForm" class="form-popup">
+            <button type="button" class="close-btn" id="closeFormBtn">X</button>
+            <label for="customer_name">Customer Name:</label>
+            <select id="customer_name" name="customer_name" class="select2" required></select>
+
+            <label for="quotation_id">Quotation ID:</label>
+            <select type="text" id="quotation_id" name="quotation_id" required></select>
+
+            <label for="agreement_id">Agreement ID:</label>
+            <input type="text" id="agreement_id" name="agreement_id" readonly>
+
+            <label for="id_number">ID_Number:</label>
+            <input type="text" id="id_number" name="id_number" required>
+
+            <label for="project_location">Project Location:</label>
+            <input type="text" id="project_location" name="project_location" required>
+
+            <label for="project_type">Project Type:</label>
+            <select id="project_type" name="project_type" required>
+                <option value="Fast Moving">Fast Moving</option>
+                <option value="Non Fast Moving">Non Fast Moving</option>
+            </select>
+
+            <label for="category">Category:</label>
+            <select id="category" name="category" required></select>
+
+            <label for="subcategory">Subcategory:</label>
+            <select id="subcategory" name="subcategory" required></select>
+
+
+            <button type="submit">Submit</button>
+        </form>
+        <table id="projectTable">
+            <thead>
+                <tr>
+                    <th>Customer Name</th>
+                    <th>Quotation ID</th>
+                    <th>Agreement ID</th>
+                    <th>ID Number</th>
+                    <th>Project Location</th>
+                    <th>Project Type</th>
+                    <th>Category</th>
+                    <th>Subcategory</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="projectTableBody">
+                <!-- Project rows will be dynamically added here -->
+            </tbody>
+        </table>
+        <div id="pagination" class="pagination"></div>
+    </div>
+    </div>
+    <script src="./client/agreement_project_details.js"></script>
+</body>
+</html>

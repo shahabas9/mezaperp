@@ -6,12 +6,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     const searchInput = document.getElementById('searchInput');
     const searchBtn = document.getElementById('searchBtn');
     const customerNameSelect = document.getElementById('customer_name');
-    const quotationIdInput = document.getElementById('quotation_id');
+    const quotationIdSelect = document.getElementById('quotation_id');
+    const agreementIdInput = document.getElementById('agreement_id');
     const projectTypeSelect = document.getElementById('project_type');
     const categorySelect = document.getElementById('category');
     const subcategorySelect = document.getElementById('subcategory');
-    const salePersonSelect = document.getElementById('sales_person');
-    const contactSelect = document.getElementById('contact');
+
     const paginationContainer = document.getElementById('pagination');
 
     let projects = [];
@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let currentPage = 1;
 
     async function fetchProjects(query = '') {
-        let url = '/projects';
+        let url = '/agreement';
         if (query) {
             url += `?search=${encodeURIComponent(query)}`;
         }
@@ -34,11 +34,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function renderTable(page) {
         projectTableBody.innerHTML = ''; // Clear existing rows
-    
+
         const start = (page - 1) * recordsPerPage;
         const end = start + recordsPerPage;
         const paginatedProjects = projects.slice(start, end);
-    
+
         paginatedProjects.forEach(project => {
             appendProjectRow(project);
         });
@@ -46,18 +46,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function renderPagination() {
         paginationContainer.innerHTML = '';
-    
+
         const totalPages = Math.ceil(projects.length / recordsPerPage);
         const maxPagesToShow = 5; // Maximum number of pages to show directly
-    
+
         let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
         let endPage = startPage + maxPagesToShow - 1;
-    
+
         if (endPage > totalPages) {
             endPage = totalPages;
             startPage = Math.max(1, endPage - maxPagesToShow + 1);
         }
-    
+
         for (let i = startPage; i <= endPage; i++) {
             const button = document.createElement('button');
             button.textContent = i;
@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
             paginationContainer.appendChild(button);
         }
-    
+
         // Previous Button
         if (currentPage > 1) {
             const prevButton = document.createElement('button');
@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
             paginationContainer.insertBefore(prevButton, paginationContainer.firstChild);
         }
-    
+
         // Next Button
         if (currentPage < totalPages) {
             const nextButton = document.createElement('button');
@@ -100,19 +100,108 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    async function fetchCustomers() {
-        const response = await fetch('/customers');
-        const customers = await response.json();
-        customers.forEach(customer => {
-            const option = document.createElement('option');
-            option.value = customer.customer_id;
-            option.textContent = customer.customer_name;
-            customerNameSelect.appendChild(option);
+    $(document).ready(function() {
+        // Initialize Select2
+        $('.select2').select2();
+        
+        // Function to fetch customers and populate dropdown
+        async function fetchCustomers() {
+            const response = await fetch('/customers_agr');
+            const customers = await response.json();
+            const customerSelect = $('#customer_name');
+            customerSelect.empty(); // Clear previous options
+            
+            customers.forEach(customer => {
+                const option = new Option(customer.customer_name, customer.customer_id, false, false);
+                customerSelect.append(option);
+            });
+            
+            customerSelect.trigger('change'); // Trigger change event to update Select2
+        }
+
+        // Function to fetch quotations based on customer ID
+        async function fetchQuotations(customerId) {
+            console.log("Fetching quotations for customerId:", customerId); // Debug statement
+            if (!customerId) {
+                console.error("Invalid customerId:", customerId);
+                return;
+            }
+        
+            try {
+                const response = await fetch(`/quotations_agr?customer_id=${customerId}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const quotations = await response.json();
+                const quotationSelect = $('#quotation_id');
+                quotationSelect.empty(); // Clear previous options
+        
+                quotations.forEach(quotation => {
+                    const option = new Option(quotation.quotation_id, quotation.quotation_id, false, false);
+                    quotationSelect.append(option);
+                });
+        
+                quotationSelect.trigger('change'); // Trigger change event to update Select2
+            } catch (error) {
+                console.error("Error fetching quotations:", error);
+            }
+        }
+
+        function fillFormForEdit(project) {
+            // Set the read-only agreement ID
+            document.getElementById('agreement_id').value = project.agreement_id;
+            document.getElementById('agreement_id').readOnly = true;
+            
+            // Set other fields
+            document.getElementById('customer_name').value = project.customer_id;
+
+            // Fetch and set quotations
+            fetchQuotations(project.customer_id).then(() => {
+                document.getElementById('quotation_id').value = project.quotation_id;
+            });
+
+            document.getElementById('project_location').value = project.project_location;
+            document.getElementById('project_type').value = project.project_type;
+            document.getElementById('category').value = project.category;
+            document.getElementById('subcategory').value = project.subcategory;
+            document.getElementById('id_number').value = project.id_number;
+
+            // Show the form
+            projectForm.classList.add('show');
+
+            // Set the project ID as a data attribute
+            projectForm.setAttribute('data-project-id', project.sl_no);
+            console.log("Setting data-project-id:", project.sl_no); // Debug statement
+        }
+
+        projectTableBody.addEventListener('click', async (e) => {
+            if (e.target.classList.contains('delete-btn')) {
+                const projectId = e.target.dataset.projectId;
+                const confirmDelete = confirm('Are you sure you want to delete this project?');
+                if (confirmDelete) {
+                    await deleteProject(projectId);
+                }
+            } else if (e.target.classList.contains('edit-btn')) {
+                // Edit button clicked, show the project form with pre-filled data
+                const projectId = e.target.dataset.projectId;
+                const project = await fetch(`/projects_agr/${projectId}`).then(response => response.json());
+                fillFormForEdit(project);
+            }
         });
-    }
+
+        // Event listener for customer selection
+        $('#customer_name').on('change', function() {
+            const customerId = $(this).val();
+            fetchQuotations(customerId);
+        });
+
+        // Initial data fetch
+        fetchCustomers();
+    }); 
+
 
     async function deleteProject(projectId) {
-        const response = await fetch(`/delete-project/${projectId}`, { method: 'DELETE' });
+        const response = await fetch(`/delete-project_agr/${projectId}`, { method: 'DELETE' });
         if (response.ok) {
             alert('Project deleted successfully.');
             fetchProjects(); // Refresh the projects list
@@ -136,6 +225,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             alert('An error occurred while saving project details.');
         }
     }
+    
+    
 
     addProjectBtn.addEventListener('click', () => {
         projectForm.reset();
@@ -149,83 +240,43 @@ document.addEventListener('DOMContentLoaded', async () => {
         projectForm.removeAttribute('data-project-id');
     });
 
-     // Form submission for adding/editing projects
-     projectForm.addEventListener('submit', async (e) => {
+    // Form submission for adding/editing projects
+    projectForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const formData = new FormData(projectForm);
         const projectId = projectForm.getAttribute('data-project-id'); // Get project ID from data attribute
-        const customerName = document.getElementById('customer_name').value; // Get customer name separately
-
+    
         const projectData = {
             customer_id: formData.get('customer_name'),
-            customer_name: customerName,
-            project_name: formData.get('project_name'),
+            customer_name: document.getElementById('customer_name').selectedOptions[0].text,
+            project_location: formData.get('project_location'),
             project_type: formData.get('project_type'),
             category: formData.get('category'),
             subcategory: formData.get('subcategory'),
-            sales_person: formData.get('sales_person'),
-            contact: formData.get('contact'),
-            quotation_id: formData.get('quotation_id')
+            quotation_id: formData.get('quotation_id'),
+            id_number: formData.get('id_number')
         };
-
+    
         let url;
         let method;
         if (projectId) {
-            // If project ID exists, it means you're editing an existing project
-            url = `/edit-project/${projectId}`;
+            // Edit project
+            url = `/edit-project_agr/${projectId}`;
             method = 'PUT';
+            projectData.agreement_id = document.getElementById('agreement_id').value; // Include agreement ID in edit request
         } else {
-            // If project ID doesn't exist, it means you're adding a new project
-            url = '/add-project';
+            // Add new project
+            url = '/add-project_agr';
             method = 'POST';
         }
-
-        const response = await fetch(url, {
-            method,
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(projectData)
-        });
-
-        if (response.ok) {
-            alert('Project details saved successfully.');
-            projectForm.reset();
-            projectForm.classList.remove('show');
-            const updatedProject = await response.json();
-            if (projectId) {
-                updateProjectRow(updatedProject);
-            } else {
-                appendProjectRow(updatedProject);
-            }
-        } else {
-            alert('An error occurred while saving project details.');
-        }
+    
+        await saveProject(projectData, method, url);
     });
+    
+    
 
     // Form submission for deleting projects
-    projectTableBody.addEventListener('click', async (e) => {
-        if (e.target.classList.contains('delete-btn')) {
-            const projectId = e.target.dataset.projectId;
-            const confirmDelete = confirm('Are you sure you want to delete this project?');
-            if (confirmDelete) {
-                const response = await fetch(`/delete-project/${projectId}`, {
-                    method: 'DELETE'
-                });
-                if (response.ok) {
-                    alert('Project deleted successfully.');
-                    document.getElementById(`projectRow_${projectId}`).remove();
-                } else {
-                    alert('An error occurred while deleting the project.');
-                }
-            }
-        } else if (e.target.classList.contains('edit-btn')) {
-            // Edit button clicked, show the project form with pre-filled data
-            const projectId = e.target.dataset.projectId;
-            const project = await fetch(`/projects/${projectId}`).then(response => response.json());
-            fillFormForEdit(project);
-        }
-    });
+    
 
     // Handle search button click
     searchBtn.addEventListener('click', async () => {
@@ -242,117 +293,34 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    customerNameSelect.addEventListener('change', async () => {
-        const customerId = customerNameSelect.value;
-        if (customerId) {
-            const response = await fetch(`/customers/${customerId}`);
-            const data = await response.json();
-            quotationIdInput.value = data.quotation_id;
-        } else {
-            quotationIdInput.value = '';
-        }
-    });
+    
 
-    salePersonSelect.addEventListener('change', updateContact);
-
-    function fillFormForEdit(project) {
-        customerNameSelect.value = project.customer_id;
-        document.getElementById('project_name').value = project.project_name;
-        document.getElementById('project_type').value = project.project_type;
-        updateCategories();
-        document.getElementById('category').value = project.category;
-        updateSubcategories();
-        document.getElementById('subcategory').value = project.subcategory;
-        document.getElementById('sales_person').value = project.sales_person;
-        updateContact();
-        document.getElementById('contact').value = project.contact;
-        document.getElementById('quotation_id').value = project.quotation_id;
-
-        projectForm.setAttribute('data-project-id', project.project_id);
-        projectForm.classList.add('show');
-        const customerOption = [...customerNameSelect.options].find(option => option.value === project.customer_id);
-        if (customerOption) {
-            customerOption.selected = true;
-        }
-    }
-
-    function appendProjectRow(project) {
+    function appendProjectRow(agreement) {
         const row = document.createElement('tr');
-        row.id = `projectRow_${project.project_id}`;
+        row.id = `projectRow_${agreement.project_id}`;
         row.innerHTML = `
-            <td>${project.customer_name}</td>
-            <td>${project.quotation_id}</td>
-            <td>${project.project_name}</td>
-            <td>${project.project_type}</td>
-            <td>${project.category}</td>
-            <td>${project.subcategory}</td>
-            <td>${project.salesperson_name}</td>
-            <td>${project.salesperson_contact}</td>
+            <td>${agreement.customer_name}</td>
+            <td>${agreement.quotation_id}</td>
+            <td>${agreement.agreement_id}</td>
+            <td>${agreement.id_number}</td>
+            <td>${agreement.project_location}</td>
+            <td>${agreement.project_type}</td>
+            <td>${agreement.category}</td>
+            <td>${agreement.subcategory}</td>
             <td>
-                <button class="edit-btn" data-project-id="${project.project_id}">Edit</button>
-                <button class="delete-btn" data-project-id="${project.project_id}">Delete</button>
+                <button class="edit-btn" data-project-id="${agreement.project_id}">Edit</button>
+                <button class="delete-btn" data-project-id="${agreement.project_id}">Delete</button>
             </td>
         `;
         projectTableBody.appendChild(row);
     }
 
-     // Function to update a project row in the table
-     function updateProjectRow(project) {
-        const row = document.getElementById(`projectRow_${project.project_id}`);
-        row.innerHTML = `
-            <td>${project.customer_name}</td>
-            <td>${project.quotation_id || ''}</td>
-            <td>${project.project_name}</td>
-            <td>${project.project_type}</td>
-            <td>${project.category}</td>
-            <td>${project.subcategory}</td>
-            <td>${project.salesperson_name}</td>
-            <td>${project.salesperson_contact}</td>
-            <td>
-                <button class="edit-btn" data-project-id="${project.project_id}">Edit</button>
-                <button class="delete-btn" data-project-id="${project.project_id}">Delete</button>
-            </td>
-        `;
-    }
-
-    // Function to fill the form for editing a project
-    function fillFormForEdit(project) {
-        document.getElementById('customer_name').value = project.customer_id;
-        document.getElementById('project_name').value = project.project_name;
-        document.getElementById('project_type').value = project.project_type;
-        updateCategories();
-        document.getElementById('category').value = project.category;
-        updateSubcategories();
-        document.getElementById('subcategory').value = project.subcategory;
-        document.getElementById('sales_person').value = project.salesperson_name;
-        updateContact();
-        document.getElementById('contact').value = project.salesperson_contact;
-        document.getElementById('quotation_id').value = project.quotation_id;
-
-        const customerOption = [...customerNameSelect.options].find(option => option.value === project.customer_id);
-        if (customerOption) {
-            customerOption.selected = true;
-        }
-
-        projectForm.setAttribute('data-project-id', project.project_id); // Set project ID in data attribute
-        projectForm.classList.add('show'); // Show the form
-    }
-
-    async function fetchCustomers() {
-        const response = await fetch('/customers');
-        const customers = await response.json();
-        customers.forEach(customer => {
-            const option = document.createElement('option');
-            option.value = customer.customer_id;
-            option.textContent = customer.customer_name;
-            customerNameSelect.appendChild(option);
-        });
-    }
+    
 
     // Handle project type and category changes
     projectTypeSelect.addEventListener('change', updateCategories);
     categorySelect.addEventListener('change', updateSubcategories);
-    salePersonSelect.addEventListener('change', updateContact);
+    
 
     function updateCategories() {
         const projectType = projectTypeSelect.value;
@@ -396,19 +364,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    function updateContact() {
-        const contact = salePersonSelect.value;
-        contactSelect.innerHTML = '';
-
-        if (contact === 'Ahmad Khaled') {
-            addOption(contactSelect, '+974 55666980', '+974 55666980');
-        } else if (contact === 'Abdulrahman') {
-            addOption(contactSelect, '+974 55666950', '+974 55666950');
-        } else if (contact === 'Saad Alkhalil') {
-            addOption(contactSelect, '+974 66222700', '+974 66222700');
-        }
-    }
-
     function addOption(selectElement, value, text) {
         const option = document.createElement('option');
         option.value = value;
@@ -416,17 +371,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         selectElement.appendChild(option);
     }
 
-    
-
      // Initialize the categories and subcategories
      updateCategories();
-     updateContact();
 
-    await fetchCustomers();
-    await fetchProjects();
-    $(document).ready(function() {
-        $('.select2').select2({
-            width: 'resolve'
-        });
-    });
+    await fetchProjects(); // Fetch initial projects
+   
 });

@@ -2105,6 +2105,113 @@ app.get('/api/vrf_villa_template', async (req, res) => {
   }
 });
 
+// Get all projects
+app.get('/agreement', async (req, res) => {
+  try {
+      const { rows } = await pool.query(`
+          SELECT 
+              a.sl_no as project_id, 
+              a.agreement_id, 
+              a.id_number, 
+              a.project_location, 
+              a.project_type, 
+              a.category, 
+              a.subcategory, 
+              c.customer_name, 
+              p.quotation_id
+          FROM agreement_project a
+          JOIN customer c ON a.customer_id = c.customer_id
+          JOIN project p ON a.quotation_id = p.quotation_id
+      `);
+      res.json(rows);
+  } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'An error occurred while fetching projects.' });
+  }
+});
+
+// Get customers for dropdown
+app.get('/customers_agr', async (req, res) => {
+  try {
+      const { rows } = await pool.query('SELECT customer_id, customer_name FROM customer');
+      res.json(rows);
+  } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'An error occurred while fetching customers.' });
+  }
+});
+
+app.get('/quotations_agr', async (req, res) => {
+  const { customer_id } = req.query;
+  try {
+      const result = await pool.query('SELECT quotation_id FROM project WHERE customer_id = $1', [customer_id]);
+      res.json(result.rows);
+  } catch (err) {
+      console.error(err);
+      res.status(500).send('Server Error');
+  }
+});
+
+app.post('/add-project_agr', async (req, res) => {
+  const { customer_id, quotation_id, agreement_id, id_number, project_location, project_type, category, subcategory } = req.body;
+  try {
+      await pool.query(`
+          INSERT INTO agreement_project (customer_id, quotation_id, id_number, project_location, project_type, category, subcategory)
+          VALUES ($1, $2, $3, $4, $5, $6, $7)
+      `, [customer_id, quotation_id, id_number, project_location, project_type, category, subcategory]);
+      res.status(201).send('Project Added');
+  } catch (err) {
+      console.error(err);
+      res.status(500).send('Server Error');
+  }
+});
+
+app.put('/edit-project_agr/:id', async (req, res) => {
+  const { id } = req.params;
+  const { customer_id, quotation_id,  id_number, project_location, project_type, category, subcategory } = req.body;
+  try {
+      await pool.query(`
+          UPDATE agreement_project
+          SET customer_id = $1, quotation_id = $2,  id_number = $3, project_location = $4, project_type = $5, category = $6, subcategory = $7
+          WHERE sl_no = $8
+      `, [customer_id, quotation_id, id_number, project_location, project_type, category, subcategory, id]);
+      res.status(200).send('Project Updated');
+  } catch (err) {
+      console.error(err);
+      res.status(500).send('Server Error');
+  }
+});
+
+
+app.get('/projects_agr/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+      const result = await pool.query(`
+          SELECT ap.sl_no, c.customer_name, p.quotation_id, ap.agreement_id, ap.id_number, ap.project_location, ap.project_type, ap.category, ap.subcategory
+          FROM agreement_project ap
+          JOIN customer c ON ap.customer_id = c.customer_id
+          JOIN project p ON ap.quotation_id = p.quotation_id
+          WHERE ap.sl_no = $1
+      `, [id]);
+      res.json(result.rows[0]);
+  } catch (err) {
+      console.error(err);
+      res.status(500).send('Server Error');
+  }
+});
+
+// Delete a project
+app.delete('/delete-project_agr/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+      await pool.query('DELETE FROM agreement_project WHERE sl_no = $1', [id]);
+      res.status(200).send('Project Deleted');
+  } catch (err) {
+      console.error(err);
+      res.status(500).send('Server Error');
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });
