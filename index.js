@@ -2105,31 +2105,6 @@ app.get('/api/vrf_villa_template', async (req, res) => {
   }
 });
 
-// Get all projects
-app.get('/agreement', async (req, res) => {
-  try {
-      const { rows } = await pool.query(`
-          SELECT 
-              a.sl_no as project_id, 
-              a.agreement_id, 
-              a.id_number, 
-              a.project_location, 
-              a.project_type, 
-              a.category, 
-              a.subcategory, 
-              c.customer_name, 
-              p.quotation_id
-          FROM agreement_project a
-          JOIN customer c ON a.customer_id = c.customer_id
-          JOIN project p ON a.quotation_id = p.quotation_id
-      `);
-      res.json(rows);
-  } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: 'An error occurred while fetching projects.' });
-  }
-});
-
 // Get customers for dropdown
 app.get('/customers_agr', async (req, res) => {
   try {
@@ -2182,7 +2157,6 @@ app.put('/edit-project_agr/:id', async (req, res) => {
   }
 });
 
-
 app.get('/projects_agr/:id', async (req, res) => {
   const { id } = req.params;
   try {
@@ -2209,6 +2183,39 @@ app.delete('/delete-project_agr/:id', async (req, res) => {
   } catch (err) {
       console.error(err);
       res.status(500).send('Server Error');
+  }
+});
+
+app.get('/agreement', async (req, res) => {
+  const agreementId = req.query.agreement_id;
+  let query = `
+      SELECT 
+          ap.sl_no as project_id, 
+          ap.agreement_id, 
+          ap.id_number, 
+          ap.project_location, 
+          ap.project_type, 
+          ap.category, 
+          ap.subcategory, 
+          c.customer_name, 
+          p.quotation_id
+      FROM agreement_project ap
+      JOIN project p ON ap.quotation_id = p.quotation_id
+      JOIN customer c ON ap.customer_id = c.customer_id
+  `;
+  let params = [];
+
+  if (agreementId) {
+      query += ' WHERE ap.agreement_id = $1';
+      params = [agreementId];
+  }
+
+  try {
+      const result = await pool.query(query, params);
+      res.json(result.rows);
+  } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'An error occurred while fetching projects.' });
   }
 });
 

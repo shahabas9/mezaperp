@@ -149,6 +149,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         function fillFormForEdit(project) {
             // Set the read-only agreement ID
+            console.log("Project data:", project); // Debug the entire project object
+
+            if (!project.project_id && !project.sl_no) {
+                console.error("Project ID or SL number is missing."); // Error message if IDs are missing
+                return;
+            }
+
+            // Assuming you want to use project_id
+            const projectId = project.project_id ? project.project_id : project.sl_no;
+            console.log("Setting data-project-id with projectId:", projectId); // 
             document.getElementById('agreement_id').value = project.agreement_id;
             document.getElementById('agreement_id').readOnly = true;
             
@@ -278,11 +288,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Form submission for deleting projects
     
 
-    // Handle search button click
+   // Event listener for search button
     searchBtn.addEventListener('click', async () => {
-        const quotationId = searchInput.value;
-        if (quotationId !== '') {
-            const projects = await fetch(`/projects?quotation_id=${quotationId}`).then(response => response.json());
+        const agreementId = searchInput.value;
+        if (agreementId !== '') {
+            const projects = await fetch(`/agreement?agreement_id=${agreementId}`).then(response => response.json());
             projectTableBody.innerHTML = ''; // Clear existing rows
             projects.forEach(project => {
                 appendProjectRow(project);
