@@ -1,0 +1,109 @@
+.header-container {
+    display: flex;
+    justify-content: space-between; /* Changed to space-between for better distribution */
+    align-items: flex-start;
+    height: 100px; /* Set the desired height */
+    gap: 1rem;
+    margin: 0; /* Ensure no margin is applied */
+    width: 100%;
+    padding: 0; /* Ensure no padding is applied */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+  }
+  
+  .header-container .left-content {
+    display: flex;
+    flex-direction: column; /* Stack the elements vertically */
+  }
+
+  
+  .header-container .left-content .image-text-container {
+    display: flex;
+    align-items: center; /* Align items horizontally */
+    margin: 0;
+  }
+  .header-container .right-content .image-text-container {
+    display: flex;
+    align-items: center; /* Align items horizontally */
+    margin: 0;
+  }
+  
+  .header-container .left-content p {
+    margin: 0.36rem 0; /* Reduce the space between paragraphs */
+    margin-left: 8px;
+  }
+  .header-container .right-content p {
+    margin: 0.75rem 0; /* Reduce the space between paragraphs */
+    margin-right: 8px;
+  }
+  
+  .header-container .left-content .wll-text {
+    font-size: 17px; /* Adjust the font size as needed */
+    font-weight: bold;
+    margin-top: 13px;
+  }
+  .header-container .right-content .wll-text {
+    font-size: 17px; /* Adjust the font size as needed */
+    font-weight: bold;
+    margin-right: 10px;
+    margin-top: 20px;
+  }
+  
+  .header-container .logo-class {
+    margin-left: -10px; /* Adjust this value as needed */
+  }
+  
+.logo-class {
+width: 140px; /* Adjust as needed */
+height: 180px; /* Maintain aspect ratio */
+
+}
+.mezab-class {
+    width: 270px; /* Adjust as needed */
+    height: 70px; /* Maintain aspect ratio */
+    margin-top: 0;
+    }
+
+hr {
+    border: 0;
+    height: 5px;
+    background: red;
+    width: 100%;
+    margin-right: 0;
+  }
+  
+  .second-container {
+    margin-top: 85px;
+  }
+  
+  .mits-class {
+    width: 170px; /* Adjust as needed */
+    height: auto;
+    margin-left: 42%;
+  }
+  
+  
+  
+  .fourth-container {
+    margin-top: 10px;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  th, td {
+    border: 1px solid #000;
+    padding: 8px;
+    text-align: center;
+  }
+  .arab-image {
+    height: 1.02cm;
+    width: 6.0cm;
+    margin-top: 22px;
+   
+  }
+  .header-container .right-content .arab-image {
+    margin-right: 5px; /* Adjust space between image and text */
+    margin-left: 0; /* Ensure the image is aligned with the left edge */
+  }
