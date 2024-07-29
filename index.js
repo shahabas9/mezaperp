@@ -2219,6 +2219,21 @@ app.get('/agreement', async (req, res) => {
   }
 });
 
+app.get('/api/agreement_villa', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT c.customer_name, ap.agreement_id, ap.subcategory
+      FROM customer c
+      JOIN agreement_project ap ON c.customer_id = ap.customer_id
+      WHERE ap.category = 'villa'
+    `);
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    res.status(500).json({ error: 'Failed to fetch data' });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });
