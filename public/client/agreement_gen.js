@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <td>${quotation.customer_name}</td>
                 <td>${quotation.agreement_id}</td>
                 <td>${quotation.subcategory}</td>
-                <td><button onclick="generateQuotation('${quotation.agreement_id}', '${quotation.subcategory}')">Generate Quotation</button></td>
+                <td><button onclick="generateQuotation('${quotation.agreement_id}', '${quotation.subcategory}')">Generate Agreement</button></td>
             `;
             tableBody.appendChild(row);
         });

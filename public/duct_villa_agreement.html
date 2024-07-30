@@ -37,7 +37,7 @@
         <hr>
     </div>
     <div>
-        <img class="mits-class" src="./images/Mitsubishi.png" alt="Logo"></div>
+        <img class="mits-class" src="./images/Mitsubishi.png" alt="Logo">
     </div>
     <div class="third-container">
        <p dir="rtl" style="font-size: 30px; text-align: center; margin: 0;">
@@ -53,6 +53,14 @@
        </p>
        <p style="text-align: center;font-size: 20px;font-weight: bold;">
         <b><span id="customerName">Customer Name</span></b>
+       </p>
+       <p style="text-align: center;font-size: 20px;font-weight: bold;">
+        <b><span id="agreement">Agreement ID</span></b>
+          : المرجع رقم
+       </p>
+       <p style="text-align: center;font-size: 20px;font-weight: bold;">
+        <b><span id="date">Date</span></b>
+        :تاريخ
        </p>
        <p style="text-align: center;font-size: 20px;font-weight: bold;">
         <b><span id="id_no">ID Number</span></b>
@@ -218,11 +226,8 @@
                 <li id="totalDuctsplitContainer">
                     ‫أجهزة تحكم مثبتة‬‬‬ على‬ الحائط‬‫ ‫لوحدات‬ تكييف‬ ‫سقف‬ مخفي‬‬ ‫بمجاري‬ ‫هواء (<b style="color:red;">Ducted Split</b>) ‫عدد‬
                 </li>
-                <p><li id="totalWallmountedContainer">
-                    ‫أجهزة تحكم ‫لاسلكي‬ ‫لوحدات‬‬ ‫تكييف‬‬‫ ‫معلق‬‬ ‫‫على‬ ‫الحائط‬ ‫‫سبلت‬‬ (<b style="color:red;">Wall Mounted</b>) ‫عدد‬
-                </li></p>
                 <p><li>
-                    توريد‬ ‫وتركيب‬ ‫مجاري‬ ‫هواء‬‬ (<b> ‫‪Pre-Insulated‬‬ </b>) ‫لدفع‬ ‫الهواء‬ ‫كما‬ ‫سيو‬ ‫ضح‬ ‫بالخر‬‫ائط‬ 
+                    توريد‬ ‫وتركيب‬ ‫مجاري‬ ‫هواء‬‬ (<b> GI </b>) ‫لدفع‬ ‫الهواء‬ ‫كما‬ ‫سيو‬ ‫ضح‬ ‫بالخر‬‫ائط‬ 
                 </li></p>
                 <p><li>
                     ‫توريد‬ ‫وتركيب‬ ‫5متر ‫مواسير‬ ‫نحاس‬ ‫لكل‬ ‫وحدة‬ ‫تكييف‬ والأمتار الإضافي‬ة ‫ستحسب‬  ‫ب- 100‬‬‬‬‬ ري‬‫ا‫ل ‫للمتر‬ الإضافي‬
@@ -243,62 +248,36 @@
             <b>‬‫‬‬‫ب - <u>‫السعر ‬ ‫الإ‬‫جمال‫ي‬:</u></b>
         </p>
         <p class="amount-container">
-            <span class="currency" style="text-decoration: line-through;">‬ريال قطرى</span>
-            <input type="text" id="amountInput" placeholder="Enter amount" class="amount-input" style="text-decoration: line-through;">
+            <span class="currency">‬ريال قطرى</span>
+            <input type="text" id="amountInput" placeholder="Enter amount" class="amount-input">
             ‫السعر ‬ ‫الإ‬‫جمال‫ي‬ :-/‬   
         </p>
-        <p class="amount-container">
-            <span class="currency">‬ريال قطرى</span>
-            <input type="text" id="discountInput" placeholder="Enter amount" class="amount-input">
-            /- :  <b style="color:red;">   ‫ بعد ‫ الخصم</b>  السعر ‬ الإجمالي‬
-        </p>
+        
         <p dir="rtl" style="font-size: 20px;">
-            <b>‫ت‬ - <u>‫مدة ‫الصلاحية‬:</u></b>
-        </p>
-        <p>
-            <ul dir="rtl" style="font-size: 20px;">
-                <p><li>
-                    ‫هذا‬ ‫العرض‬ ‫ساري‬ ‫لمدة‬ ‫شهر‬ ‫واحد‬ ‫فقط‬
-                </li></p>
-                <p><li>
-                    ‫عند‬ ‫توقيع‬ ‫العقد‪،‬‬ ‫سنلتزم‬ ‫بالسعر‬ ‫المتفق‬ ‫عليه‬ ‫لمدة‬ ‫سنتين‬‬
-                </li></p>
-            </ul>
-        </p>
-        <p dir="rtl" style="font-size: 20px;">
-            <b> ث <u>‫‪-‬‬ ‫ ‫شروط‬‬ الدفع‬:</u></b>
+            <b> ت <u>‫‪-‬‬ ‫ ‫شروط‬‬ الدفع‬:</u></b>
         </p>
         <p>
             <ol dir="rtl" style="font-size: 20px;">
-                <p><li>
+                <p><li class="installment">
                     ‫‪20‬‬% ‫دفعة‬ ‫مقدمة
                 </li></p>
-                <p><li>
+                <p><li class="installment">
                     %20‬‬‬ ‫بعد ‫الإنتهاء ‫من‬ ‫توريد ‫وتركيب‬‫ مجاري‬ ‫الهواء‬
-                </li></p>
-                <p><li>
+                </li></p >
+                <p><li class="installment">
                     %20‬‬‬ ‫بعد ‫الإنتهاء ‫من‬ ‫توريد ‫وتركيب‬‫ مواسير‬ ‫النحاس‬
                 </li></p>
-                <p><li>
+                <p><li class="installment">
                     %20 ‫تدفع‬ ‫عند‬ ‫طلب‬ ‫وحدات‬ ‫التكييف‬ ‫الداخلية‬ ‫إلى‬ ‫الموقع‬
                 </li></p>
-                <p><li>
+                <p><li class="installment">
                     %20 ‫تدفع‬ ‫عند‬ ‫طلب‬ ‫وحدات‬ ‫التكييف‬ ‫الخار‬ ‫جية ‫إلى‬ ‫الموقع‬
                 </li></p>
             </ol>
         </p>
+        
         <p dir="rtl" style="font-size: 20px;">
-            <b>ج‬ - <u>‫طريقة‬ ‫الدفع‬:</u></b>
-        </p>
-        <p>
-            <ul dir="rtl" style="font-size: 20px;">
-                <li>
-                    ‫كاش‬ ‫أو‬ ‫شيك‬ ‫أو‬ ‫تحويل‬ ‫بنكي‬ ‫فقط‬
-                </li>
-            </ul>
-        </p>
-        <p dir="rtl" style="font-size: 20px;">
-            <b>‫ح‬ - <u>‫الإستثناءات‬:‬ </u></b>( ‫الأ ‫عمال‬ ‫الخ‫ا‬‬‫‫ر‬‬‬‫جة‬ ‫عن‬ ‫مجال‬ ‫عملنا‬ )
+            <b>ث - <u>‫مسؤوليات‬ ‫الطرف ‫الأ‫ول:‬ </u></b>
         </p>
         <p>
             <ol dir="rtl" style="font-size: 20px;">
@@ -348,7 +327,39 @@
              
         </p>
         <p dir="rtl" style="font-size: 20px;">
-            <b>  خ- <u >‫الضمان‬:</u></b>
+            <b>  ج‬- <u >‫مدة‬ ‫التعاقد‬:</u></b>
+        </p>
+        <p>
+            <ul dir="rtl" style="font-size: 20px;">
+                <p><li>
+                    ‫أسعار‬ ‫أجهزة‬ ‫التكييف‬ ‫صالحة‬ ‫لمدة‬ ‫سنتين‬ من ‫تاريخ‬ ‫التعاقد‬، ‫في‬ ‫حال‬ ‫زيادة‬ ‫السعار‬  ‫سيتم‬ ‫الزيادة‬ ‫وفقا ‫ً‬ ‫لذلك‬‬
+                </li></p>
+            </ul>
+        </p>
+        <p dir="rtl" style="font-size: 20px;">
+            <b>  ح- <u > ‫شروط‬ ‫أخرى‬:</u></b>
+        </p>
+        <p>
+            <ul dir="rtl" style="font-size: 20px;">
+                <p><li>
+                    في حال ‫إلغاء‬ ‫الطرف‬ ‫ال‬أول ‫للتعاقد‬ ‫سيتم‬ ‫خصم‬ 10% من ‫القيمة‬ ‫الإجمالية ‫للعقد‬ م‬ن ‫حسابه‬ ‫بالإضافة‬ إلي خصم قيمة ‫الأعمال ‫المنفذة‬.‬
+                </li></p>
+                <p><li>
+                    ‫مدة‬ ‫توريد‬ ‫أجهزة‬ ‫التكييف‬ ‫الداخلية‬ أو ‫الخارجية‬ شهر إلى شهرين من تاريخ طلبها
+                </li></p>
+                <p><li>
+                    ‫مدة‬ ‫توريد‬ مخارج الهواء شهر من تاريخ ‫إبالاغنا ب‬إنتهاء ‫أعمال‬ ‫الجبس‬ أو طلبها
+                </li></p>
+                <p><li>
+                    ‫يجب‬ على مقاول البناء إبلاغنا برسالة من جواله بمو عد صب أي خرسانة أسقف قبل 5 أيام على الأقل
+                </li></p>
+                <p><li>
+                    في حال فرضة الحكومة ‫ضرائب‬ إضافية من بعد تاريخ هدا العقد فستكون على الطرف الأول
+                </li></p>
+            </ul>
+        </p>
+        <p dir="rtl" style="font-size: 20px;">
+            <b>  خ- <u >الضمان والصيانة:</u></b>
         </p>
         <p>
             <ul dir="rtl" style="font-size: 20px;">
@@ -361,21 +372,43 @@
                 <p><li>
                     ‫بالإضافة ‫إلى‬ ‫عقد‬ ‫صيانة‬ ‫دورية‬ ‫مجاني‬ ‫لمدة‬ ‫سنة‬ ‫واحدة‬ ‫ت‬‫بدأ‬‬ ‫من‬ ‫تاريخ‬ ‫تشغيل‬ ‫وحدات‬ ‫التكييف‬.
                 </li></p>
+                
+                <select id="togglePoint" onchange="toggleText()">
+                    <option value="show">Include</option>
+                    <option value="hide">Do not include</option>
+                </select>
+                <div id="optionalText"><li>
+               ويعتبر الضمان المذكور أعلاه ملغي في حالة قيام الطرف الأول بأي تعديلات أو إضلاحات لالأجهزة بدون إعلام الطرف الثاني أو في حالة سوء إستخدام المكيف إجراءالصيانة (مرة في السنة على الأقل).
+                </li></div>
             </ul>
-        </p>
-        <p style="margin-left: 20px;"><b>‬ ‫وشكراً‬‫لكم،</b></p>    
+        </p>   
     </div>
     <div class="fifth-container">
-        <div>
-         <img class="sig-class" src="./images/signature.png" alt="Logo">
-        </div> 
-        <div style="font-size: 20px;">
-         <i><b>ميزاب‬ ‫للتكييف‬</b></i>
-        </div>
-     </div>
+        <p dir="rtl" style="font-size: 25px;font-weight: bold;text-align: center;">
+            <u>تم توقيع هذا العقد بين كلا من : </u>
+        </p>
+        <p style="text-align: right;font-size: 22px;">
+            <b><span id="customer_name">Customer Name</span></b>
+           <u> : الطرف الأول   </u>
+        </p>
+        <p  style="text-align: right;font-size: 22px;">
+           : التوقيع
+           <br>
+           <br>
+        </p>
+        <p style="text-align: right;font-size: 22px;">
+             الطرف الثاني :
+          <b>  شركة / ميزاب للتكييف </b>
+ 
+        </p>
+        <p  style="text-align: right;font-size: 22px;">
+            : التوقيع
+            
+         </p>
+    </div>
  
      <button id="printButton" onclick="window.print()">Print</button>
     
-     <script src="./client/duct_split_villa.js"></script>
+     <script src="./client/duct_villa_agreement.js"></script>
 </body>
 </html>

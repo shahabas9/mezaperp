@@ -2234,6 +2234,47 @@ app.get('/api/agreement_villa', async (req, res) => {
   }
 });
 
+app.get('/api/duct_villa_agreement', async (req, res) => {
+  const { agreementId } = req.query;
+
+  if (!agreementId) {
+    return res.status(400).json({ error: 'Agreement ID is required' });
+  }
+
+  try {
+    const result = await pool.query(`
+      SELECT
+        p.project_location,
+        p.agreement_id,
+        p.id_number,
+        c.customer_name,
+        c.mobile_no,
+        s.area,
+        s.type,
+        s.ton,
+        s.quantity,
+        s.location
+      FROM
+        customer c
+      JOIN
+        agreement_project p ON c.customer_id = p.customer_id
+      JOIN
+        villa s ON p.quotation_id = s.quotation_id
+      WHERE
+        p.agreement_id = $1 AND p.subcategory = 'duct'
+    `, [agreementId]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'No data found for the given quotation ID' });
+    }
+
+    res.json({ data: result.rows });
+  } catch (error) {
+    console.error('Error fetching data for duct template:', error);
+    res.status(500).json({ error: 'Failed to fetch data' });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });

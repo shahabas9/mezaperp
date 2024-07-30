@@ -97,6 +97,38 @@ hr {
     padding: 8px;
     text-align: center;
   }
+  
+  .serving-area {
+    width: 40%;
+  }
+  
+  .quantity {
+    width: 15%;
+  }
+  
+  .ton {
+    width: 15%;
+  }
+  
+  .description {
+    width: 30%;
+  }
+  
+  .total-price {
+    width: 20%;
+  }
+  
+  .unit-price {
+    width: 25%;
+    text-align: center;
+  }
+  
+  .unit{
+    border: none;
+    text-align: center;
+    background-color: transparent;
+  }
+  
   .arab-image {
     height: 1.02cm;
     width: 6.0cm;
@@ -107,3 +139,101 @@ hr {
     margin-right: 5px; /* Adjust space between image and text */
     margin-left: 0; /* Ensure the image is aligned with the left edge */
   }
+
+  @media print {
+    #togglePoint,
+    .hide-print {
+        display: none;
+    }
+}
+#printButton {
+  display: block;
+  margin: 20px auto; /* Center the button horizontally */
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: rgb(50, 59, 37);
+  color: beige;
+}
+
+.no-border {
+  border: none;
+  outline: none;
+}
+
+/* Ensure the button doesn't appear in the printout */
+@media print {
+  #printButton {
+      display: none;
+  }
+}
+
+@media print {
+  @page {
+      margin-top: 3mm; /* Default margin for all pages */
+  }
+
+  @page:first {
+      margin-top: 0; /* No margin for the first page */
+  }
+}
+
+@media print {
+  body {
+      position: relative;
+      /* Ensure body has some content height to cover multiple pages */
+      min-height: 100vh;
+  }
+
+  .watermark {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: 70%;
+      height: 70%;
+      transform: translate(-50%, -40%);
+      z-index: -1;
+      background-image: url('../images/Mezab.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      opacity: 0.2; /* Adjust the transparency */
+      pointer-events: none; /* Make sure it doesn't interfere with page content */
+  }
+}
+
+.container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-weight: bold;
+  font-size: 20px;
+  margin-top: 20px;
+  text-align: right;
+  direction: ltr;
+}
+.amount-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 20px;
+  margin-top: 20px;
+  text-align: right;
+  direction: ltr;
+}
+.amount-input {
+  height: 20px;
+  font-size: 18px;
+  font-weight: bold;
+  width: 70px;
+  border: none;
+  padding-top: 0;
+  text-align: left;
+  margin-left: 4px;
+  margin-top: 7px;
+  background-color: transparent;
+}
+.currency {
+  font-size: 20px;
+  margin-right: 2px; /* Adjust margin as necessary */
+}
