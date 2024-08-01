@@ -237,3 +237,6 @@ hr {
   font-size: 20px;
   margin-right: 2px; /* Adjust margin as necessary */
 }
+h3 {
+  margin: 0;
+}
