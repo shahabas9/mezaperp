@@ -1,5 +1,5 @@
 .logo-class {
-  width: 140px; /* Adjust as needed */
+  width: 170px; /* Adjust as needed */
   height: 180px; /* Maintain aspect ratio */
   margin-top: 15px;
 }
@@ -229,6 +229,7 @@ h3 {
   margin-left: 4px;
   margin-top: 7px;
   background-color: transparent;
+  flex-shrink: 0;
 }
 .currency {
   font-size: 20px;
@@ -246,4 +247,12 @@ h3 {
   margin-left: 4px;
   margin-top: 7px;
   background-color: transparent;
+  flex-shrink: 0;
+}
+
+@media print {
+  #togglePoint,
+  .hide-print {
+      display: none;
+  }
 }

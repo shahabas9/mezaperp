@@ -96,8 +96,8 @@ function populateTable(data) {
             totalTonQuantity += locationTotal.totalTonQuantity;
         });
 
-        document.getElementById('totalQuantityContainer').textContent = `Total Quantity: ${totalQuantity}`;
-        document.getElementById('totalTonContainer').textContent = `Total Ton: ${totalTonQuantity.toFixed(2)} Ton`;
+        document.getElementById('totalQuantityContainer').textContent = ` ${totalQuantity}`;
+        document.getElementById('totalTonContainer').textContent = ` ${totalTonQuantity.toFixed(2)} `;
 
 
         const locationNames = {
@@ -193,3 +193,37 @@ const discountInput = document.getElementById('discountInput');
             this.value = value.toLocaleString();
         }
     }
+
+    function checkDiscount() {
+        const discountInput = document.getElementById('discountInput').value.trim();
+        const firstLine = document.getElementById('firstLine');
+        const secondLine = document.getElementById('secondLine');
+        const currency1 = document.getElementById('currency1');
+        const amountInput = document.getElementById('amountInput');
+    
+        if (discountInput === '') {
+            secondLine.style.display = 'none';
+            currency1.style.textDecoration = 'none';
+            amountInput.style.textDecoration = 'none';
+        } else {
+            secondLine.style.display = 'flex'; // Ensure consistent display
+            currency1.style.textDecoration = 'line-through';
+            amountInput.style.textDecoration = 'line-through';
+        }
+    }
+    
+    // Ensure the second line is visible on page load
+    document.getElementById('secondLine').style.display = 'flex'; // Use 'flex' instead of 'block' for consistency
+    
+    function toggleText() {
+        var selectBox = document.getElementById("togglePoint");
+        var selectedValue = selectBox.options[selectBox.selectedIndex].value;
+        var textDiv = document.getElementById("optionalText");
+        
+        if (selectedValue === "show") {
+            textDiv.classList.remove("hide-print");
+        } else {
+            textDiv.classList.add("hide-print");
+        }
+    }    
+    
