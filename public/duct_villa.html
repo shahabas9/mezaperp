@@ -193,11 +193,22 @@
                     ‫أجهزة تحكم مثبتة‬‬‬ على‬ الحائط‬‫ ‫لوحدات‬ تكييف‬ ‫سقف‬ مخفي‬‬ ‫بمجاري‬ ‫هواء (<b style="color:red;">Ducted Split</b>) ‫عدد‬
                 </li>
                 <p><li>
-                    توريد‬ ‫وتركيب‬ ‫مجاري‬ ‫هواء‬‬ (<b> ‫‪Pre-Insulated‬‬ </b>) ‫لدفع‬ ‫الهواء‬ ‫كما‬ ‫سيو‬ ‫ضح‬ ‫بالخر‬‫ائط‬ 
+                    توريد‬ ‫وتركيب‬ ‫مجاري‬ ‫هواء‬‬ 
+                    (<select style="font-weight: bold; font-size: inherit; border: none; -webkit-appearance: none; -moz-appearance: none; appearance: none; padding-left: 0;background: none;">
+                        <option value="pre-insulated" style="font-weight: bold; padding-right: 0;">‫‪Pre-Insulated‬‬</option>
+                        <option value="gi-duct" style="font-weight: bold;text-align: center;">GI Duct</option>
+                    </select>) 
+                    ‫لدفع‬ ‫الهواء‬ ‫كما‬ ‫سيو‬ ‫ضح‬ ‫بالخر‬‫ائط‬ 
                 </li></p>
-                <p><li>
-                    ‫توريد‬ ‫وتركيب‬ ‫5متر ‫مواسير‬ ‫نحاس‬ ‫لكل‬ ‫وحدة‬ ‫تكييف‬ والأمتار الإضافي‬ة ‫ستحسب‬  ‫ب- 100‬‬‬‬‬ ري‬‫ا‫ل ‫للمتر‬ الإضافي‬
-                </li></p>
+                <select id="togglePoint" onchange="toggleText()">
+                    <option value="show">Include</option>
+                    <option value="hide">Do not include</option>
+                </select>
+                <div id="optionalText"><li>
+                    
+                        ‫توريد‬ ‫وتركيب‬ ‫5 متر ‫مواسير‬ ‫نحاس‬ ‫لكل‬ ‫وحدة‬ ‫تكييف‬ والأمتار الإضافية ‫ستحسب‬  ‫ب- 
+                        <input type="number" value="100" style="width: 48px; font-weight: bold; font-size: inherit; border: none; text-align: center;" />‬‬‬‬ ري‬‫ا‫ل ‫للمتر‬ الإضافي‬
+                    </li></div>
                 <p><li>
                     ‫توريد‬ ‫‫وتركيب ‫مفاتيح‬ ‫تحكم‬ ‫بالهواء‬ (<b> VCD</b>) ‫كما‬ ‫سيوضح‬ ‫بالخر‬‫ائط‬ ‫إذا‬ ‫احتاج‬ ‫التصميم‬ ‫لذلك
                 </li></p>
