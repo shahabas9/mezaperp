@@ -248,6 +248,27 @@ function generateSummaryTable(data) {
     }
 }
 
+function checkSummaryDiscount() {
+    const summaryDiscountInput = document.getElementById('summaryDiscountInput').value.trim();
+    const summaryAmountContainer = document.getElementById('summaryAmountContainer');
+    const summaryCurrency = document.getElementById('summaryCurrency');
+    const totalPriceSum = document.getElementById('totalPriceSum');
+
+    if (summaryDiscountInput === '') {
+        summaryAmountContainer.style.display = 'none';
+        totalPriceSum.style.textDecoration = 'none';
+    } else {
+        summaryAmountContainer.style.display = 'flex';
+        totalPriceSum.style.textDecoration = 'line-through';
+    }
+}
+
+// Ensure the amount container is visible on page load
+document.getElementById('summaryAmountContainer').style.display = 'flex'; // Use 'flex' instead
+document.getElementById('summaryDiscountInput').addEventListener('input', checkSummaryDiscount);
+
+
+
 // CSS to center the description text
 const style = document.createElement('style');
 style.textContent = `
@@ -274,5 +295,15 @@ const amountInput = document.getElementById('amountInput');
         }
     }
 
-
+    function toggleText() {
+        var selectBox = document.getElementById("togglePoint");
+        var selectedValue = selectBox.options[selectBox.selectedIndex].value;
+        var textDiv = document.getElementById("optionalText");
+        
+        if (selectedValue === "show") {
+            textDiv.classList.remove("hide-print");
+        } else {
+            textDiv.classList.add("hide-print");
+        }
+    }    
 

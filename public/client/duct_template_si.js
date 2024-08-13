@@ -77,3 +77,14 @@ function displayTotalSum(data) {
     const totalSumContainer = document.getElementById('totalSumContainer');
     totalSumContainer.innerHTML = `<b>Total Amount: QAR ${totalSum.toLocaleString()}/-</b>`;
 }
+function toggleText() {
+    var selectBox = document.getElementById("togglePoint");
+    var selectedValue = selectBox.options[selectBox.selectedIndex].value;
+    var textDiv = document.getElementById("optionalText");
+    
+    if (selectedValue === "show") {
+        textDiv.classList.remove("hide-print");
+    } else {
+        textDiv.classList.add("hide-print");
+    }
+}    

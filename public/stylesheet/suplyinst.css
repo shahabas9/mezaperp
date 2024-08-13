@@ -142,3 +142,34 @@ body{
   margin-top: 43px;
   margin-bottom: 10px;
 }
+
+#totalAmountContainer {
+  font-weight: bold;
+  margin-top: 20px;
+  text-align: right;
+  display: flex; /* Ensure proper layout */
+  justify-content: flex-end; /* Align text to the right */
+  align-items: center; /* Vertically align input field */
+}
+
+.no-border {
+  border: none;
+  background: transparent; /* Make the input field blend with the background */
+  outline: none; /* Remove outline */
+  text-align: left; /* Align text to the left inside the input */
+}
+
+#amountInput {
+  font-weight: bold;
+  height: 25px;
+  font-size: 15.5px;
+  width: 70px;
+  margin-left: 10px; /* Space between text and input field */
+}
+
+@media print {
+  #togglePoint,
+  .hide-print {
+      display: none;
+  }
+}

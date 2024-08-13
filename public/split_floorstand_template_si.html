@@ -84,17 +84,23 @@
         </table>
         <div id="totalSumContainer" style="font-weight: bold; margin-top: 20px;text-align: right;"></div>
 
-        <p style="font-weight: bold; margin-top: 20px;text-align: right;">Total Amount After Discount: QAR 
+        <p id="totalAmountContainer" style="font-weight: bold; margin-top: 20px;text-align: right;">
+            Total Amount After Discount: QAR 
             <input type="text" id="amountInput" placeholder="Enter amount" class="no-border" style="font-weight: bold;height: 25px;font-size: 15.5px;width: 70px">
-        
+        </p>
+
         <p>
             <b><u>Note:</u></b>
         </p>
         <p>
             <ul>
-                <li>
-                    <b>Our price is up to 5 Meter copper pipes length for each unit, for extra length will be charged QAR. 100 / Meter lengths.</b>
-                </li>
+                <select id="togglePoint" onchange="toggleText()">
+                    <option value="show">Include</option>
+                    <option value="hide">Do not include</option>
+                </select>
+                <div id="optionalText"><li>
+                    <b>Our price is up to 5 Meter copper pipes length for each unit, for extra length will be charged QAR.<input type="number" value="100" style="width: 48px; font-weight: bold; font-size: inherit; border: none; text-align: center;" />/ Meter lengths.</b>
+                </li></div>
                 <p><li>
                     <b>Outdoor unit wall bracket will be charged QAR. 300 for each unit (if needed).</b>
                 </li></p>

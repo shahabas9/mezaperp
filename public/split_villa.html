@@ -204,21 +204,28 @@
                 </tbody>
             </table>
         </div>
-        <p class="container">
-            <span class="currency">ر.ق</span>
-            <input type="text" id="amountInput" placeholder="Enter amount" class="amount-input">
-    
+        
+        <p id="summaryAmountContainer" class="container">
+            <span id="summaryCurrency" class="currency">ر.ق</span>
+            <input type="text" id="summaryDiscountInput" placeholder="Enter discount amount" class="amount-input">
             الخصم‬ ‫بعد‬ ‫المجموع:
-            
         </p>
+        
+        
         <p dir="rtl" style="font-size: 20px;">
             <b><u>ملاحظة:</u></b>
         </p>
         <p>
             <ul dir="rtl" style="font-size: 20px;">
-                <li>
-                    ‫توريد‬ ‫وتركيب‬ ‫5متر ‫مواسير‬ ‫نحاس‬ ‫لكل‬ ‫وحدة‬ ‫تكييف‬ والأمتار الإضافي‬ة ‫ستحسب‬  ‫ب- 100‬‬‬‬‬ ري‬‫ا‫ل ‫للمتر‬ الإضافي‬
-                </li>
+                <select id="togglePoint" onchange="toggleText()">
+                    <option value="show">Include</option>
+                    <option value="hide">Do not include</option>
+                </select>
+                <div id="optionalText"><li>
+                    
+                        ‫توريد‬ ‫وتركيب‬ ‫5 متر ‫مواسير‬ ‫نحاس‬ ‫لكل‬ ‫وحدة‬ ‫تكييف‬ والأمتار الإضافية ‫ستحسب‬  ‫ب- 
+                        <input type="number" value="100" style="width: 48px; font-weight: bold; font-size: inherit; border: none; text-align: center;" />‬‬‬‬ ري‬‫ا‫ل ‫للمتر‬ الإضافي‬
+                    </li></div>
                 <p><li>
                     ‫سيتم‬ ‫احتساب‬ ‫تكلفة‬ ‫حامل‬ ‫الحائط‬ ‫للوحدة‬ ‫الخارجية‬‬ ‫ب-300 ريال ‫لكل‬ ‫وحدة‬ ‫(إذا‬‬‬‬‬‬ ‫لزم‬ ‫الأمر )‬ ‫ ‫‪‬
                 </li></p>
