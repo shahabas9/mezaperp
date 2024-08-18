@@ -66,3 +66,20 @@ a{
     height: 100px; /* Adjust size as needed */
     border-radius: 40%;
 }
+
+.notification-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 5px 10px;
+    font-size: 14px;
+    font-weight: bold;
+}
+.customer {
+    position: relative;
+    /* other styles */
+}
+

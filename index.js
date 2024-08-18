@@ -2275,6 +2275,115 @@ app.get('/api/duct_villa_agreement', async (req, res) => {
   }
 });
 
+app.post('/add-employee', async (req, res) => {
+  const { employee_name, qatar_id, expiry_date, profession, renewal_date, contact } = req.body;
+  try {
+    const result = await pool.query(
+      'INSERT INTO employee (employee_name, qatar_id, expiry_date, profession, renewal_date, contact) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      [employee_name, qatar_id, expiry_date, profession, renewal_date, contact]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
+
+// Handle editing customer details
+app.put('/edit-employee/:employeeId', async (req, res) => {
+  const { employeeId } = req.params;
+  const { employee_name, qatar_id, expiry_date, profession, renewal_date, contact } = req.body;
+  try {
+    const result = await pool.query(
+      'UPDATE employee SET employee_name = $1, qatar_id = $2, expiry_date = $3, profession = $4, renewal_date = $5, contact = $6 WHERE employee_id = $7 RETURNING *',
+      [employee_name, qatar_id, expiry_date, profession, renewal_date, contact, employeeId]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).send('Employee not found');
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+;
+
+// Handle deleting customer
+app.delete('/delete-employee/:employeeId', async (req, res) => {
+  const { employeeId } = req.params;
+  try {
+    await pool.query('DELETE FROM employee WHERE employee_id = $1', [employeeId]);
+    res.status(204).send(); // 204 No Content
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
+
+// Fetch all customers or search customers by name
+app.get('/employees', async (req, res) => {
+  const searchQuery = req.query.search ? `%${req.query.search}%` : '%';
+  try {
+    const result = await pool.query(
+      'SELECT * FROM employee WHERE employee_name ILIKE $1',
+      [searchQuery]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
+app.get('/employees/:employeeId', async (req, res) => {
+  const { employeeId } = req.params;
+  try {
+    const result = await pool.query('SELECT * FROM employee WHERE employee_id = $1', [employeeId]);
+    const project = result.rows[0];
+    if (!project) {
+      // If project with the provided ID doesn't exist, send a 404 response
+      return res.status(404).send('employee not found');
+    }
+    // If project exists, send it as JSON
+    res.json(project);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
+app.get('/employees-expiring-soon', async (req, res) => {
+  try {
+      const result = await pool.query(
+          `SELECT employee_name, qatar_id, TO_CHAR(expiry_date, 'YYYY-MM-DD') AS expiry_date 
+           FROM employee 
+           WHERE expiry_date <= NOW() + INTERVAL '2 weeks'`
+      );
+      res.json(result.rows);
+  } catch (err) {
+      console.error(err);
+      res.status(500).send('Server error');
+  }
+});
+
+app.get('/employees-expiring-soon-count', async (req, res) => {
+  try {
+      const result = await pool.query(
+          `SELECT COUNT(*) AS count 
+           FROM employee 
+           WHERE expiry_date <= NOW() + INTERVAL '2 weeks'`
+      );
+      res.json(result.rows[0]);
+  } catch (err) {
+      console.error(err);
+      res.status(500).send('Server error');
+  }
+});
+
+
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });

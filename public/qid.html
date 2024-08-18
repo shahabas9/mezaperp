@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>qatar ids</title>
+    <link rel="stylesheet" href="./stylesheet/customer_project.css" />
+
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- jQuery (required by Select2) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+</head>
+<body>
+    <h1>Employee ID Details</h1>
+    <div class="container">
+        
+        <input type="text" id="searchInput" placeholder="Enter Employee name" />
+        <button id="searchBtn">Search</button>
+        <button id="addProjectBtn">Add Employee</button>
+        <button id="homebutton"><a href="./Dashboard.html"  class="button-link">Home</a></button>
+        <form id="projectForm" class="form-popup">
+            <button type="button" class="close-btn" id="closeFormBtn">X</button>
+            <label for="employee_name">Employee Name:</label>
+            <input type="text" id="employee_name" name="employee_name" required>
+
+            <label for="qatar_id">Qatar ID:</label>
+            <input type="text" id="qatar_id" name="qatar_id" required>
+
+            <label for="expiry_date">Expiry Date:</label>
+            <input type="date" id="expiry_date" name="expiry_date" required>
+
+            <label for="profession">Profession:</label>
+            <select id="profession" name="profession" required>
+                <option value="Accoutant">Accoutant</option>
+                <option value="Driver">Driver</option>
+                <option value="Engineer">Engineer</option>
+                <option value="Helper">Helper</option>          
+                <option value="Sales">Sales</option>
+                <option value="Programmer">Programmer</option>
+            </select>
+
+            <label for="renewal_date">Renewal Date:</label>
+            <input type="date" id="renewal_date" name="renewal_date" required>
+
+            <label for="contact">Contact:</label>
+            <input type="text" id="contact" name="contact" ></select>
+
+            <button type="submit">Submit</button>
+        </form>
+        <table id="projectTable">
+            <thead>
+                <tr>
+                    <th>Employee Name</th>
+                    <th>Qatar ID</th>
+                    <th>Expiry Date</th>
+                    <th>Profession</th>
+                    <th>Renewal</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="projectTableBody">
+                <!-- Project rows will be dynamically added here -->
+            </tbody>
+        </table>
+        <div id="pagination" class="pagination"></div>
+    </div>
+    </div>
+    <script src="./client/qid.js"></script>
+</body>
+</html>
