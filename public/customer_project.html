@@ -16,12 +16,18 @@
 </head>
 <body>
     <h1>Customer Project Details</h1>
+    <button onclick="goBack()" style="padding: 10px 14px;">Back</button>
+    <button id="homebutton"><a href="./Dashboard.html"  class="button-link">Home</a></button>
     <div class="container">
         
         <input type="text" id="searchInput" placeholder="Enter Quotation ID" />
         <button id="searchBtn">Search</button>
+        <input type="text" id="searchName" placeholder="Enter customer name" />
+        <button id="searchName">Search</button>
+        <input type="text" id="searchMobile" placeholder="Enter mobile number" />
+        <button id="searchMobile">Search</button>
         <button id="addProjectBtn">Add Project</button>
-        <button id="homebutton"><a href="./Dashboard.html"  class="button-link">Home</a></button>
+        
         <form id="projectForm" class="form-popup">
             <button type="button" class="close-btn" id="closeFormBtn">X</button>
             <label for="customer_name">Customer Name:</label>
@@ -61,6 +67,7 @@
             <thead>
                 <tr>
                     <th>Customer Name</th>
+                    <th>Customer Number</th>
                     <th>Quotation ID</th>
                     <th>Project Name</th>
                     <th>Project Type</th>

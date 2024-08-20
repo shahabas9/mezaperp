@@ -74,6 +74,12 @@ button:hover {
 #searchInput {
     width: 150px;
 }
+#searchName {
+    width: 150px;
+}
+#searchMobile {
+    width: 150px;
+}
 .close-btn {
     position: absolute;
     top: 10px;

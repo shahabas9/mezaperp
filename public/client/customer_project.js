@@ -281,6 +281,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         row.id = `projectRow_${project.project_id}`;
         row.innerHTML = `
             <td>${project.customer_name}</td>
+            <td>${project.mobile_no}</td>
             <td>${project.quotation_id}</td>
             <td>${project.project_name}</td>
             <td>${project.project_type}</td>
@@ -430,3 +431,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
 });
+
+function goBack() {
+    window.history.back();
+}

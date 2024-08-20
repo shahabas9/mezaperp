@@ -201,7 +201,7 @@ app.delete('/delete-project/:id', async (req, res) => {
 app.get('/projects', async (req, res) => {
   const quotationId = req.query.quotation_id;
   let query = `
-      SELECT p.*, c.customer_name
+      SELECT p.*, c.customer_name,c.mobile_no
       FROM project p
       JOIN customer c ON p.customer_id = c.customer_id
   `;
