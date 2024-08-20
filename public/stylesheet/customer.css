@@ -24,6 +24,14 @@ body {
 #searchButton {
   padding: 8px 12px;
 }  
+#searchMobile {
+  padding: 8px;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+#searchButtonMobile {
+  padding: 8px 12px;
+}  
 table {
   width: 100%;
   border-collapse: collapse;

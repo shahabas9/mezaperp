@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const customerTableBody = document.getElementById('customerTableBody');
     const searchInput = document.getElementById('searchInput');
     const searchButton = document.getElementById('searchButton');
+    const searchMobileInput = document.getElementById('searchMobile');
+    const searchButtonMobile = document.getElementById('searchButtonMobile');
     const formTitle = document.getElementById('formTitle');
     const paginationContainer = document.getElementById('pagination');
 
@@ -125,21 +127,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    async function fetchCustomers(query = '') {
+    async function fetchCustomers(query = '', searchBy = 'customer_name') {
+        console.log('Fetching customers with query:', query, 'and searchBy:', searchBy); // Debugging line
         let url = '/customers';
         if (query) {
-            url += `?search=${encodeURIComponent(query)}`;
+            url += `?search=${encodeURIComponent(query)}&searchBy=${encodeURIComponent(searchBy)}`;
         }
-
+    
         const response = await fetch(url);
         customers = await response.json();
-
+    
         // Sort customers in descending order of customer_id
         customers.sort((a, b) => b.customer_id - a.customer_id);
-
+    
         renderTable(currentPage);
         renderPagination();
     }
+    
 
     function renderTable(page) {
         // Clear existing table data
@@ -231,8 +235,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
     searchButton.addEventListener('click', () => {
         const query = searchInput.value.trim();
-        fetchCustomers(query);
+        fetchCustomers(query,'customer_name');
+    });
+    searchButtonMobile.addEventListener('click', () => {
+        const query = searchMobileInput.value.trim();
+        fetchCustomers(query, 'mobile_no'); // 'mobile' indicates searching by mobile number
+    });
+
+    // Trigger search when "Enter" key is pressed in the search input (customer name)
+    searchInput.addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            const query = searchInput.value.trim();
+            fetchCustomers(query, 'customer_name');
+        }
+    });
+
+    // Trigger search when "Enter" key is pressed in the search mobile input (mobile number)
+    searchMobileInput.addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            const query = searchMobileInput.value.trim();
+            fetchCustomers(query, 'mobile_no');
+        }
     });
 
     fetchCustomers();
 });
+
+
+function goBack() {
+    window.history.back();
+}
+

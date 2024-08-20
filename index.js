@@ -39,17 +39,32 @@ app.get('/', (req, res) => {
 // Handle form submission
 app.post('/add-customer', async (req, res) => {
   const { customer_name, mobile_no, email } = req.body;
+
   try {
+    // Check if a customer with the same name and mobile number already exists
+    const existingCustomer = await pool.query(
+      'SELECT * FROM customer WHERE customer_name = $1 AND mobile_no = $2',
+      [customer_name, mobile_no]
+    );
+
+    if (existingCustomer.rows.length > 0) {
+      // If customer exists, send an error response
+      return res.status(400).json({ error: 'Customer with the same name and mobile number already exists.' });
+    }
+
+    // If the combination is unique, insert the new customer
     const result = await pool.query(
       'INSERT INTO customer (customer_name, mobile_no, email) VALUES ($1, $2, $3) RETURNING *',
       [customer_name, mobile_no, email]
     );
+
     res.json(result.rows[0]);
   } catch (err) {
-    console.error(err);
+    console.error('Database Insert Error:', err);
     res.status(500).send('Server error');
   }
 });
+
 
 // Handle editing customer details
 app.put('/edit-customer/:id', async (req, res) => {
@@ -81,29 +96,43 @@ app.delete('/delete-customer/:id', async (req, res) => {
 
 // Fetch all customers or search customers by name
 app.get('/customers', async (req, res) => {
-  const searchQuery = req.query.search ? `%${req.query.search}%` : '%';
+  const searchQuery = req.query.search || '';  // Default to an empty string if no search query is provided
+  const searchBy = req.query.searchBy || 'customer_name'; // Default to 'customer_name'
+
+  let query = '';
+  let queryParams = [];
+
+  if (searchQuery) {
+    // When a search query is provided
+    if (searchBy === 'customer_name') {
+        query = 'SELECT * FROM customer WHERE customer_name ILIKE $1';
+        queryParams = [`%${searchQuery}%`];
+    } else if (searchBy === 'mobile_no') {
+        query = 'SELECT * FROM customer WHERE mobile_no ILIKE $1';
+        queryParams = [searchQuery];
+    } else {
+        return res.status(400).send('Invalid searchBy parameter');
+    }
+  } else {
+    // When no search query is provided, return all customers
+    query = 'SELECT * FROM customer';
+  }
+
+  // Log the search query and parameters
+  console.log('Search Query:', searchQuery);
+  console.log('Search By:', searchBy);
+  console.log('Query:', query);
+  console.log('Query Params:', queryParams);
+
   try {
-    const result = await pool.query(
-      'SELECT * FROM customer WHERE customer_name ILIKE $1',
-      [searchQuery]
-    );
-    res.json(result.rows);
+      const result = await pool.query(query, queryParams);
+      res.json(result.rows);
   } catch (err) {
-    console.error(err);
-    res.status(500).send('Server error');
+      console.error('Database Query Error:', err);
+      res.status(500).send('Server error');
   }
 });
 
-// Fetch customers
-app.get('/customers', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT customer_id, customer_name FROM customer');
-    res.json(result.rows);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Server error');
-  }
-});
 
 //customer project page
 
