@@ -23,7 +23,7 @@ function deleteRow(button) {
     updateButtons();
 }
 
-function addRow(button) {
+function addRow(button,record={}) {
     var table = document.getElementById("supplyTable").getElementsByTagName('tbody')[0];
     var newRow = table.insertRow(table.rows.length);
 
@@ -31,11 +31,27 @@ function addRow(button) {
     var cell2 = newRow.insertCell(1);
     var cell3 = newRow.insertCell(2);
     var cell4 = newRow.insertCell(3);
+    var cell5 = newRow.insertCell(4);
     
     cell1.innerHTML = '<input type="number" name="supply_cost[]" oninput="updateTotal(this)">';
     cell2.innerHTML = '<input type="number" name="installation_cost[]" oninput="updateTotal(this)">';
     cell3.innerHTML = '<input type="number" name="total_amount[]" readonly>';
-    cell4.innerHTML = '<button onclick="addRow(this)">+</button> <button onclick="deleteRow(this)">-</button>';
+    cell5.innerHTML = '<button onclick="addRow(this)">+</button> <button onclick="deleteRow(this)">-</button>';
+    
+    const supplyIdValue = record.supply_id || 'not found';
+    cell4.innerHTML = `<input type="readonly" name="supplyId[]" value="${supplyIdValue} "readonly>`;
+    cell4.style.display = 'none';
+
+    if (record.supply_amount) {
+        cell1.querySelector('input[name="supply_cost[]"]').value = record.supply_amount;
+    }
+    if (record.installation_amount) {
+        cell2.querySelector('input[name="installation_cost[]"]').value = record.installation_amount;
+    }
+    if (record.total_amount) {
+        cell3.querySelector('input[name="total_amount[]"]').value = record.total_amount;
+    }
+
 
     updateButtons();
 }
@@ -107,11 +123,15 @@ async function handleSubmit(event) {
 
     const customerId = document.getElementById('customer').value;
     const quotationId = document.getElementById('quotation').value;
+    const revise = document.getElementById('revise').checked;
     const tableRows = document.querySelectorAll('#supplyTable tbody tr');
 
     const supplyData = [];
 
     tableRows.forEach((row, index) => {
+        console.log(`Row ${index} HTML:`, row.innerHTML);
+        const supplyIdElement = row.querySelector('input[name="supplyId[]"]');
+        console.log(`Row ${index} supply_id value:`, supplyIdElement ? supplyIdElement.value : 'not found');
         const supplyElement = row.querySelector('input[name="supply_cost[]"]');
         const installationPriceElement = row.querySelector('input[name="installation_cost[]"]');
         const totalPriceElement = row.querySelector('input[name="total_amount[]"]');
@@ -126,10 +146,10 @@ async function handleSubmit(event) {
         // Ensure all elements are found before accessing their values
         if ( supplyElement && installationPriceElement && totalPriceElement) {
             supplyData.push({
-            
-                supply: supplyElement.value,
-                installation: installationPriceElement.value,
-                total_price: totalPriceElement.value
+                supply_id: supplyIdElement ? supplyIdElement.value : null,
+                supply: supplyElement ? supplyElement.value: null,
+                installation: installationPriceElement ? installationPriceElement.value: null,
+                total_price: totalPriceElement ? totalPriceElement.value: null
             });
         } else {
             console.error(`Error: Missing elements in row ${index}`);
@@ -137,12 +157,17 @@ async function handleSubmit(event) {
     });
 
 
+    if (supplyData.length === 0) {
+        alert('Please fill in all fields before submitting.');
+        return;
+    }
+
     const payload = {
         quotation_id: quotationId,
         customer_id: customerId,
-        supply_data: supplyData
+        supply_data: supplyData,
+        revise: revise // Added revise to payload
     };
-
     console.log('Submitting payload:', payload);
 
     try {

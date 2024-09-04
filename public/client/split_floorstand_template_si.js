@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const { data } = await response.json();
         populateTable(data);
-        displayTotalSum(data);
+        
     } catch (error) {
         console.error('Error fetching quotation data:', error);
     }
@@ -37,6 +37,10 @@ function populateTable(data) {
         const tableBody = document.getElementById('supplyTableBody');
         const descriptions = {};
 
+        let totalTonQuantity = 0;
+        let totalQuantity = 0;
+        let totalSum = 0;
+
         data.forEach(item => {
             console.log("Item: ", item);
             const description = item.type.toUpperCase();
@@ -45,6 +49,11 @@ function populateTable(data) {
             }
             descriptions[description].count++;
             descriptions[description].rows.push(item);
+
+            const tonQuantity = parseFloat(item.ton) * item.quantity;
+            totalQuantity += tonQuantity;
+            totalSum += parseFloat(item.total_price);
+            totalTonQuantity += parseFloat(item.quantity);
         });
 
         Object.keys(descriptions).forEach(description => {
@@ -55,7 +64,7 @@ function populateTable(data) {
                     const descriptionCell = document.createElement('td');
                     descriptionCell.setAttribute('rowspan', count);
                     descriptionCell.className = 'merged-cell';
-                    descriptionCell.innerHTML = `<b><span style="color:black;">Supply and Installation of</span></b><br><b style="color:red;"> ${description}</b>`;
+                    descriptionCell.innerHTML = `<b><span style="color:black;">Supply Only of</span></b><br><b style="color:red;"> ${description}</b>`;
                     row.appendChild(descriptionCell);
                 }
                 row.innerHTML += `
@@ -69,14 +78,23 @@ function populateTable(data) {
                 tableBody.appendChild(row);
             });
         });
+
+        // Add the row with merged cells for totals
+        const totalRow = document.createElement('tr');
+        totalRow.id = 'totalRow'; // Assign an ID to this row for easy manipulation
+        totalRow.innerHTML = `
+            <td colspan="1"><b>Total</b></td>
+            <td><b>${totalQuantity.toFixed(2)}</b></td>
+            <td><b>${totalTonQuantity.toFixed(2)}</b></td>
+            <td colspan="2"><b id="totalAmount">QAR ${totalSum.toLocaleString()}</b></td>
+        `;
+        tableBody.appendChild(totalRow);
+
+       
     }
 }
 
-function displayTotalSum(data) {
-    const totalSum = data.reduce((sum, row) => sum + parseFloat(row.total_price), 0);
-    const totalSumContainer = document.getElementById('totalSumContainer');
-    totalSumContainer.innerHTML = `<b>Total Amount: <s>QAR ${totalSum.toLocaleString()}/-</s></b>`;
-}
+
 
 const amountInput = document.getElementById('amountInput');
 
@@ -108,41 +126,50 @@ function toggleText() {
 
 let totalSum = 0; // Define totalSum globally
 
+// Function to display the total sum
 function checkTotalDiscount() {
     const amountInput = document.getElementById('amountInput');
     const amountInputValue = amountInput.value.trim();
-    const totalSumContainer = document.getElementById('totalSumContainer');
     const totalAmountContainer = document.getElementById('totalAmountContainer');
+    const totalAmountElement = document.getElementById('totalAmount');
+
+    if (!totalAmountElement) {
+        console.error('totalAmount element not found');
+        return;
+    }
 
     if (amountInputValue === '') {
-        // Clear the discount input and hide the discount line
-        amountInput.value = ''; // Clear the input
-        totalAmountContainer.style.display = 'none'; // Hide the discount line
-        totalSumContainer.innerHTML = `<b>Total Amount: QAR ${totalSum.toLocaleString()}/-</b>`; // Remove strike-through
+        // Clear the input and show the total without a strike-through
+        totalAmountContainer.style.display = 'none'; // Hide the discount line only when input is cleared
+        totalAmountElement.style.textDecoration = 'none';
     } else {
+        // Show the discount line and apply the strike-through
         totalAmountContainer.style.display = 'flex'; // Show the discount line
-        totalSumContainer.innerHTML = `<b>Total Amount: <s>QAR ${totalSum.toLocaleString()}/-</s></b>`; // Add strike-through
+        totalAmountElement.style.textDecoration = 'line-through';
     }
 }
 
-// Function to display the total sum
-function displayTotalSum(data) {
-    totalSum = data.reduce((sum, row) => sum + parseFloat(row.total_price), 0);
-    const totalSumContainer = document.getElementById('totalSumContainer');
-    
-    // Display the total sum with the strike-through by default
-    totalSumContainer.innerHTML = `<b>Total Amount: <s>QAR ${totalSum.toLocaleString()}/-</s></b>`;
-    
-    // Ensure the discount line is visible on page load
-    document.getElementById('totalAmountContainer').style.display = 'flex';
-    
-    
-}
-
-// Add event listener to check for discount input changes
-document.getElementById('amountInput').addEventListener('input', checkTotalDiscount);
-
-// Ensure everything is initialized correctly on page load
+// Ensure this runs after DOM is fully loaded
 window.onload = function() {
-    checkTotalDiscount(); // Initialize the discount line visibility
+    document.getElementById('amountInput').addEventListener('input', checkTotalDiscount);
 };
+
+
+
+
+
+document.getElementById('printButton').addEventListener('click', function() {
+    // Fetch the quotation ID and customer name
+    const quotationId = document.getElementById('refNo').textContent.trim();
+    const customerName = document.getElementById('projectName').textContent.trim();
+
+    // Set the document title to the desired filename format
+    document.title = `${quotationId}_${customerName}`;
+
+    // Trigger the print dialog
+    window.print();
+});
+
+function goBack() {
+    window.history.back();
+}

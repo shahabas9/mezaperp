@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const searchBtn = document.getElementById('searchBtn');
     const searchInput = document.getElementById('searchInput');
+    const searchName = document.getElementById('searchName');
+    const searchMobile = document.getElementById('searchMobile');
     const tableBody = document.getElementById('quotationTableBody');
     const paginationContainer = document.getElementById('pagination');
 
@@ -10,15 +12,82 @@ document.addEventListener('DOMContentLoaded', async () => {
     let filteredQuotations = []; // Array to store filtered quotations
     let currentQuotations = []; // Array to store currently displayed quotations
 
+    // Event listener for search button
     searchBtn.addEventListener('click', () => {
-        const quotationId = searchInput.value.trim();
-        if (quotationId) {
-            fetchRecordsByQuotationId(quotationId);
-        } else {
-            fetchAllRecords();
+        performSearch();
+    });
+
+    // Add event listeners for Enter key on input fields
+    searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            performSearch();
         }
     });
 
+    searchName.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            performSearch();
+        }
+    });
+
+    searchMobile.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            performSearch();
+        }
+    });
+
+    // Function to perform the search
+    async function performSearch() {
+        let quotationId = document.getElementById('searchInput').value.trim();
+        const customerName = document.getElementById('searchName').value.trim();
+        const mobileNumber = document.getElementById('searchMobile').value.trim();
+    
+        let query = '';
+        let params = [];
+    
+        if (quotationId !== '') {
+            // Normalize the quotation ID
+            quotationId = quotationId.replace(/\s+/g, '').toUpperCase(); // Remove spaces and convert to uppercase
+    
+            // Handle cases like "1", "01", "QT001", "qt001", etc.
+            if (quotationId.startsWith('QT')) {
+                // If it starts with "QT", ensure it has the right number of digits
+                quotationId = 'QT ' + quotationId.substring(2).padStart(3, '0');
+            } else {
+                // If it doesn't start with "QT", assume it's a number and format it
+                quotationId = 'QT ' + quotationId.padStart(3, '0');
+            }
+    
+            query = `/api/villa_data?quotationId=${encodeURIComponent(quotationId)}`;
+        } else if (customerName !== '') {
+            query = `/api/villa_data?customerName=${encodeURIComponent(customerName)}`;
+        } else if (mobileNumber !== '') {
+            query = `/api/villa_data?mobileNumber=${encodeURIComponent(mobileNumber)}`;
+        } else {
+            // If no input is provided, fetch all records
+            await fetchAllRecords();
+            return;
+        }
+    
+        try {
+            const response = await fetch(query);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            data.sort((a, b) => parseInt(b.quotation_id.split(' ')[1]) - parseInt(a.quotation_id.split(' ')[1]));
+            quotations = data;
+            filteredQuotations = [...quotations];
+            currentPage = 1; // Reset to first page after fetch
+            renderTable(currentPage);
+            renderPagination();
+        } catch (error) {
+            console.error('Error fetching records:', error);
+        }
+    }
+    
+
+    // Function to fetch all records
     async function fetchAllRecords() {
         try {
             const response = await fetch('/api/villa_data');
@@ -37,28 +106,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    function fetchRecordsByQuotationId(quotationId) {
-        console.log(`Fetching data for Quotation ID: ${quotationId}`);
-        fetch(`/api/villa_data/${quotationId}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Data received:', data);
-                quotations = data; // Update quotations with filtered data
-                filteredQuotations = [...quotations]; // Update filteredQuotations
-                currentPage = 1; // Reset to first page after fetch
-                renderTable(currentPage);
-                renderPagination();
-            })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-            });
-    }
-
+    // Function to render the table
     function renderTable(page) {
         tableBody.innerHTML = ''; // Clear existing table rows
 
@@ -70,17 +118,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${quotation.quotation_id}</td>
-                <td>${quotation.location}</td>
-                <td>${quotation.area}</td>
-                <td>${quotation.type}</td>
-                <td>${quotation.ton}</td>
-                <td>${quotation.quantity}</td>
+                <td>${quotation.customer_name}</td>
+                <td>${quotation.customer_mobile_number}</td>
+                <td>${quotation.subcategory}</td>
                 <td><button onclick="editRecord('${quotation.quotation_id}')">Edit</button></td>
             `;
             tableBody.appendChild(row);
         });
     }
 
+    // Function to render pagination
     function renderPagination() {
         paginationContainer.innerHTML = ''; // Clear existing pagination buttons
 
@@ -143,4 +190,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 function editRecord(quotationId) {
     window.location.href = `/villa_edit.html?quotationId=${quotationId}`;
+}
+function goBack() {
+    window.history.back();
 }

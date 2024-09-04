@@ -171,52 +171,60 @@ function updateTotal(element) {
     
     totalInput.value = (unitPrice * quantity); // Calculate and set the total tonnage
 }
-
+$(document).ready(function() {
+    $('#customer').select2({
+      placeholder: 'Search for a customer',
+      allowClear: true
+    });
+  
+    // Load the customer data and populate the dropdown
+    initializeDataOptions();
+  });
 async function initializeDataOptions() {
     try {
-        const response = await fetch('/api/customers_si');
-        const customers = await response.json();
-        
-        // Populate customer dropdown and set default value
-        populateDropdown('customer', customers, 'customer_id', 'customer_name');
-        
-        const customerDropdown = document.getElementById('customer');
-        
-        // Add event listener to the customer dropdown
-        customerDropdown.addEventListener('change', updateQuotationDropdown);
-        
-        // Trigger change event to populate the quotation dropdown
-        if (customerDropdown.options.length > 0) {
-            customerDropdown.selectedIndex = 0;  // Select the first customer by default
-            customerDropdown.dispatchEvent(new Event('change'));
-        }
+      const response = await fetch('/api/customers_si');
+      const customers = await response.json();
+      console.log('Customers:', customers);
+  
+      populateDropdown('customer', customers, 'customer_id', 'customer_name');
+  
+      const customerDropdown = $('#customer');
+  
+      // Trigger change event to populate the quotation dropdown
+      if (customerDropdown.find('option').length > 0) {
+        customerDropdown.val(customerDropdown.find('option:first').val()).trigger('change');
+      }
+  
+      // Add event listener to the customer dropdown
+      customerDropdown.on('change', updateQuotationDropdown);
     } catch (error) {
-        console.error('Error fetching data:', error);
+      console.error('Error fetching customers:', error);
     }
-}
+  }
 
 async function updateQuotationDropdown() {
     const customerId = this.value;
     try {
-        const response = await fetch(`/api/quotations_si/${customerId}`);
-        const quotations = await response.json();
-        console.log('Quotations fetched:', quotations); // Debugging log
-        populateDropdown('quotation', quotations, 'quotation_id', 'quotation_id');
+      const response = await fetch(`/api/quotations_si/${customerId}`);
+      const quotations = await response.json();
+      console.log('Quotations:', quotations);
+  
+      populateDropdown('quotation', quotations, 'quotation_id', 'quotation_id');
     } catch (error) {
-        console.error('Error fetching data:', error);
+      console.error('Error fetching quotations:', error);
     }
-}
+  }
 
 function populateDropdown(dropdownId, items, valueKey, textKey) {
-    const dropdown = document.getElementById(dropdownId);
-    dropdown.innerHTML = ''; // Clear existing options
+    const dropdown = $(`#${dropdownId}`);
+    dropdown.empty(); // Clear existing options
+  
     items.forEach(item => {
-        const option = document.createElement('option');
-        option.value = item[valueKey];
-        option.text = item[textKey];
-        dropdown.add(option);
+      dropdown.append(new Option(item[textKey], item[valueKey]));
     });
-}
+  
+    dropdown.trigger('change'); // Refresh the dropdown with Select2
+  }
 
 function filterCustomers() {
     const searchInput = document.getElementById('customerSearch');
@@ -300,8 +308,12 @@ async function handleSubmit(event) {
 
         const result = await response.json();
         alert('Data submitted successfully');
+        window.location.reload();
     } catch (error) {
         console.error('Error submitting form:', error);
         alert('Failed to submit data');
     }
+}
+function goBack() {
+    window.history.back();
 }

@@ -37,6 +37,10 @@ function populateTable(data) {
         const tableBody = document.getElementById('supplyTableBody');
         const descriptions = {};
 
+        let totalTonQuantity = 0;
+        let totalQuantity = 0;
+        let totalSum = 0;
+
         data.forEach(item => {
             console.log("Item: ", item);
             const description = item.type.toUpperCase();
@@ -45,6 +49,11 @@ function populateTable(data) {
             }
             descriptions[description].count++;
             descriptions[description].rows.push(item);
+
+            const tonQuantity = parseFloat(item.ton) * item.quantity;
+            totalQuantity += tonQuantity;
+            totalSum += parseFloat(item.total_price);
+            totalTonQuantity += parseFloat(item.quantity);
         });
 
         Object.keys(descriptions).forEach(description => {
@@ -58,7 +67,8 @@ function populateTable(data) {
                     descriptionCell.innerHTML = `<b><span style="color:black;">Supply Only of</span></b><br><b style="color:red;"> ${description}</b>`;
                     row.appendChild(descriptionCell);
                 }
-                row.innerHTML += ` 
+                row.innerHTML += `
+                    
                     <td>${item.ton}</td>
                     <td>${item.quantity}</td>
                     <td>${item.unit_price.toLocaleString()}</td>
@@ -68,14 +78,23 @@ function populateTable(data) {
                 tableBody.appendChild(row);
             });
         });
+
+        // Add the row with merged cells for totals
+        const totalRow = document.createElement('tr');
+        totalRow.innerHTML = `
+            <td colspan="1"><b>Total</b></td>
+            <td><b>${totalQuantity.toFixed(2)}</b></td>
+            <td><b>${totalTonQuantity.toFixed(2)}</b></td>
+            
+            <td colspan="2"><b>QAR ${totalSum.toLocaleString()}</b></td>
+        `;
+        tableBody.appendChild(totalRow);
+
+        
     }
 }
 
-function displayTotalSum(data) {
-    const totalSum = data.reduce((sum, row) => sum + parseFloat(row.total_price), 0);
-    const totalSumContainer = document.getElementById('totalSumContainer');
-    totalSumContainer.innerHTML = `<b>Total Amount: <s>QAR ${totalSum.toLocaleString()}/-</s></b>`;
-}
+
 
 const amountInput = document.getElementById('amountInput');
 
@@ -92,3 +111,19 @@ const amountInput = document.getElementById('amountInput');
             this.value = value.toLocaleString();
         }
     }
+
+document.getElementById('printButton').addEventListener('click', function() {
+    // Fetch the quotation ID and customer name
+    const quotationId = document.getElementById('refNo').textContent.trim();
+    const customerName = document.getElementById('projectName').textContent.trim();
+
+    // Set the document title to the desired filename format
+    document.title = `${quotationId}_${customerName}`;
+
+    // Trigger the print dialog
+    window.print();
+});
+
+function goBack() {
+    window.history.back();
+}

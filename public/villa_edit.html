@@ -8,7 +8,15 @@
     
 </head>
 <body onload="fetchSupplyData();">
-    <h1>Editing Details Only for Villa</h1>
+    <h1>
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div>
+                <button onclick="goBack()" class="submit">Back</button>
+                <button id="homebutton" class="submit"><a href="./Dashboard.html" class="button-link">Home</a></button>
+            </div>
+            <span>Editing Details Only for Villa</span>
+        </div>
+    </h1>
     <form id="supplyForm" onsubmit="handleSubmit(event)">
         <div>
             <label for="customer">Customer id:</label>
@@ -17,6 +25,9 @@
 
             <label for="quotation">Quotation ID:</label>
             <select name="quotation" id="quotation"></select>
+
+            <label for="revise">Revise Quotation ID:</label>
+            <input type="radio" id="revise" name="revise" value="yes">
         </div>
         <div>
             <table id="supplyTable">
@@ -63,7 +74,9 @@
                         <td>
                             <input type="number" name="Quantity[]">
                         </td>
-                        
+                        <td>
+                            <input type="number" name="supplyId[]" value="{{supply_id}}" readonly>
+                        </td>
                         <td>
                             <button type="button" onclick="addRow(this)">+</button>
                         </td>

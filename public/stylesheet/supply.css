@@ -1,9 +1,24 @@
-h1{
+h1 {
     color: #30479e; 
     background-color: beige;
     text-transform: uppercase;
     text-align: center;
- }
+}
+
+h1 div {
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+h1 div span {
+    flex-grow: 1;
+    text-align: center;
+}
+
+h1 div div {
+    display: flex;
+    gap: 10px; /* Space between buttons */
+}
 
 body {
 font-family: Arial, sans-serif;
@@ -40,8 +55,24 @@ th, td {
     align-items: center;
 }
 
-.submit{
-    background-color: #4cda58;
+.submit {
+    background-color: #45a049;;
     height: 35px;
     width: 100px;
+    color: white; /* Add this if you want the text color to be white */
+    border: none; /* Add this to remove default button borders */
+    cursor: pointer; /* Add this to change the cursor on hover */
 }
+
+.button-link {
+    text-decoration: none;
+    color: white; /* Ensures the link text color matches the button */
+    display: inline-block;
+    height: 100%;
+    width: 100%;
+    text-align: center;
+    line-height: 35px; /* Vertically center the text inside the button */
+}
+.select2-container {
+    width: 100% !important;
+  }

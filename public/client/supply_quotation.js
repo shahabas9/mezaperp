@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const searchBtn = document.getElementById('searchBtn');
     const searchInput = document.getElementById('searchInput');
+    const searchName = document.getElementById('searchName');
+    const searchMobile = document.getElementById('searchMobile');
     const tableBody = document.getElementById('quotationTableBody');
     const paginationContainer = document.getElementById('pagination');
 
@@ -10,26 +12,94 @@ document.addEventListener('DOMContentLoaded', async () => {
     let filteredQuotations = []; // Array to store filtered quotations
     let currentQuotations = []; // Array to store currently displayed quotations
 
+    // Event listener for search button
     searchBtn.addEventListener('click', () => {
-        const searchTerm = searchInput.value.trim().toLowerCase();
-        filteredQuotations = quotations.filter(quotation => quotation.quotation_id.toLowerCase().includes(searchTerm));
-        currentPage = 1; // Reset to first page after search
-        renderTable(currentPage);
-        renderPagination();
+        performSearch();
     });
 
-    async function fetchQuotations() {
+    // Add event listeners for Enter key on input fields
+    searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            performSearch();
+        }
+    });
+
+    searchName.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            performSearch();
+        }
+    });
+
+    searchMobile.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            performSearch();
+        }
+    });
+
+
+    async function fetchAllRecords() {
         try {
-            const response = await fetch('/api/quotations_supply');
+            const response = await fetch('/api/supply_data');
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-            quotations = await response.json();
-            filteredQuotations = [...quotations]; // Initialize filtered quotations with all quotations
+            const data = await response.json();
+            data.sort((a, b) => parseInt(b.quotation_id.split(' ')[1]) - parseInt(a.quotation_id.split(' ')[1]));
+            quotations = data;
+            filteredQuotations = [...quotations];
+            currentPage = 1; // Reset to first page after fetch
             renderTable(currentPage);
             renderPagination();
         } catch (error) {
-            console.error('Error fetching quotations:', error);
+            console.error('Error fetching records:', error);
+        }
+    }
+
+    async function performSearch() {
+        let quotationId = searchInput.value.trim();
+        const customerName = searchName.value.trim();
+        const mobileNumber = searchMobile.value.trim();
+
+        let query = '';
+
+        if (quotationId !== '') {
+            // Normalize the quotation ID
+            quotationId = quotationId.replace(/\s+/g, '').toUpperCase(); // Remove spaces and convert to uppercase
+
+            // Handle cases like "1", "01", "QT001", "qt001", etc.
+            if (quotationId.startsWith('QT')) {
+                // If it starts with "QT", ensure it has the right number of digits
+                quotationId = 'QT ' + quotationId.substring(2).padStart(3, '0');
+            } else {
+                // If it doesn't start with "QT", assume it's a number and format it
+                quotationId = 'QT ' + quotationId.padStart(3, '0');
+            }
+
+            query = `/api/supply_data?quotationId=${encodeURIComponent(quotationId)}`;
+        } else if (customerName !== '') {
+            query = `/api/supply_data?customerName=${encodeURIComponent(customerName)}`;
+        } else if (mobileNumber !== '') {
+            query = `/api/supply_data?mobileNumber=${encodeURIComponent(mobileNumber)}`;
+        } else {
+            // If no input is provided, fetch all records
+            await fetchAllRecords();
+            return;
+        }
+
+        try {
+            const response = await fetch(query);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            data.sort((a, b) => parseInt(b.quotation_id.split(' ')[1]) - parseInt(a.quotation_id.split(' ')[1]));
+            quotations = data;
+            filteredQuotations = [...quotations];
+            currentPage = 1; // Reset to first page after fetch
+            renderTable(currentPage);
+            renderPagination();
+        } catch (error) {
+            console.error('Error fetching records:', error);
         }
     }
 
@@ -43,8 +113,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         currentQuotations.forEach(quotation => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${quotation.customer_name}</td>
                 <td>${quotation.quotation_id}</td>
+                <td>${quotation.customer_name}</td>
+                <td>${quotation.customer_mobile_number}</td>
                 <td>${quotation.subcategory}</td>
                 <td><button onclick="generateQuotation('${quotation.quotation_id}', '${quotation.subcategory}')">Generate Quotation</button></td>
             `;
@@ -108,8 +179,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Fetch quotations and initialize
-    await fetchQuotations();
+    // Initial fetch and render
+    await fetchAllRecords();
 });
 
 
@@ -142,7 +213,9 @@ function generateQuotation(quotationId, subcategory) {
     console.log(`Redirecting to: ${templatePage}`); // Log the redirection
     window.location.href = `${templatePage}?quotationId=${quotationId}`;
 }
-  
+function goBack() {
+    window.history.back();
+}
   
   
 

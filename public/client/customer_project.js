@@ -198,6 +198,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             } else {
                 appendProjectRow(updatedProject);
             }
+            window.location.reload();
         } else {
             alert('An error occurred while saving project details.');
         }
@@ -227,20 +228,66 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    // Handle search button click
+    // Existing search button event listener
     searchBtn.addEventListener('click', async () => {
-        const quotationId = searchInput.value;
-        if (quotationId !== '') {
-            const projects = await fetch(`/projects?quotation_id=${quotationId}`).then(response => response.json());
-            projectTableBody.innerHTML = ''; // Clear existing rows
-            projects.forEach(project => {
-                appendProjectRow(project);
-            });
-        } else {
-            // If no quotationId is provided, fetch all projects
-            await fetchProjects();
-        }
+        await performSearch();
     });
+
+    // New event listener for the input fields
+    const inputFields = [document.getElementById('searchInput'), document.getElementById('searchName'), document.getElementById('searchMobile')];
+
+    inputFields.forEach(inputField => {
+        inputField.addEventListener('keydown', async (event) => {
+            if (event.key === 'Enter') {
+                await performSearch();
+            }
+        });
+    });
+
+    
+    // Function to perform the search
+    async function performSearch() {
+        let quotationId = document.getElementById('searchInput').value.trim();
+        const customerName = document.getElementById('searchName').value.trim();
+        const mobileNumber = document.getElementById('searchMobile').value.trim();
+
+        let query = '';
+        let params = [];
+
+        if (quotationId !== '') {
+            // Normalize the quotation ID
+            quotationId = quotationId.replace(/\s+/g, '').toUpperCase(); // Remove spaces and convert to uppercase
+
+            // Handle cases like "1", "01", "QT001", "qt001", etc.
+            if (quotationId.startsWith('QT')) {
+                // If it starts with "QT", ensure it has the right number of digits
+                quotationId = 'QT ' + quotationId.substring(2).padStart(3, '0');
+            } else {
+                // If it doesn't start with "QT", assume it's a number and format it
+                quotationId = 'QT ' + quotationId.padStart(3, '0');
+            }
+
+            query = `/projects?quotation_id=${encodeURIComponent(quotationId)}`;
+        } else if (customerName !== '') {
+            query = `/projects?customer_name=${encodeURIComponent(customerName)}`;
+        } else if (mobileNumber !== '') {
+            query = `/projects?mobile_number=${encodeURIComponent(mobileNumber)}`;
+        } else {
+            // If no input is provided, fetch all projects
+            await fetchProjects();
+            return;
+        }
+
+        const projects = await fetch(query).then(response => response.json());
+        projectTableBody.innerHTML = ''; // Clear existing rows
+        projects.forEach(project => {
+            appendProjectRow(project);
+        });
+    }
+
+
+
+    
 
     customerNameSelect.addEventListener('change', async () => {
         const customerId = customerNameSelect.value;
@@ -279,6 +326,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     function appendProjectRow(project) {
         const row = document.createElement('tr');
         row.id = `projectRow_${project.project_id}`;
+        const formatText = (text) => {
+            return text.replace(/_/g, ' ') // Replace underscores with spaces
+                       .replace(/\b\w/g, char => char.toUpperCase()); // Capitalize the first letter of each word
+        };
+
         row.innerHTML = `
             <td>${project.customer_name}</td>
             <td>${project.mobile_no}</td>
@@ -286,12 +338,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             <td>${project.project_name}</td>
             <td>${project.project_type}</td>
             <td>${project.category}</td>
-            <td>${project.subcategory}</td>
+            <td>${formatText(project.subcategory)}</td>
             <td>${project.salesperson_name}</td>
             <td>${project.salesperson_contact}</td>
             <td>
                 <button class="edit-btn" data-project-id="${project.project_id}">Edit</button>
                 <button class="delete-btn" data-project-id="${project.project_id}">Delete</button>
+                <button class="modify-btn" data-project-id="${project.project_id}">Modify</button>
+                <button class="generate-btn" data-project-id="${project.project_id}">Generate</button>
             </td>
         `;
         projectTableBody.appendChild(row);
@@ -300,21 +354,30 @@ document.addEventListener('DOMContentLoaded', async () => {
      // Function to update a project row in the table
      function updateProjectRow(project) {
         const row = document.getElementById(`projectRow_${project.project_id}`);
+    
+        const formatText = (text) => {
+            return text.replace(/_/g, ' ') // Replace underscores with spaces
+                       .replace(/\b\w/g, char => char.toUpperCase()); // Capitalize the first letter of each word
+        };
+    
         row.innerHTML = `
             <td>${project.customer_name}</td>
             <td>${project.quotation_id || ''}</td>
             <td>${project.project_name}</td>
             <td>${project.project_type}</td>
             <td>${project.category}</td>
-            <td>${project.subcategory}</td>
+            <td>${formatText(project.subcategory)}</td>
             <td>${project.salesperson_name}</td>
             <td>${project.salesperson_contact}</td>
             <td>
                 <button class="edit-btn" data-project-id="${project.project_id}">Edit</button>
                 <button class="delete-btn" data-project-id="${project.project_id}">Delete</button>
+                <button class="modify-btn" data-project-id="${project.project_id}">Modify</button>
+                <button class="generate-btn" data-project-id="${project.project_id}">Generate</button>
             </td>
         `;
     }
+    
 
     // Function to fill the form for editing a project
     function fillFormForEdit(project) {
@@ -373,40 +436,45 @@ document.addEventListener('DOMContentLoaded', async () => {
     function updateSubcategories() {
         const category = categorySelect.value;
         subcategorySelect.innerHTML = '';
-
+    
+        const formatOptionText = (text) => {
+            return text.replace(/_/g, ' ') // Replace underscores with spaces
+                       .replace(/\b\w/g, char => char.toUpperCase()); // Capitalize the first letter of each word
+        };
+    
         if (category === 'Supply') {
-            ['Duct', 'VRF', 'FloorStand', 'Package Units'].forEach(optionText => {
-                addOption(subcategorySelect, optionText.toLowerCase().replace(/ /g, '_'), optionText);
+            ['Ducted Split', 'VRF', 'FloorStand', 'Package Units'].forEach(optionText => {
+                addOption(subcategorySelect, optionText.toLowerCase(), formatOptionText(optionText));
             });
         } else if (category === 'Supply & Installation') {
-            ['Cassette', 'Duct', 'Split', 'FloorStand', 'Split&FloorStand'].forEach(optionText => {
-                addOption(subcategorySelect, optionText.toLowerCase().replace(/ /g, '_'), optionText);
+            ['Cassette', 'Ducted Split', 'Split', 'FloorStand', 'Split&FloorStand'].forEach(optionText => {
+                addOption(subcategorySelect, optionText.toLowerCase(), formatOptionText(optionText));
             });
         } else if (category === 'villa') {
-            ['Duct', 'Split', 'VRF', 'Duct&Split', 'Warehouse'].forEach(optionText => {
-                addOption(subcategorySelect, optionText.toLowerCase().replace(/ /g, '_'), optionText);
+            ['Ducted Split', 'Split', 'VRF', 'Duct&Split', 'Warehouse'].forEach(optionText => {
+                addOption(subcategorySelect, optionText.toLowerCase(), formatOptionText(optionText));
             });
         } else if (category === 'Other') {
             ['AMC', 'Fan'].forEach(optionText => {
-                addOption(subcategorySelect, optionText.replace(/ /g, '_'), optionText);
+                addOption(subcategorySelect, optionText.toLowerCase().replace(/ /g, ''), formatOptionText(optionText));
             });
         } else if (category === 'other') {
             ['BOQ', 'Spare Parts'].forEach(optionText => {
-                addOption(subcategorySelect, optionText.replace(/ /g, '_'), optionText);
+                addOption(subcategorySelect, optionText.toLowerCase().replace(/ /g, ''), formatOptionText(optionText));
             });
         }
     }
-
+    
     function updateContact() {
         const contact = salePersonSelect.value;
         contactSelect.innerHTML = '';
 
         if (contact === 'Ahmad Khaled') {
-            addOption(contactSelect, '+974 55666980', '+974 55666980');
+            addOption(contactSelect, '55666980', '55666980');
         } else if (contact === 'Abdulrahman') {
-            addOption(contactSelect, '+974 55666950', '+974 55666950');
+            addOption(contactSelect, '55666950', '55666950');
         } else if (contact === 'Saad Alkhalil') {
-            addOption(contactSelect, '+974 66222700', '+974 66222700');
+            addOption(contactSelect, '66222700', '66222700');
         }
     }
 
@@ -435,3 +503,101 @@ document.addEventListener('DOMContentLoaded', async () => {
 function goBack() {
     window.history.back();
 }
+
+document.addEventListener('click', function(event) {
+    if (event.target.classList.contains('modify-btn')) {
+        const projectId = event.target.getAttribute('data-project-id');
+        const projectRow = document.getElementById(`projectRow_${projectId}`);
+        const category = projectRow.querySelector('td:nth-child(6)').textContent.trim();
+        const subCategory = projectRow.querySelector('td:nth-child(7)').textContent.trim();
+        const quotationId = projectRow.querySelector('td:nth-child(3)').textContent.trim();
+
+        if (category === 'Supply') {
+            window.location.href = `supply_edit.html?quotationId=${quotationId}`;
+        } else if (category === 'villa') {
+            window.location.href = `villa_edit.html?quotationId=${quotationId}`;
+        } else if (category === 'Supply & Installation') {
+            window.location.href = `supply_inst_edit.html?quotationId=${quotationId}`;
+        }else if (subCategory === 'AMC') {
+            window.location.href = `amc_edit.html?quotationId=${quotationId}`;
+        }else if (subCategory === 'Fan') {
+            window.location.href = `fan_edit.html?quotationId=${quotationId}`;
+        }else if (subCategory === 'BOQ') {
+            window.location.href = `boq_edit.html?quotationId=${quotationId}`;
+        }else if (subCategory === 'Spare Parts') {
+            window.location.href = `spare_parts_edit.html?quotationId=${quotationId}`;
+        }else {
+            alert('Category not recognized. No action taken.');
+        }
+    }
+});
+
+document.addEventListener('click', function(event) {
+    if (event.target.classList.contains('generate-btn')) {
+        const projectId = event.target.getAttribute('data-project-id');
+        const projectRow = document.getElementById(`projectRow_${projectId}`);
+        const category = projectRow.querySelector('td:nth-child(6)').textContent.trim();
+        const subcategory = projectRow.querySelector('td:nth-child(7)').textContent.trim();
+        const quotationId = projectRow.querySelector('td:nth-child(3)').textContent.trim();
+
+        let redirectUrl = '';
+
+        // Check for Supply category
+        if (category === 'Supply') {
+            if (subcategory === 'Ducted Split') {
+                redirectUrl = `duct_supply_template.html?quotationId=${quotationId}`;
+            } else if (subcategory === 'Split') {
+                redirectUrl = `duct_supply_template.html?quotationId=${quotationId}`;
+            } else if (subcategory === 'Floorstand') {
+                redirectUrl = `floorstand_template.html?quotationId=${quotationId}`;
+            } else if (subcategory === 'Package Units') {
+                redirectUrl = `packageunit_template.html?quotationId=${quotationId}`;
+            } else if (subcategory === 'Vrf') {
+                redirectUrl = `vrf_template.html?quotationId=${quotationId}`;
+            }
+        }
+        // Check for Villa category
+        else if (category === 'villa') {
+            if (subcategory === 'Ducted Split') {
+                redirectUrl = `duct_villa.html?quotationId=${quotationId}`;
+            } else if (subcategory === 'Split') {
+                redirectUrl = `split_villa.html?quotationId=${quotationId}`;
+            } else if (subcategory === 'Duct&Split') {
+                redirectUrl = `duct_split_villa.html?quotationId=${quotationId}`;
+            } else if (subcategory === 'Package Units') {
+                redirectUrl = `packageunit_template.html?quotationId=${quotationId}`;
+            } else if (subcategory === 'Vrf') {
+                redirectUrl = `vrf_template_villa.html?quotationId=${quotationId}`;
+            }
+        }
+        // Check for Supply & Installation category
+        else if (category === 'Supply & Installation') {
+            if (subcategory === 'Ducted Split') {
+                redirectUrl = `duct_template_si.html?quotationId=${quotationId}`;
+            } else if (subcategory === 'Split') {
+                redirectUrl = `split_template_si.html?quotationId=${quotationId}`;
+            } else if (subcategory === 'Floorstand') {
+                redirectUrl = `floorstand_template_si.html?quotationId=${quotationId}`;
+            } else if (subcategory === 'Cassette') {
+                redirectUrl = `cassette_template_si.html?quotationId=${quotationId}`;
+            } else if (subcategory === 'Split&Floorstand') {
+                redirectUrl = `split_floorstand_template_si.html?quotationId=${quotationId}`;
+            }
+        } else if (subcategory === 'AMC') {
+            redirectUrl = `amc_template.html?quotationId=${quotationId}`;
+        }else if (subcategory === 'Fan') {
+            redirectUrl =  `fan_template.html?quotationId=${quotationId}`;
+        }else if (subcategory === 'BOQ') {
+            redirectUrl =  `boq_template.html?quotationId=${quotationId}`;
+        }else if (subcategory === 'Spare Parts') {
+            redirectUrl =  `spareparts_template.html?quotationId=${quotationId}`;
+        }else {
+            alert('Category or Subcategory not recognized. No action taken.');
+        }
+
+        // Redirect if a valid URL was generated
+        if (redirectUrl) {
+            window.location.href = redirectUrl;
+        }
+    }
+});

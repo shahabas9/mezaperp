@@ -199,17 +199,23 @@ app.delete('/delete-project/:id', async (req, res) => {
 
 // Fetch all projects or search projects by quotation ID
 app.get('/projects', async (req, res) => {
-  const quotationId = req.query.quotation_id;
+  const { quotation_id, customer_name, mobile_number } = req.query;
   let query = `
-      SELECT p.*, c.customer_name,c.mobile_no
+      SELECT p.*, c.customer_name, c.mobile_no
       FROM project p
       JOIN customer c ON p.customer_id = c.customer_id
   `;
   let params = [];
 
-  if (quotationId) {
-      query += ' WHERE p.quotation_id = $1';
-      params = [quotationId];
+  if (quotation_id) {
+      query += ' WHERE p.quotation_id ILIKE $1';
+      params = [quotation_id];
+  } else if (customer_name) {
+      query += ' WHERE c.customer_name ILIKE $1';
+      params = [`%${customer_name}%`]; 
+  } else if (mobile_number) {
+      query += ' WHERE c.mobile_no ILIKE $1';
+      params = [`%${mobile_number}%`];
   }
 
   try {
@@ -220,6 +226,7 @@ app.get('/projects', async (req, res) => {
       res.status(500).send('Server error');
   }
 });
+
 
 
 // Fetch project data for editing
@@ -361,7 +368,7 @@ app.get('/api/duct_template', async (req, res) => {
       JOIN
         supply s ON p.quotation_id = s.quotation_id
       WHERE
-        p.quotation_id = $1 AND p.subcategory = 'duct'
+        p.quotation_id = $1 AND p.subcategory = 'ducted split'
     `, [quotationId]);
 
     res.json({ data: result.rows });
@@ -468,7 +475,7 @@ app.get('/api/packageunit_template', async (req, res) => {
       JOIN
         supply s ON p.quotation_id = s.quotation_id
       WHERE
-        p.quotation_id = $1 AND p.subcategory = 'package_units'
+        p.quotation_id = $1 AND p.subcategory = 'package units'
     `, [quotationId]);
 
     res.json({ data: result.rows });
@@ -667,7 +674,7 @@ app.get('/api/ductsi_template', async (req, res) => {
       JOIN
         supplyandinstallation s ON p.quotation_id = s.quotation_id
       WHERE
-        p.quotation_id = $1 AND p.subcategory = 'duct'
+        p.quotation_id = $1 AND p.subcategory = 'ducted split'
     `, [quotationId]);
 
     if (result.rows.length === 0) {
@@ -923,7 +930,7 @@ app.get('/api/ductvilla_template', async (req, res) => {
       JOIN
         villa s ON p.quotation_id = s.quotation_id
       WHERE
-        p.quotation_id = $1 AND p.subcategory = 'duct'
+        p.quotation_id = $1 AND p.subcategory = 'ducted split'
     `, [quotationId]);
 
     if (result.rows.length === 0) {
@@ -1468,9 +1475,34 @@ app.get('/api/fan_template', async (req, res) => {
 
 // Get all supply data
 app.get('/api/supply_data', async (req, res) => {
-  console.log('Fetching all supply data'); // Debugging line
+  const { quotationId, customerName, mobileNumber } = req.query;
+
+  console.log('Fetching supply and installation data'); // Debugging line
   try {
-      const result = await pool.query('SELECT * FROM supply');
+      let query = `
+          SELECT 
+              p.quotation_id, 
+              c.customer_name, 
+              c.mobile_no AS customer_mobile_number, 
+              p.subcategory 
+          FROM project p
+          JOIN customer c ON p.customer_id = c.customer_id
+          WHERE p.category = 'Supply'
+      `;
+      let queryParams = [];
+
+      if (quotationId) {
+          query += ' AND p.quotation_id = $1';
+          queryParams.push(quotationId);
+      } else if (customerName) {
+          query += ' AND c.customer_name ILIKE $1';
+          queryParams.push(`%${customerName}%`);
+      } else if (mobileNumber) {
+          query += ' AND c.mobile_no = $1';
+          queryParams.push(mobileNumber);
+      }
+
+      const result = await pool.query(query, queryParams);
       console.log('Query result:', result.rows); // Debugging line
       res.json(result.rows);
   } catch (err) {
@@ -1478,6 +1510,7 @@ app.get('/api/supply_data', async (req, res) => {
       res.status(500).send(err.message);
   }
 });
+
 
 // Get supply data by quotation ID
 app.get('/api/supply_data/:quotationId', async (req, res) => {
@@ -1512,49 +1545,75 @@ app.get('/api/supply_edit/:quotationId', async (req, res) => {
 
 // Your save supply endpoint
 app.post('/api/savesupply', async (req, res) => {
-  const { quotation_id, customer_id, supply_data } = req.body;
+  const { quotation_id, customer_id, supply_data, revise } = req.body;
 
-  console.log('Received payload:', req.body);
+  
 
   try {
+    if (revise) {
+      // Existing logic for revising and creating a new quotation ID
+      const originalQuotationId = quotation_id.includes('_RV') ? quotation_id.split('_RV')[0] : quotation_id;
+
+      // Generate a new quotation ID
+      const newQuotationId = generateNewQuotationId(quotation_id);
+
+      // Fetch the original project data
       const projectResult = await pool.query(`
-          SELECT customer_id, project_name, project_type, category, subcategory, salesperson_name, salesperson_contact
-          FROM project
-          WHERE quotation_id = $1
-      `, [quotation_id]);
+        SELECT customer_id, project_name, project_type, category, subcategory, salesperson_name, salesperson_contact
+        FROM project
+        WHERE quotation_id = $1
+      `, [originalQuotationId]);
 
       if (projectResult.rows.length === 0) {
-          console.error('Original quotation ID not found');
-          return res.status(404).send('Original quotation ID not found');
+        console.error('Original quotation ID not found');
+        return res.status(404).send('Original quotation ID not found');
       }
 
       const projectData = projectResult.rows[0];
 
-      const newQuotationId = generateNewQuotationId(quotation_id);
-
-      console.log('New Quotation ID:', newQuotationId);
-
+      // Insert the new project data with the revised quotation ID
       await pool.query(`
-          INSERT INTO project (customer_id, quotation_id, project_name, project_type, category, subcategory, salesperson_name, salesperson_contact)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        INSERT INTO project (customer_id, quotation_id, project_name, project_type, category, subcategory, salesperson_name, salesperson_contact)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       `, [projectData.customer_id, newQuotationId, projectData.project_name, projectData.project_type, projectData.category, projectData.subcategory, projectData.salesperson_name, projectData.salesperson_contact]);
 
+      // Insert the new supply data with the revised quotation ID
       const supplyInsertPromises = supply_data.map(async (row) => {
-          const { type, model, ton, quantity, unit_price, total_price } = row;
-          return pool.query(`
-              INSERT INTO supply (customer_id, quotation_id, type, model, ton, quantity, unit_price, total_price)
-              VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-          `, [customer_id, newQuotationId, type, model, ton, quantity, unit_price, total_price]);
+        const { type, model, ton, quantity, unit_price, total_price } = row;
+        return pool.query(`
+          INSERT INTO supply (customer_id, quotation_id, type, model, ton, quantity, unit_price, total_price)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        `, [customer_id, newQuotationId, type, model, ton, quantity, unit_price, total_price]);
       });
 
       await Promise.all(supplyInsertPromises);
+      return res.status(200).send('Data saved successfully with revised quotation ID');
+    } else {
+      console.log('Received payload:', req.body);
+      // If not revising, update the existing records or insert new ones
+        const upsertPromises = supply_data.map(async (row) => {
+        const {  type,model, ton, quantity, unit_price, total_price,supply_id } = row;
+        if (supply_id) {
+          
+          return pool.query(`
+              UPDATE supply
+              SET type = $4, model = $5, ton = $6, quantity = $7, unit_price = $8, total_price = $9
+              WHERE supply_id = $1 AND customer_id = $2 AND quotation_id = $3
+          `, [supply_id, customer_id, quotation_id, type, model, ton, quantity, unit_price, total_price]);
+      }
+      
+      });
 
-      res.status(200).send('Data saved successfully');
+      await Promise.all(upsertPromises);
+      return res.status(200).send('Data updated or inserted successfully');
+    }
   } catch (error) {
-      console.error('Error inserting data:', error);
-      res.status(500).send('Failed to save data');
+    console.error('Error processing request:', error);
+    return res.status(500).send('Internal server error');
   }
 });
+
+
 
 
 function generateNewQuotationId(quotationId) {
@@ -1569,9 +1628,34 @@ function generateNewQuotationId(quotationId) {
 
 
 app.get('/api/supply_inst_data', async (req, res) => {
-  console.log('Fetching all supply data'); // Debugging line
+  const { quotationId, customerName, mobileNumber } = req.query;
+
+  console.log('Fetching supply and installation data'); // Debugging line
   try {
-      const result = await pool.query('SELECT * FROM supplyandinstallation');
+      let query = `
+          SELECT 
+              p.quotation_id, 
+              c.customer_name, 
+              c.mobile_no AS customer_mobile_number, 
+              p.subcategory 
+          FROM project p
+          JOIN customer c ON p.customer_id = c.customer_id
+          WHERE p.category = 'Supply & Installation'
+      `;
+      let queryParams = [];
+
+      if (quotationId) {
+          query += ' AND p.quotation_id = $1';
+          queryParams.push(quotationId);
+      } else if (customerName) {
+          query += ' AND c.customer_name ILIKE $1';
+          queryParams.push(`%${customerName}%`);
+      } else if (mobileNumber) {
+          query += ' AND c.mobile_no = $1';
+          queryParams.push(mobileNumber);
+      }
+
+      const result = await pool.query(query, queryParams);
       console.log('Query result:', result.rows); // Debugging line
       res.json(result.rows);
   } catch (err) {
@@ -1611,54 +1695,105 @@ app.get('/api/supply_inst_edit/:quotationId', async (req, res) => {
 });
 
 app.post('/api/savesupplyinst', async (req, res) => {
-  const { quotation_id, customer_id, supply_data } = req.body;
+  const { quotation_id, customer_id, supply_data, revise } = req.body;
 
   console.log('Received payload:', req.body);
 
   try {
-      const projectResult = await pool.query(`
-          SELECT customer_id, project_name, project_type, category, subcategory, salesperson_name, salesperson_contact
-          FROM project
-          WHERE quotation_id = $1
-      `, [quotation_id]);
+      const originalQuotationId = quotation_id.includes('_RV') ? quotation_id.split('_RV')[0] : quotation_id;
+      
+      let newQuotationId = quotation_id;
 
-      if (projectResult.rows.length === 0) {
-          console.error('Original quotation ID not found');
-          return res.status(404).send('Original quotation ID not found');
+      if (revise) {
+          // If the user clicked the revise button, generate a new quotation ID
+          newQuotationId = generateNewQuotationId(quotation_id);
+          
+          // Insert the revised data with a new quotation ID
+          const projectResult = await pool.query(`
+              SELECT customer_id, project_name, project_type, category, subcategory, salesperson_name, salesperson_contact
+              FROM project
+              WHERE quotation_id = $1
+          `, [originalQuotationId]);
+
+          if (projectResult.rows.length === 0) {
+              console.error('Original quotation ID not found');
+              return res.status(404).send('Original quotation ID not found');
+          }
+
+          const projectData = projectResult.rows[0];
+
+          // Insert the new project data with the revised quotation ID
+          await pool.query(`
+              INSERT INTO project (customer_id, quotation_id, project_name, project_type, category, subcategory, salesperson_name, salesperson_contact)
+              VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+          `, [projectData.customer_id, newQuotationId, projectData.project_name, projectData.project_type, projectData.category, projectData.subcategory, projectData.salesperson_name, projectData.salesperson_contact]);
+
+          // Insert the new supply and installation data with the revised quotation ID
+          const supplyInsertPromises = supply_data.map(async (row) => {
+              const { type, ton, quantity, unit_price, total_price } = row;
+              return pool.query(`
+                  INSERT INTO supplyandinstallation (customer_id, quotation_id, type, ton, quantity, unit_price, total_price)
+                  VALUES ($1, $2, $3, $4, $5, $6, $7)
+              `, [customer_id, newQuotationId, type, ton, quantity, unit_price, total_price]);
+          });
+
+          await Promise.all(supplyInsertPromises);
+          res.status(200).send('Data saved successfully with revised quotation ID');
+        } else {
+          console.log('Received payload:', req.body);
+          // If not revising, update the existing records or insert new ones
+            const upsertPromises = supply_data.map(async (row) => {
+            const {  type, ton, quantity, unit_price, total_price,supply_id } = row;
+            if (supply_id) {
+              
+              return pool.query(`
+                  UPDATE supplyandinstallation
+                  SET type = $4,  ton = $5, quantity = $6, unit_price = $7, total_price = $8
+                  WHERE supply_id = $1 AND customer_id = $2 AND quotation_id = $3
+              `, [supply_id, customer_id, quotation_id, type, ton, quantity, unit_price, total_price]);
+          }
+          
+          });
+    
+          await Promise.all(upsertPromises);
+          return res.status(200).send('Data updated or inserted successfully');
+        }
+      } catch (error) {
+        console.error('Error processing request:', error);
+        return res.status(500).send('Internal server error');
       }
+    });
 
-      const projectData = projectResult.rows[0];
-
-      const newQuotationId = generateNewQuotationId(quotation_id);
-
-      console.log('New Quotation ID:', newQuotationId);
-
-      await pool.query(`
-          INSERT INTO project (customer_id, quotation_id, project_name, project_type, category, subcategory, salesperson_name, salesperson_contact)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-      `, [projectData.customer_id, newQuotationId, projectData.project_name, projectData.project_type, projectData.category, projectData.subcategory, projectData.salesperson_name, projectData.salesperson_contact]);
-
-      const supplyInsertPromises = supply_data.map(async (row) => {
-          const { type, ton, quantity, unit_price, total_price } = row;
-          return pool.query(`
-              INSERT INTO supplyandinstallation (customer_id, quotation_id, type, ton, quantity, unit_price, total_price)
-              VALUES ($1, $2, $3, $4, $5, $6, $7)
-          `, [customer_id, newQuotationId, type, ton, quantity, unit_price, total_price]);
-      });
-
-      await Promise.all(supplyInsertPromises);
-
-      res.status(200).send('Data saved successfully');
-  } catch (error) {
-      console.error('Error inserting data:', error);
-      res.status(500).send('Failed to save data');
-  }
-});
 
 app.get('/api/villa_data', async (req, res) => {
-  console.log('Fetching all supply data'); // Debugging line
+  const { quotationId, customerName, mobileNumber } = req.query;
+
+  console.log('Fetching villa data'); // Debugging line
   try {
-      const result = await pool.query('SELECT * FROM villa');
+      let query = `
+          SELECT 
+              p.quotation_id, 
+              c.customer_name, 
+              c.mobile_no AS customer_mobile_number, 
+              p.subcategory 
+          FROM project p
+          JOIN customer c ON p.customer_id = c.customer_id
+          WHERE p.category = 'villa'
+      `;
+      let queryParams = [];
+
+      if (quotationId) {
+          query += ' AND p.quotation_id = $1';
+          queryParams.push(quotationId);
+      } else if (customerName) {
+          query += ' AND c.customer_name ILIKE $1';
+          queryParams.push(`%${customerName}%`);
+      } else if (mobileNumber) {
+          query += ' AND c.mobile_no = $1';
+          queryParams.push(mobileNumber);
+      }
+
+      const result = await pool.query(query, queryParams);
       console.log('Query result:', result.rows); // Debugging line
       res.json(result.rows);
   } catch (err) {
@@ -1666,6 +1801,7 @@ app.get('/api/villa_data', async (req, res) => {
       res.status(500).send(err.message);
   }
 });
+
 
 // Get villa data by quotation ID
 app.get('/api/villa_data/:quotationId', async (req, res) => {
@@ -1698,54 +1834,106 @@ app.get('/api/villa_edit/:quotationId', async (req, res) => {
 });
 
 app.post('/api/savevilla', async (req, res) => {
-  const { quotation_id, customer_id, supply_data } = req.body;
+  const { quotation_id, customer_id, supply_data, revise } = req.body;
 
   console.log('Received payload:', req.body);
 
   try {
-      const projectResult = await pool.query(`
-          SELECT customer_id, project_name, project_type, category, subcategory, salesperson_name, salesperson_contact
-          FROM project
-          WHERE quotation_id = $1
-      `, [quotation_id]);
+      const originalQuotationId = quotation_id.includes('_RV') ? quotation_id.split('_RV')[0] : quotation_id;
+      
+      let newQuotationId = quotation_id;
 
-      if (projectResult.rows.length === 0) {
-          console.error('Original quotation ID not found');
-          return res.status(404).send('Original quotation ID not found');
+      if (revise) {
+          // If the user clicked the revise button, generate a new quotation ID
+          newQuotationId = generateNewQuotationId(quotation_id);
+          
+          // Insert the revised data with a new quotation ID
+          const projectResult = await pool.query(`
+              SELECT customer_id, project_name, project_type, category, subcategory, salesperson_name, salesperson_contact
+              FROM project
+              WHERE quotation_id = $1
+          `, [originalQuotationId]);
+
+          if (projectResult.rows.length === 0) {
+              console.error('Original quotation ID not found');
+              return res.status(404).send('Original quotation ID not found');
+          }
+
+          const projectData = projectResult.rows[0];
+
+          // Insert the new project data with the revised quotation ID
+          await pool.query(`
+              INSERT INTO project (customer_id, quotation_id, project_name, project_type, category, subcategory, salesperson_name, salesperson_contact)
+              VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+          `, [projectData.customer_id, newQuotationId, projectData.project_name, projectData.project_type, projectData.category, projectData.subcategory, projectData.salesperson_name, projectData.salesperson_contact]);
+
+          // Insert the new villa data with the revised quotation ID
+          const villaInsertPromises = supply_data.map(async (row) => {
+              const { location, area, type, ton, quantity } = row;
+              return pool.query(`
+                  INSERT INTO villa (customer_id, quotation_id, location, area, type, ton, quantity)
+                  VALUES ($1, $2, $3, $4, $5, $6, $7)
+              `, [customer_id, newQuotationId, location, area, type, ton, quantity]);
+          });
+
+          await Promise.all(villaInsertPromises);
+          res.status(200).send('Data saved successfully with revised quotation ID');
+        } else {
+          console.log('Received payload:', req.body);
+          // If not revising, update the existing records or insert new ones
+            const upsertPromises = supply_data.map(async (row) => {
+            const {  location, area, type, ton, quantity,supply_id } = row;
+            if (supply_id) {
+              
+              return pool.query(`
+                  UPDATE villa
+                  SET location = $4,  area = $5, type = $6, ton = $7, quantity = $8
+                  WHERE supply_id = $1 AND customer_id = $2 AND quotation_id = $3
+              `, [supply_id, customer_id, quotation_id, location, area, type, ton, quantity]);
+          }
+          
+          });
+    
+          await Promise.all(upsertPromises);
+          return res.status(200).send('Data updated or inserted successfully');
+        }
+      } catch (error) {
+        console.error('Error processing request:', error);
+        return res.status(500).send('Internal server error');
       }
+    });
 
-      const projectData = projectResult.rows[0];
 
-      const newQuotationId = generateNewQuotationId(quotation_id);
-
-      console.log('New Quotation ID:', newQuotationId);
-
-      await pool.query(`
-          INSERT INTO project (customer_id, quotation_id, project_name, project_type, category, subcategory, salesperson_name, salesperson_contact)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-      `, [projectData.customer_id, newQuotationId, projectData.project_name, projectData.project_type, projectData.category, projectData.subcategory, projectData.salesperson_name, projectData.salesperson_contact]);
-
-      const supplyInsertPromises = supply_data.map(async (row) => {
-          const { location, area, type, ton, quantity } = row;
-          return pool.query(`
-          INSERT INTO villa (customer_id, quotation_id, location, area, type, ton, quantity)
-          VALUES ($1, $2, $3, $4, $5, $6, $7)
-      `, [customer_id, newQuotationId, location, area, type, ton, quantity]);
-      });
-
-      await Promise.all(supplyInsertPromises);
-
-      res.status(200).send('Data saved successfully');
-  } catch (error) {
-      console.error('Error inserting data:', error);
-      res.status(500).send('Failed to save data');
-  }
-});
 
 app.get('/api/amc_data', async (req, res) => {
-  console.log('Fetching all supply data'); // Debugging line
+  const { quotationId, customerName, mobileNumber } = req.query;
+
+  console.log('Fetching villa data'); // Debugging line
   try {
-      const result = await pool.query('SELECT * FROM amc');
+      let query = `
+          SELECT 
+              p.quotation_id, 
+              c.customer_name, 
+              c.mobile_no AS customer_mobile_number, 
+              p.subcategory 
+          FROM project p
+          JOIN customer c ON p.customer_id = c.customer_id
+          WHERE p.subcategory = 'AMC'
+      `;
+      let queryParams = [];
+
+      if (quotationId) {
+          query += ' AND p.quotation_id = $1';
+          queryParams.push(quotationId);
+      } else if (customerName) {
+          query += ' AND c.customer_name ILIKE $1';
+          queryParams.push(`%${customerName}%`);
+      } else if (mobileNumber) {
+          query += ' AND c.mobile_no = $1';
+          queryParams.push(mobileNumber);
+      }
+
+      const result = await pool.query(query, queryParams);
       console.log('Query result:', result.rows); // Debugging line
       res.json(result.rows);
   } catch (err) {
@@ -1785,49 +1973,74 @@ app.get('/api/amc_edit/:quotationId', async (req, res) => {
 });
 
 app.post('/api/saveamc', async (req, res) => {
-  const { quotation_id, customer_id, supply_data } = req.body;
+  const { quotation_id, customer_id, supply_data, revise } = req.body;
 
   console.log('Received payload:', req.body);
 
   try {
+    const originalQuotationId = quotation_id.includes('_RV') ? quotation_id.split('_RV')[0] : quotation_id;
+
+    let newQuotationId = quotation_id;
+
+    if (revise) {
+      // If the user clicked the revise button, generate a new quotation ID
+      newQuotationId = generateNewQuotationId(quotation_id);
+      
+      // Insert the revised data with a new quotation ID
       const projectResult = await pool.query(`
-          SELECT customer_id, project_name, project_type, category, subcategory, salesperson_name, salesperson_contact
-          FROM project
-          WHERE quotation_id = $1
-      `, [quotation_id]);
+        SELECT customer_id, project_name, project_type, category, subcategory, salesperson_name, salesperson_contact
+        FROM project
+        WHERE quotation_id = $1
+      `, [originalQuotationId]);
 
       if (projectResult.rows.length === 0) {
-          console.error('Original quotation ID not found');
-          return res.status(404).send('Original quotation ID not found');
+        console.error('Original quotation ID not found');
+        return res.status(404).send('Original quotation ID not found');
       }
 
       const projectData = projectResult.rows[0];
 
-      const newQuotationId = generateNewQuotationId(quotation_id);
-
-      console.log('New Quotation ID:', newQuotationId);
-
+      // Insert the new project data with the revised quotation ID
       await pool.query(`
-          INSERT INTO project (customer_id, quotation_id, project_name, project_type, category, subcategory, salesperson_name, salesperson_contact)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        INSERT INTO project (customer_id, quotation_id, project_name, project_type, category, subcategory, salesperson_name, salesperson_contact)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       `, [projectData.customer_id, newQuotationId, projectData.project_name, projectData.project_type, projectData.category, projectData.subcategory, projectData.salesperson_name, projectData.salesperson_contact]);
 
-      const supplyInsertPromises = supply_data.map(async (row) => {
-          const {  type, quantity } = row;
-          return pool.query(`
+      // Insert the new AMC data with the revised quotation ID
+      const amcInsertPromises = supply_data.map(async (row) => {
+        const { type,  quantity } = row;
+        return pool.query(`
           INSERT INTO amc (customer_id, quotation_id, type, quantity)
           VALUES ($1, $2, $3, $4)
-      `, [customer_id, newQuotationId, type, quantity]);
+        `, [customer_id, newQuotationId, type, quantity]);
       });
 
-      await Promise.all(supplyInsertPromises);
+      await Promise.all(amcInsertPromises);
+      res.status(200).send('Data saved successfully with revised quotation ID');
+    } else {
+      // If not revising, update the existing records or insert new ones
+      const upsertPromises = supply_data.map(async (row) => {
+        const { type, quantity, supply_id } = row;
+        if (supply_id) {
+          // Update existing record
+          return pool.query(`
+            UPDATE amc
+            SET type = $3, quantity = $4
+            WHERE supply_id = $1 AND customer_id = $2 AND quotation_id = $5
+          `, [supply_id, customer_id, type, quantity, quotation_id]);
+        } 
+      });
 
-      res.status(200).send('Data saved successfully');
+      await Promise.all(upsertPromises);
+      res.status(200).send('Data updated or inserted successfully');
+    }
   } catch (error) {
-      console.error('Error inserting data:', error);
-      res.status(500).send('Failed to save data');
+    console.error('Error processing request:', error);
+    return res.status(500).send('Internal server error');
   }
 });
+
+
 
 app.get('/api/boq_data', async (req, res) => {
   console.log('Fetching all supply data'); // Debugging line
@@ -1872,49 +2085,74 @@ app.get('/api/boq_edit/:quotationId', async (req, res) => {
 });
 
 app.post('/api/saveboq', async (req, res) => {
-  const { quotation_id, customer_id, supply_data } = req.body;
+  const { quotation_id, customer_id, supply_data, revise } = req.body;
 
   console.log('Received payload:', req.body);
 
   try {
+    const originalQuotationId = quotation_id.includes('_RV') ? quotation_id.split('_RV')[0] : quotation_id;
+
+    let newQuotationId = quotation_id;
+
+    if (revise) {
+      // If the user clicked the revise button, generate a new quotation ID
+      newQuotationId = generateNewQuotationId(quotation_id);
+      
+      // Insert the revised data with a new quotation ID
       const projectResult = await pool.query(`
-          SELECT customer_id, project_name, project_type, category, subcategory, salesperson_name, salesperson_contact
-          FROM project
-          WHERE quotation_id = $1
-      `, [quotation_id]);
+        SELECT customer_id, project_name, project_type, category, subcategory, salesperson_name, salesperson_contact
+        FROM project
+        WHERE quotation_id = $1
+      `, [originalQuotationId]);
 
       if (projectResult.rows.length === 0) {
-          console.error('Original quotation ID not found');
-          return res.status(404).send('Original quotation ID not found');
+        console.error('Original quotation ID not found');
+        return res.status(404).send('Original quotation ID not found');
       }
 
       const projectData = projectResult.rows[0];
 
-      const newQuotationId = generateNewQuotationId(quotation_id);
-
-      console.log('New Quotation ID:', newQuotationId);
-
+      // Insert the new project data with the revised quotation ID
       await pool.query(`
-          INSERT INTO project (customer_id, quotation_id, project_name, project_type, category, subcategory, salesperson_name, salesperson_contact)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        INSERT INTO project (customer_id, quotation_id, project_name, project_type, category, subcategory, salesperson_name, salesperson_contact)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       `, [projectData.customer_id, newQuotationId, projectData.project_name, projectData.project_type, projectData.category, projectData.subcategory, projectData.salesperson_name, projectData.salesperson_contact]);
 
-      const supplyInsertPromises = supply_data.map(async (row) => {
-          const {supply, installation, total_price} = row;
-          return pool.query(`
+      // Insert the new BOQ data with the revised quotation ID
+      const boqInsertPromises = supply_data.map(async (row) => {
+        const { supply, installation, total_price } = row;
+        return pool.query(`
           INSERT INTO boq (customer_id, quotation_id, supply_amount, installation_amount, total_amount)
-          VALUES ($1, $2, $3, $4,$5)
-      `, [customer_id, newQuotationId, supply, installation, total_price]);
+          VALUES ($1, $2, $3, $4, $5)
+        `, [customer_id, newQuotationId, supply, installation, total_price]);
       });
 
-      await Promise.all(supplyInsertPromises);
+      await Promise.all(boqInsertPromises);
+      res.status(200).send('Data saved successfully with revised quotation ID');
+    } else {
+      // If not revising, update the existing records or insert new ones
+      const upsertPromises = supply_data.map(async (row) => {
+        const { supply, installation, total_price, supply_id } = row;  // Assuming 'boq_id' is the equivalent to 'supply_id'
+        if (supply_id) {
+          // Update existing record
+          return pool.query(`
+            UPDATE boq
+            SET supply_amount = $3, installation_amount = $4, total_amount = $5
+            WHERE supply_id = $1 AND customer_id = $2 AND quotation_id = $6
+          `, [supply_id, customer_id, supply, installation, total_price, quotation_id]);
+        }
+      });
 
-      res.status(200).send('Data saved successfully');
+      await Promise.all(upsertPromises);
+      res.status(200).send('Data updated or inserted successfully');
+    }
   } catch (error) {
-      console.error('Error inserting data:', error);
-      res.status(500).send('Failed to save data');
+    console.error('Error processing request:', error);
+    return res.status(500).send('Internal server error');
   }
 });
+
+
 
 app.get('/api/sp_data', async (req, res) => {
   console.log('Fetching all supply data'); // Debugging line
@@ -1959,49 +2197,79 @@ app.get('/api/sp_edit/:quotationId', async (req, res) => {
 });
 
 app.post('/api/savesp', async (req, res) => {
-  const { quotation_id, customer_id, supply_data } = req.body;
+  const { quotation_id, customer_id, supply_data, revise } = req.body;
 
   console.log('Received payload:', req.body);
 
   try {
+    const originalQuotationId = quotation_id.includes('_RV') ? quotation_id.split('_RV')[0] : quotation_id;
+
+    let newQuotationId = quotation_id;
+
+    if (revise) {
+      // If the user clicked the revise button, generate a new quotation ID
+      newQuotationId = generateNewQuotationId(quotation_id);
+      
+      // Insert the revised data with a new quotation ID
       const projectResult = await pool.query(`
-          SELECT customer_id, project_name, project_type, category, subcategory, salesperson_name, salesperson_contact
-          FROM project
-          WHERE quotation_id = $1
-      `, [quotation_id]);
+        SELECT customer_id, project_name, project_type, category, subcategory, salesperson_name, salesperson_contact
+        FROM project
+        WHERE quotation_id = $1
+      `, [originalQuotationId]);
 
       if (projectResult.rows.length === 0) {
-          console.error('Original quotation ID not found');
-          return res.status(404).send('Original quotation ID not found');
+        console.error('Original quotation ID not found');
+        return res.status(404).send('Original quotation ID not found');
       }
 
       const projectData = projectResult.rows[0];
 
-      const newQuotationId = generateNewQuotationId(quotation_id);
-
-      console.log('New Quotation ID:', newQuotationId);
-
+      // Insert the new project data with the revised quotation ID
       await pool.query(`
-          INSERT INTO project (customer_id, quotation_id, project_name, project_type, category, subcategory, salesperson_name, salesperson_contact)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        INSERT INTO project (customer_id, quotation_id, project_name, project_type, category, subcategory, salesperson_name, salesperson_contact)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       `, [projectData.customer_id, newQuotationId, projectData.project_name, projectData.project_type, projectData.category, projectData.subcategory, projectData.salesperson_name, projectData.salesperson_contact]);
 
+      // Insert the new spare parts data with the revised quotation ID
       const supplyInsertPromises = supply_data.map(async (row) => {
-          const {type, model,quantity, unit_price,total_price} = row;
-          return pool.query(`
-          INSERT INTO spare_parts (customer_id, quotation_id, type, model,quantity, unit_price,total_price)
-          VALUES ($1, $2, $3, $4,$5,$6,$7)
-      `, [customer_id, newQuotationId, type, model,quantity, unit_price,total_price]);
+        const { type, model, quantity, unit_price, total_price } = row;
+        return pool.query(`
+          INSERT INTO spare_parts (customer_id, quotation_id, type, model, quantity, unit_price, total_price)
+          VALUES ($1, $2, $3, $4, $5, $6, $7)
+        `, [customer_id, newQuotationId, type, model, quantity, unit_price, total_price]);
       });
 
       await Promise.all(supplyInsertPromises);
+      res.status(200).send('Data saved successfully with revised quotation ID');
+    } else {
+      // If not revising, update the existing records or insert new ones
+      const upsertPromises = supply_data.map(async (row) => {
+        const { type, model, quantity, unit_price, total_price, supply_id } = row;
+        if (supply_id) {
+          // Update existing record
+          return pool.query(`
+            UPDATE spare_parts
+            SET type = $3, model = $4, quantity = $5, unit_price = $6, total_price = $7
+            WHERE supply_id = $1 AND customer_id = $2 AND quotation_id = $8
+          `, [supply_id, customer_id, type, model, quantity, unit_price, total_price, quotation_id]);
+        } else {
+          // Insert new record
+          return pool.query(`
+            INSERT INTO spare_parts (customer_id, quotation_id, type, model, quantity, unit_price, total_price)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
+          `, [customer_id, quotation_id, type, model, quantity, unit_price, total_price]);
+        }
+      });
 
-      res.status(200).send('Data saved successfully');
+      await Promise.all(upsertPromises);
+      res.status(200).send('Data updated or inserted successfully');
+    }
   } catch (error) {
-      console.error('Error inserting data:', error);
-      res.status(500).send('Failed to save data');
+    console.error('Error processing request:', error);
+    return res.status(500).send('Internal server error');
   }
 });
+
 
 app.get('/api/fan_data', async (req, res) => {
   console.log('Fetching all supply data'); // Debugging line
@@ -2046,49 +2314,79 @@ app.get('/api/fan_edit/:quotationId', async (req, res) => {
 });
 
 app.post('/api/savefan', async (req, res) => {
-  const { quotation_id, customer_id, supply_data } = req.body;
+  const { quotation_id, customer_id, supply_data, revise } = req.body;
 
   console.log('Received payload:', req.body);
 
   try {
+    const originalQuotationId = quotation_id.includes('_RV') ? quotation_id.split('_RV')[0] : quotation_id;
+
+    let newQuotationId = quotation_id;
+
+    if (revise) {
+      // If the user clicked the revise button, generate a new quotation ID
+      newQuotationId = generateNewQuotationId(quotation_id);
+      
+      // Insert the revised data with a new quotation ID
       const projectResult = await pool.query(`
-          SELECT customer_id, project_name, project_type, category, subcategory, salesperson_name, salesperson_contact
-          FROM project
-          WHERE quotation_id = $1
-      `, [quotation_id]);
+        SELECT customer_id, project_name, project_type, category, subcategory, salesperson_name, salesperson_contact
+        FROM project
+        WHERE quotation_id = $1
+      `, [originalQuotationId]);
 
       if (projectResult.rows.length === 0) {
-          console.error('Original quotation ID not found');
-          return res.status(404).send('Original quotation ID not found');
+        console.error('Original quotation ID not found');
+        return res.status(404).send('Original quotation ID not found');
       }
 
       const projectData = projectResult.rows[0];
 
-      const newQuotationId = generateNewQuotationId(quotation_id);
-
-      console.log('New Quotation ID:', newQuotationId);
-
+      // Insert the new project data with the revised quotation ID
       await pool.query(`
-          INSERT INTO project (customer_id, quotation_id, project_name, project_type, category, subcategory, salesperson_name, salesperson_contact)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        INSERT INTO project (customer_id, quotation_id, project_name, project_type, category, subcategory, salesperson_name, salesperson_contact)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       `, [projectData.customer_id, newQuotationId, projectData.project_name, projectData.project_type, projectData.category, projectData.subcategory, projectData.salesperson_name, projectData.salesperson_contact]);
 
+      // Insert the new fan data with the revised quotation ID
       const supplyInsertPromises = supply_data.map(async (row) => {
-          const {type, location,quantity, unit_price,total_price} = row;
-          return pool.query(`
-          INSERT INTO fans (customer_id, quotation_id, type, location,quantity, unit_price,total_price)
-          VALUES ($1, $2, $3, $4,$5,$6,$7)
-      `, [customer_id, newQuotationId, type, location,quantity, unit_price,total_price]);
+        const { type, location, quantity, unit_price, total_price } = row;
+        return pool.query(`
+          INSERT INTO fans (customer_id, quotation_id, type, location, quantity, unit_price, total_price)
+          VALUES ($1, $2, $3, $4, $5, $6, $7)
+        `, [customer_id, newQuotationId, type, location, quantity, unit_price, total_price]);
       });
 
       await Promise.all(supplyInsertPromises);
+      res.status(200).send('Data saved successfully with revised quotation ID');
+    } else {
+      // If not revising, update the existing records or insert new ones
+      const upsertPromises = supply_data.map(async (row) => {
+        const { type, location, quantity, unit_price, total_price, supply_id } = row;
+        if (supply_id) {
+          // Update existing record
+          return pool.query(`
+            UPDATE fans
+            SET type = $3, location = $4, quantity = $5, unit_price = $6, total_price = $7
+            WHERE supply_id = $1 AND customer_id = $2 AND quotation_id = $8
+          `, [supply_id, customer_id, type, location, quantity, unit_price, total_price, quotation_id]);
+        } else {
+          // Insert new record
+          return pool.query(`
+            INSERT INTO fans (customer_id, quotation_id, type, location, quantity, unit_price, total_price)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
+          `, [customer_id, quotation_id, type, location, quantity, unit_price, total_price]);
+        }
+      });
 
-      res.status(200).send('Data saved successfully');
+      await Promise.all(upsertPromises);
+      res.status(200).send('Data updated or inserted successfully');
+    }
   } catch (error) {
-      console.error('Error inserting data:', error);
-      res.status(500).send('Failed to save data');
+    console.error('Error processing request:', error);
+    return res.status(500).send('Internal server error');
   }
 });
+
 
 app.get('/api/vrf_villa_template', async (req, res) => {
   const { quotationId } = req.query;

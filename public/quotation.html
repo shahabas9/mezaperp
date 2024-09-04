@@ -7,26 +7,30 @@
     <link rel="stylesheet" href="../stylesheet/Dashboard.css" />
 </head>
 <body>
-    <h1 class="header">Quotation</h1>
+    <div class="header-content">
+        <button onclick="goBack()" class="submit">Back</button>
+        <h1 class="header">Quotation</h1>
+    </div>
     <div class="container">
        
         <div class="customer">
-            <img src="./images/project.png" alt="project">
+            <a href="./customer_project.html">
+            <img src="./images/project.png" alt="project"></a>
             <a href="./customer_project.html">Quotation Project Data</a>
         </div>
         <div class="customer">
-            <img src="./images/quotation_details.png" alt="quotation_details">
-            <a href="./quotation_details.html">Quotation Data Addition</a>
+            <a href="./quotation_details.html">
+            <img src="./images/quotation_details.png" alt="quotation_details"></a>
+            <a href="./quotation_details.html">New Quotation</a>
         </div>
-        <div class="customer">
-            <img src="./images/data_viewer.svg" alt="quotation_data_view">
-            <a href="./data_viewing.html">Quotation Data View/Edit</a>
-        </div>
-        <div class="customer">
-            <img src="./images/Get Quotes.png" alt="quotation_generation">
-            <a href="./quotation_generation.html">Quotation Generation</a>
-        </div>
+        
+        
        </div> 
     
 </body>
+<script>
+    function goBack() {
+    window.history.back();
+}
+</script>
 </html>

@@ -227,3 +227,18 @@ const discountInput = document.getElementById('discountInput');
         }
     }    
     
+document.getElementById('printButton').addEventListener('click', function() {
+    // Fetch the quotation ID and customer name
+    const quotationId = document.getElementById('refNo').textContent.trim();
+    const customerName = document.getElementById('customerName').textContent.trim();
+
+    // Set the document title to the desired filename format
+    document.title = `${quotationId}_${customerName}`;
+
+    // Trigger the print dialog
+    window.print();
+});
+
+function goBack() {
+    window.history.back();
+}

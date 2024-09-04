@@ -1,18 +1,11 @@
 function updateButtons() {
-    var rows = document.querySelectorAll('#supplyTable tbody tr');
-    rows.forEach(function(row, index) {
-        var actionCell = row.querySelector('td:last-child');
-        actionCell.innerHTML = '';
-        
-        if (rows.length === 1) {
-            actionCell.innerHTML = '<button onclick="addRow(this)">+</button>';
-        } else if (index === 0) {
-            actionCell.innerHTML = '<button onclick="addRow(this)">+</button>';
-        } else if (index === rows.length - 1) {
-            actionCell.innerHTML = '<button onclick="addRow(this)">+</button> <button onclick="deleteRow(this)">-</button>';
-        } else {
-            actionCell.innerHTML = '<button onclick="deleteRow(this)">-</button>';
-        }
+    const rows = document.querySelectorAll('#supplyTable tbody tr');
+    rows.forEach((row) => {
+        const actionCell = row.querySelector('td:last-child');
+        actionCell.innerHTML = `
+            <button type="button" onclick="addRow(this)">+</button>
+            <button type="button" onclick="deleteRow(this)">-</button>
+        `;
     });
 }
 
@@ -23,27 +16,61 @@ function deleteRow(button) {
     updateButtons();
 }
 
-function addRow(button) {
-    var table = document.getElementById("supplyTable").getElementsByTagName('tbody')[0];
-    var newRow = table.insertRow(table.rows.length);
+function addRow(button, record = {}) {
+    const table = document.getElementById("supplyTable").getElementsByTagName('tbody')[0];
+    const newRow = table.insertRow(button ? button.parentNode.parentNode.rowIndex : table.rows.length);
 
-    var cell1 = newRow.insertCell(0);
-    var cell2 = newRow.insertCell(1);
-    var cell3 = newRow.insertCell(2);
-    var cell4 = newRow.insertCell(3);
-    var cell5 = newRow.insertCell(4);
-    var cell6 = newRow.insertCell(5);
+    const cell1 = newRow.insertCell(0);
+    const cell2 = newRow.insertCell(1);
+    const cell3 = newRow.insertCell(2);
+    const cell4 = newRow.insertCell(3);
+    const cell5 = newRow.insertCell(4);
+    const cell6 = newRow.insertCell(5);
+    const cell7 = newRow.insertCell(6);
 
-    cell1.innerHTML = '<select name="Type[]"><option value="VD-15">VD-15</option><option value="VD-10">VD-10</option><option value="lineo-100QVO">lineo-100QVO</option><option value="CA-100MD">CA-100MD</option></select>';
-    cell2.innerHTML = '<input type="text" name="Location[]""></input>';
-    cell3.innerHTML = '<input type="number" name="Quantity[]" oninput="updateTotal(this)">';
-    cell4.innerHTML = '<input type="number" name="Unit Price[]" oninput="updateTotal(this)">';
-    cell5.innerHTML = '<input type="number" name="Total Price[]" readonly>';
-    cell6.innerHTML = '<button onclick="addRow(this)">+</button> <button onclick="deleteRow(this)">-</button>';
+    const typeOptions = `
+        <option value="VD-15">VD-15</option>
+        <option value="VD-10">VD-10</option>
+        <option value="lineo-100QVO">lineo-100QVO</option>
+        <option value="CA-100MD">CA-100MD</option>
+    `;
 
+    cell1.innerHTML = `<select name="Type[]">${typeOptions}</select>`;
+    cell2.innerHTML = `<input type="text" name="Location[]" value="${record.location || ''}">`;
+    cell3.innerHTML = `<input type="number" name="Quantity[]" value="${record.quantity || ''}" oninput="updateTotal(this)">`;
+    cell4.innerHTML = `<input type="number" name="Unit Price[]" value="${record.unit_price || ''}" oninput="updateTotal(this)">`;
+    cell5.innerHTML = `<input type="number" name="Total Price[]" value="${record.total_price || ''}" readonly>`;
+    cell7.innerHTML = `
+        <button type="button" onclick="addRow(this)">+</button>
+        <button type="button" onclick="deleteRow(this)">-</button>
+    `;
+    const supplyIdValue = record.supply_id || 'not found';
+    cell6.innerHTML = `<input type="readonly" name="supplyId[]" value="${supplyIdValue} "readonly>`;
+    cell6.style.display = 'none';
+
+
+    // If record data exists, set the appropriate values
+    if (record.type) {
+        cell1.querySelector('select[name="Type[]"]').value = record.type;
+    }
+    if (record.location) {
+        cell2.querySelector('input[name="Location[]"]').value = record.location;
+    }
+    if (record.quantity) {
+        cell3.querySelector('input[name="Quantity[]"]').value = record.quantity;
+    }
+    if (record.unit_price) {
+        cell4.querySelector('input[name="Unit Price[]"]').value = record.unit_price;
+    }
+    if (record.total_price) {
+        cell5.querySelector('input[name="Total Price[]"]').value = record.total_price;
+    }
 
     updateButtons();
 }
+
+// Assuming updateTotal and updateButtons are functions already defined elsewhere in your script
+
 
 function updateTotal(element) {
     var row = element.parentNode.parentNode;
@@ -66,6 +93,9 @@ async function handleSubmit(event) {
     const supplyData = [];
 
     tableRows.forEach((row, index) => {
+        console.log(`Row ${index} HTML:`, row.innerHTML);
+        const supplyIdElement = row.querySelector('input[name="supplyId[]"]');
+        console.log(`Row ${index} supply_id value:`, supplyIdElement ? supplyIdElement.value : 'not found');
         const typeElement = row.querySelector('select[name="Type[]"]');
         const locationElement = row.querySelector('input[name="Location[]"]');
         const quantityElement = row.querySelector('input[name="Quantity[]"]');
@@ -85,11 +115,12 @@ async function handleSubmit(event) {
         // Ensure all elements are found before accessing their values
         if (typeElement && locationElement && quantityElement && unitPriceElement && totalPriceElement) {
             supplyData.push({
-                type: typeElement.value,
-                location: locationElement.value,
-                quantity: quantityElement.value,
-                unit_price: unitPriceElement.value,
-                total_price: totalPriceElement.value
+                supply_id: supplyIdElement ? supplyIdElement.value : null,
+                type: typeElement ? typeElement.value : null,
+                location: locationElement ? locationElement.value :null,
+                quantity: quantityElement ? quantityElement.value : null,
+                unit_price: unitPriceElement ? unitPriceElement.value : null,
+                total_price: totalPriceElement ? totalPriceElement.value : null
             });
         } else {
             console.error(`Error: Missing elements in row ${index}`);

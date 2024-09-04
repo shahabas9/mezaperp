@@ -23,7 +23,7 @@ function deleteRow(button) {
     updateButtons();
 }
 
-function addRow(button) {
+function addRow(button,record = {}) {
     var table = document.getElementById("supplyTable").getElementsByTagName('tbody')[0];
     var newRow = table.insertRow(table.rows.length);
 
@@ -33,6 +33,7 @@ function addRow(button) {
     var cell4 = newRow.insertCell(3);
     var cell5 = newRow.insertCell(4);
     var cell6 = newRow.insertCell(5);
+    var cell7 = newRow.insertCell(6);
     
 
     cell1.innerHTML = '<select name="Type[]" onchange="updateModelOptions(this)"><option value="Compressor">Compressor</option><option value="INVERTER PCB">INVERTER PCB</option><option value="Wireless Remote">Wireless Remote</option><option value="Outdoor Motor Rewinding">Outdoor Motor Rewinding</option><option value="Outdoor Motor Bearing">Outdoor Motor Bearing</option><option value="Outdoor Motor Brush">Outdoor Motor Brush</option><option value="Filter Drier">Filter Drier</option><option value="Splite AC Blade">Splite AC Blade</option><option value="Contractor">Contractor</option><option value="Fan Belt">Fan Belt</option><option value="Fan Motor Rewinding">Fan Motor Rewinding</option><option value="PCB Board">PCB Board</option><option value="Exhaust Fan">Exhaust Fan</option><option value="Motor for Duct Split Unit">Motor for Duct Split Unit</option><option value="Propeller Fan for Duct Split Unit">Propeller Fan for Duct Split Unit</option>';
@@ -40,10 +41,27 @@ function addRow(button) {
     cell3.innerHTML = '<input type="number" name="Quantity[]" oninput="updateTotal(this)">';
     cell4.innerHTML = '<input type="number" name="Unit Price[]" oninput="updateTotal(this)">';
     cell5.innerHTML = '<input type="number" name="Total Price[]" readonly>';
-    cell6.innerHTML = '<button onclick="addRow(this)">+</button> <button onclick="deleteRow(this)">-</button>';
-
+    cell7.innerHTML = '<button onclick="addRow(this)">+</button> <button onclick="deleteRow(this)">-</button>';
+    const supplyIdValue = record.supply_id || 'not found';
+    cell6.innerHTML = `<input type="readonly" name="supplyId[]" value="${supplyIdValue} "readonly>`;
+    cell6.style.display = 'none';
     // Initialize Model options based on the default Type value
     updateModelOptions(newRow.querySelector('select[name="Type[]"]'));
+    
+    if (record.type) cell1.querySelector('select[name="Type[]"]').value = record.type;
+    updateModelOptions(cell1.querySelector('select[name="Type[]"]'), record.model);
+    if (record.model) cell2.querySelector('select[name="Model[]"]').value = record.model;
+    
+    if (record.quantity) {
+        cell3.querySelector('input[name="Quantity[]"]').value = record.quantity;
+    }
+    if (record.unit_price) {
+        cell4.querySelector('input[name="Unit Price[]"]').value = record.unit_price;
+    }
+    if (record.total_price) {
+        cell5.querySelector('input[name="Total Price[]"]').value = record.total_price;
+    }
+
     
 
     updateButtons();
@@ -101,11 +119,15 @@ async function handleSubmit(event) {
 
     const customerId = document.getElementById('customer').value;
     const quotationId = document.getElementById('quotation').value;
+    const revise = document.getElementById('revise').checked;
     const tableRows = document.querySelectorAll('#supplyTable tbody tr');
 
     const supplyData = [];
 
     tableRows.forEach((row, index) => {
+        console.log(`Row ${index} HTML:`, row.innerHTML);
+        const supplyIdElement = row.querySelector('input[name="supplyId[]"]');
+        console.log(`Row ${index} supply_id value:`, supplyIdElement ? supplyIdElement.value : 'not found');
         const typeElement = row.querySelector('select[name="Type[]"]');
         const modelElement = row.querySelector('select[name="Model[]"]');
         const quantityElement = row.querySelector('input[name="Quantity[]"]');
@@ -124,21 +146,28 @@ async function handleSubmit(event) {
         // Ensure all elements are found before accessing their values
         if (typeElement && modelElement && quantityElement && unitPriceElement && totalPriceElement) {
             supplyData.push({
-                type: typeElement.value,
-                model: modelElement.value,
-                quantity: quantityElement.value,
-                unit_price: unitPriceElement.value,
-                total_price: totalPriceElement.value
+                supply_id: supplyIdElement ? supplyIdElement.value : 'not found',
+                type: typeElement ? typeElement.value : 'not found',
+                model: modelElement ? modelElement.value : 'not found',
+                quantity: quantityElement ? quantityElement.value : 'not found',
+                unit_price: unitPriceElement ? unitPriceElement.value : 'not found',
+                total_price: totalPriceElement ? totalPriceElement.value : 'not found'
             });
         } else {
             console.error(`Error: Missing elements in row ${index}`);
         }
     });
 
+    if (supplyData.length === 0) {
+        alert('Please fill in all fields before submitting.');
+        return;
+    }
+
     const payload = {
         quotation_id: quotationId,
         customer_id: customerId,
-        supply_data: supplyData
+        supply_data: supplyData,
+        revise: revise // Added revise to payload
     };
 
     console.log('Submitting payload:', payload);

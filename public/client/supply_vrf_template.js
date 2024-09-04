@@ -77,3 +77,19 @@ function displayTotalSum(data) {
     const totalSumContainer = document.getElementById('totalSumContainer');
     totalSumContainer.innerHTML = `<b>Total Amount: QAR ${totalSum.toLocaleString()}/-</b>`;
 }
+
+document.getElementById('printButton').addEventListener('click', function() {
+    // Fetch the quotation ID and customer name
+    const quotationId = document.getElementById('refNo').textContent.trim();
+    const customerName = document.getElementById('projectName').textContent.trim();
+
+    // Set the document title to the desired filename format
+    document.title = `${quotationId}_${customerName}`;
+
+    // Trigger the print dialog
+    window.print();
+});
+
+function goBack() {
+    window.history.back();
+}

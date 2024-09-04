@@ -90,6 +90,9 @@ table {
   #printButton {
       display: none;
   }
+  #backButton {
+    display: none;
+}
 }
 
 @media print {

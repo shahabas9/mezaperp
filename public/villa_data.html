@@ -7,18 +7,20 @@
     <link rel="stylesheet" href="./stylesheet/customer_project.css" />
 </head>
 <body>
+    <button onclick="goBack()" style="padding: 10px 14px;">Back</button>
+    <button id="homebutton"><a href="./Dashboard.html"  class="button-link">Home</a></button>
     <div class="container">
         <input type="text" id="searchInput" placeholder="Enter Quotation ID" />
+        <input type="text" id="searchName" placeholder="Enter customer name" />
+        <input type="text" id="searchMobile" placeholder="Enter mobile number" />
         <button id="searchBtn">Search</button>
         <table id="quotationTable">
             <thead>
                 <tr>
                     <th>Quotation ID</th>
-                    <th>Location</th>
-                    <th>Serving Area</th>
-                    <th>Description</th>
-                    <th>TON</th>
-                    <th>Quantity</th>
+                    <th>Customer Name</th>
+                    <th>Customer Mobile Number</th>
+                    <th>Subcategory</th>
                     <th>Action</th> <!-- Action buttons column -->
                 </tr>
             <tbody id="quotationTableBody">

@@ -1,8 +1,21 @@
-h1{
-   color: #0a2a64; 
-   
-   text-transform: uppercase;
+
+
+.header {
+    color: #0a2a64; 
+    text-transform: uppercase;
+    margin: 0; /* Remove default margin for better alignment */
 }
+
+.submit {
+    background-color: #45a049;
+    height: 35px;
+    width: 100px;
+    color: white; /* Ensure the text color is white */
+    border: none; /* Remove default button borders */
+    cursor: pointer; /* Change cursor on hover */
+    font-size: 14px; /* Adjust font size if needed */
+}
+
 body{
     background-color: #10393d;
     font-family: Verdana, Geneva, Tahoma, sans-serif;

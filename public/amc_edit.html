@@ -17,6 +17,9 @@
 
             <label for="quotation">Quotation ID:</label>
             <select name="quotation" id="quotation"></select>
+
+            <label for="revise">Revise Quotation ID:</label>
+            <input type="radio" id="revise" name="revise" value="yes">
         </div>
         <div>
             <table id="supplyTable">
@@ -43,6 +46,9 @@
                         
                         <td>
                             <input type="number" name="Quantity[]">
+                        </td>
+                        <td>
+                            <input type="number" name="supplyId[]" value="{{supply_id}}" readonly>
                         </td>
                         
                         <td>

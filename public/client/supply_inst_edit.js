@@ -41,6 +41,15 @@ function populateForm(data) {
     data.forEach(record => {
         addRow(null, record);
     });
+    const rows = tableBody.querySelectorAll('tr');
+    rows.forEach(row => {
+        const modelSelect = row.querySelector('select[name="Type[]"]');
+        const tonSelect = row.querySelector('select[name="TON[]"]');
+        
+        if (modelSelect && tonSelect) {
+            updateTonOptions(modelSelect, tonSelect.value);
+        }
+    });
 
     updateButtons();
 }
@@ -49,19 +58,12 @@ window.onload = fetchSupplyData;
 
 function updateButtons() {
     const rows = document.querySelectorAll('#supplyInstTable tbody tr');
-    rows.forEach((row, index) => {
+    rows.forEach((row) => {
         const actionCell = row.querySelector('td:last-child');
-        actionCell.innerHTML = '';
-
-        if (rows.length === 1) {
-            actionCell.innerHTML = '<button type="button" onclick="addRow(this)">+</button>';
-        } else if (index === 0) {
-            actionCell.innerHTML = '<button type="button" onclick="addRow(this)">+</button>';
-        } else if (index === rows.length - 1) {
-            actionCell.innerHTML = '<button type="button" onclick="addRow(this)">+</button> <button type="button" onclick="deleteRow(this)">-</button>';
-        } else {
-            actionCell.innerHTML = '<button type="button" onclick="deleteRow(this)">-</button>';
-        }
+        actionCell.innerHTML = `
+            <button type="button" onclick="addRow(this)">+</button>
+            <button type="button" onclick="deleteRow(this)">-</button>
+        `;
     });
 }
 
@@ -72,61 +74,121 @@ function deleteRow(button) {
     updateButtons();
 }
 
-function addRow(button) {
-    var table = document.getElementById("supplyInstTable").getElementsByTagName('tbody')[0];
-    var newRow = table.insertRow(table.rows.length);
+function addRow(button, record = {}) {
+    const table = document.getElementById("supplyInstTable").getElementsByTagName('tbody')[0];
+    const newRow = table.insertRow(button ? button.parentNode.parentNode.rowIndex : table.rows.length);
 
-    var cell1 = newRow.insertCell(0);
-    var cell2 = newRow.insertCell(1);
-    var cell3 = newRow.insertCell(2);
-    var cell4 = newRow.insertCell(3);
-    var cell5 = newRow.insertCell(4);
-    var cell6 = newRow.insertCell(5);
+    const cell1 = newRow.insertCell(0);
+    const cell2 = newRow.insertCell(1);
+    const cell3 = newRow.insertCell(2);
+    const cell4 = newRow.insertCell(3);
+    const cell5 = newRow.insertCell(4);
+    const cell6 = newRow.insertCell(5);
+    const cell7 = newRow.insertCell(6);
 
-    cell1.innerHTML = '<select name="Type[]" onchange="updateTonOptions(this)"><option value="ducted split units">Ducted Split Units</option><option value="wall mounted split units">Wall Mounted Split Units</option><option value="cassette">Cassette</option><option value="floor stand">Floor Stand</option><option value="package units">Package Units</option></select>';
+    const typeOptions = `
+        <option value="ducted split units">Ducted Split Units</option>
+        <option value="wall mounted split units">Wall Mounted Split Units</option>
+        <option value="cassette">Cassette</option>
+        <option value="floor stand">Floor Stand</option>
+        <option value="package units">Package Units</option>
+    `;
+
+    cell1.innerHTML = `<select name="Type[]" onchange="updateTonOptions(this, '${record.ton || ''}')">${typeOptions}</select>`;
     cell2.innerHTML = '<select name="TON[]"></select>';
     cell3.innerHTML = '<input type="number" name="Quantity[]" oninput="updateTotal(this)">';
     cell4.innerHTML = '<input type="number" name="Unit Price[]" oninput="updateTotal(this)">';
     cell5.innerHTML = '<input type="number" name="Total Price[]" readonly>';
-    cell6.innerHTML = '<button type="button" onclick="addRow(this)">+</button> <button type="button" onclick="deleteRow(this)">-</button>';
 
-    // Initialize TON options based on the default Type value
-    updateTonOptions(newRow.querySelector('select[name="Type[]"]'));
-    
+    cell7.innerHTML = `
+        <button type="button" onclick="addRow(this)">+</button>
+        <button type="button" onclick="deleteRow(this)">-</button>
+    `;
+    const supplyIdValue = record.supply_id || 'not found';
+    cell6.innerHTML = `<input type="readonly" name="supplyId[]" value="${supplyIdValue} "readonly>`;
+    cell6.style.display = 'none';
+
+
+    if (record.type) {
+        cell1.querySelector('select[name="Type[]"]').value = record.type;
+    }
+    updateTonOptions(cell1.querySelector('select[name="Type[]"]'), record.ton || '');
+    if (record.quantity) {
+        cell3.querySelector('input[name="Quantity[]"]').value = record.quantity;
+    }
+    if (record.unit_price) {
+        cell4.querySelector('input[name="Unit Price[]"]').value = record.unit_price;
+    }
+    if (record.total_price) {
+        cell5.querySelector('input[name="Total Price[]"]').value = record.total_price;
+    }
+
     updateButtons();
 }
 
 
-function updateTonOptions(selectElement) {
-    var tonSelect = selectElement.parentNode.nextElementSibling.querySelector('select[name="TON[]"]');
-    var typeValue = selectElement.value;
-    
-    tonSelect.innerHTML = ''; // Clear existing options
+function updateTonOptions(selectElement, selectedTon = '') {
+    const tonSelect = selectElement.parentNode.nextElementSibling.querySelector('select[name="TON[]"]');
+    const typeValue = selectElement.value;
 
-    if (typeValue === 'ducted split units') {
-        tonSelect.innerHTML = '<option value="1.5">1.5</option><option value="2.5">2.5</option><option value="2.75">2.75</option><option value="3">3</option><option value="4.26">4.26</option><option value="5">5</option><option value="6.66">6.66</option><option value="8.33">8.33</option>';
-    } else if (typeValue === 'wall mounted split units') {
-        tonSelect.innerHTML = '<option value="1">1</option><option value="1.5">1.5</option><option value="2">2</option><option value="2.5">2.5</option><option value="3">3</option>';
-    } else if (typeValue === 'cassette') {
-        tonSelect.innerHTML = '<option value="1.5">1.5</option><option value="2.5">2.5</option><option value="2.75">2.75</option><option value="3">3</option><option value="4">4</option><option value="4.25">4.25</option>';
-    } else if (typeValue === 'floor stand') {
-        tonSelect.innerHTML = '<option value="2.3">2.3</option><option value="3.25">3.25</option><option value="4">4</option><option value="4.35">4.35</option>';
-    } else if (typeValue === 'package units') {
-        tonSelect.innerHTML = '<option value="6.8">6.8</option><option value="9.1">9.1</option><option value="10">10</option><option value="13.65">13.65</option><option value="18.2">18.2</option><option value="20">20</option><option value="28.5">28.5</option>';
-    }else {
-        // Add default or other specific options based on type if necessary
-        tonSelect.innerHTML = '<option value="Select TON">Select TON</option>';
+    const tonOptions = {
+        'ducted split units': ["1.50", "2.50", "2.75", "3.00", "4.26", "5.00", "6.66", "8.33"],
+        'wall mounted split units': ["1.00", "1.50", "2.00", "2.50", "3.00"],
+        'cassette': ["1.50", "2.50", "2.75", "3.00", "4.00", "4.25"],
+        'floor stand': ["2.30", "3.25", "4.00", "4.35"],
+        'package units': ["6.80", "9.10", "10.00", "13.65", "18.20", "20.00", "28.50"]
+    };
+
+    // Clear existing options
+    tonSelect.innerHTML = '';
+
+    // Populate options
+    if (tonOptions[typeValue]) {
+        tonOptions[typeValue].forEach(option => {
+            const optionElement = document.createElement('option');
+            optionElement.value = option;
+            optionElement.text = option;
+            tonSelect.add(optionElement);
+        });
+    }
+
+    // Ensure selectedTon is a string, handle case where it might be an HTML element
+    if (selectedTon instanceof HTMLElement) {
+        console.error('Invalid selectedTon: Expected a string but got an HTML element.');
+        selectedTon = '';
+    } else {
+        selectedTon = (selectedTon || '').toString().trim();
+    }
+
+    // Check if the selectedTon matches any of the options
+    const matchingOption = Array.from(tonSelect.options).find(option => option.value === selectedTon);
+
+    if (matchingOption) {
+        tonSelect.value = matchingOption.value;
+        console.log(`Selected TON set to: ${matchingOption.value}`);
+    } else {
+        // If no match found, select the first option and log a warning
+        tonSelect.selectedIndex = 0;
+        console.warn(`TON value "${selectedTon}" not found. Defaulting to the first option.`);
     }
 }
 
-function initializeTonOptions() {
-    var rows = document.querySelectorAll('#supplyInstTable tbody tr');
-    rows.forEach(function(row, index) {
-        var typeSelect = row.querySelector('select[name="Type[]"]');
-        updateTonOptions(typeSelect);
+
+async function initializeTonOptions() {
+    console.log('Initializing TON options');
+    const rows = document.querySelectorAll('#supplyInstTable tbody tr');
+    rows.forEach(row => {
+        const modelSelect = row.querySelector('select[name="Type[]"]');
+        const selectedModel = modelSelect ? modelSelect.value : '';
+        const tonSelect = row.querySelector('select[name="TON[]"]');
+        
+        console.log('Model:', selectedModel);
+        console.log('TON Select:', tonSelect);
+        
+        updateTonOptions(modelSelect, tonSelect.value);
     });
-    updateButtons();
 }
+
 
 function updateTotal(element) {
     var row = element.parentNode.parentNode;
@@ -145,11 +207,15 @@ async function handleSubmit(event) {
 
     const customerId = document.getElementById('customer').value;
     const quotationId = document.getElementById('quotation').value;
+    const revise = document.getElementById('revise').checked;
     const tableRows = document.querySelectorAll('#supplyInstTable tbody tr');
 
     const supplyData = [];
 
     tableRows.forEach((row, index) => {
+        console.log(`Row ${index} HTML:`, row.innerHTML);
+        const supplyIdElement = row.querySelector('input[name="supplyId[]"]');
+        console.log(`Row ${index} supply_id value:`, supplyIdElement ? supplyIdElement.value : 'not found');
         const typeElement = row.querySelector('select[name="Type[]"]');
         const tonElement = row.querySelector('select[name="TON[]"]');
         const quantityElement = row.querySelector('input[name="Quantity[]"]');
@@ -168,21 +234,28 @@ async function handleSubmit(event) {
         // Ensure all elements are found before accessing their values
         if (typeElement && tonElement && quantityElement && unitPriceElement && totalPriceElement) {
             supplyData.push({
-                type: typeElement.value,
-                ton: tonElement.value,
-                quantity: quantityElement.value,
-                unit_price: unitPriceElement.value,
-                total_price: totalPriceElement.value
+                supply_id: supplyIdElement ? supplyIdElement.value : null,
+                type: typeElement ? typeElement.value : null,
+                ton: tonElement ? tonElement.value : null,
+                quantity: quantityElement ? quantityElement.value : null,
+                unit_price: unitPriceElement ? unitPriceElement.value : null,
+                total_price: totalPriceElement ? totalPriceElement.value : null
             });
         } else {
             console.error(`Error: Missing elements in row ${index}`);
         }
     });
 
+    if (supplyData.length === 0) {
+        alert('Please fill in all fields before submitting.');
+        return;
+    }
+
     const payload = {
         quotation_id: quotationId,
         customer_id: customerId,
-        supply_data: supplyData
+        supply_data: supplyData,
+        revise: revise // Added revise to payload
     };
 
     console.log('Submitting payload:', payload);
@@ -221,3 +294,10 @@ function generateNewQuotationId(quotationId) {
 
 initializeTonOptions();
 updateButtons();
+document.addEventListener('DOMContentLoaded', () => {
+    initializeTonOptions();
+});
+
+function goBack() {
+    window.history.back();
+}
