@@ -27,25 +27,87 @@ function addRow(button) {
     var table = document.getElementById("supplyInstTable").getElementsByTagName('tbody')[0];
     var newRow = table.insertRow(table.rows.length);
 
-    var cell1 = newRow.insertCell(0);
-    var cell2 = newRow.insertCell(1);
-    var cell3 = newRow.insertCell(2);
-    var cell4 = newRow.insertCell(3);
-    var cell5 = newRow.insertCell(4);
-    var cell6 = newRow.insertCell(5);
+    var cell1 = newRow.insertCell(0); // Type (dropdown or manual input)
+    var cell2 = newRow.insertCell(1); // TON (dropdown or manual input)
+    var cell3 = newRow.insertCell(2); // Quantity
+    var cell4 = newRow.insertCell(3); // Unit Price
+    var cell5 = newRow.insertCell(4); // Total Price
+    var cell6 = newRow.insertCell(5); // Buttons for add/delete
 
-    cell1.innerHTML = '<select name="Type[]" onchange="updateTonOptions(this)"><option value="ducted split units">Ducted Split Units</option><option value="wall mounted split units">Wall Mounted Split Units</option><option value="cassette">Cassette</option><option value="floor stand">Floor Stand</option><option value="package units">Package Units</option><option value="VRF ceiling concealed">VRF Ceiling Concealed</option>><option value="vrf outdoor units">VRF Outdoor Units</option></select>';
-    cell2.innerHTML = '<select name="TON[]"></select>';
-    cell3.innerHTML = '<input type="number" name="Quantity[]" oninput="updateTotal(this)">';
-    cell4.innerHTML = '<input type="number" name="Unit Price[]" oninput="updateTotal(this)">';
-    cell5.innerHTML = '<input type="number" name="Total Price[]" readonly>';
-    cell6.innerHTML = '<button type="button" onclick="addRow(this)">+</button> <button type="button" onclick="deleteRow(this)">-</button>';
+    // First column (Type): Toggle between dropdown or manual input
+    cell1.innerHTML = `
+        <label><input type="radio" name="typeToggle${table.rows.length}" onclick="toggleTypeInput(this, 'dropdown')" checked> Dropdown</label>
+        <label><input type="radio" name="typeToggle${table.rows.length}" onclick="toggleTypeInput(this, 'manual')"> Manual</label>
+        <br>
+        <select name="Type[]" onchange="updateTonOptions(this)" style="display:block;">
+            <option value="ducted split units">Ducted Split Units</option>
+            <option value="wall mounted split units">Wall Mounted Split Units</option>
+            <option value="cassette">Cassette</option>
+            <option value="floor stand">Floor Stand</option>
+            <option value="package units">Package Units</option>
+            <option value="VRF ceiling concealed">VRF Ceiling Concealed</option>
+            <option value="vrf outdoor units">VRF Outdoor Units</option>
+            <option value="Fan">Fan</option>
+        </select>
+        <input type="text" name="TypeManual[]" style="display:none;" placeholder="Enter type manually">
+    `;
+
+    // Second column (TON): Toggle between dropdown or manual input
+    cell2.innerHTML = `
+        <label><input type="radio" name="tonToggle${table.rows.length}" onclick="toggleTonInput(this, 'dropdown')" checked> Dropdown</label>
+        <label><input type="radio" name="tonToggle${table.rows.length}" onclick="toggleTonInput(this, 'manual')"> Manual</label>
+        <br>
+        <select name="TON[]" style="display:block;"></select>
+        <input type="text" name="TONManual[]" style="display:none;" placeholder="Enter ton manually">
+    `;
 
     // Initialize TON options based on the default Type value
     updateTonOptions(newRow.querySelector('select[name="Type[]"]'));
-    
-    updateButtons();
+
+    // Quantity input
+    cell3.innerHTML = '<input type="number" name="Quantity[]" oninput="updateTotal(this)">';
+
+    // Unit Price input
+    cell4.innerHTML = '<input type="number" name="Unit Price[]" oninput="updateTotal(this)">';
+
+    // Total Price input (readonly)
+    cell5.innerHTML = '<input type="number" name="Total Price[]" readonly>';
+
+    // Add/Delete buttons
+    cell6.innerHTML = '<button type="button" onclick="addRow(this)">+</button> <button type="button" onclick="deleteRow(this)">-</button>';
 }
+
+// Function to toggle between dropdown and manual input for Type
+function toggleTypeInput(radio, mode) {
+    const row = radio.closest('tr');
+    const dropdown = row.querySelector('select[name="Type[]"]');
+    const manualInput = row.querySelector('input[name="TypeManual[]"]');
+
+    if (mode === 'dropdown') {
+        dropdown.style.display = 'block';
+        manualInput.style.display = 'none';
+        updateTonOptions(dropdown);  // Ensure TON options are updated when switching to dropdown
+    } else {
+        dropdown.style.display = 'none';
+        manualInput.style.display = 'block';
+    }
+}
+
+// Function to toggle between dropdown and manual input for TON
+function toggleTonInput(radio, mode) {
+    const row = radio.closest('tr');
+    const dropdown = row.querySelector('select[name="TON[]"]');
+    const manualInput = row.querySelector('input[name="TONManual[]"]');
+
+    if (mode === 'dropdown') {
+        dropdown.style.display = 'block';
+        manualInput.style.display = 'none';
+    } else {
+        dropdown.style.display = 'none';
+        manualInput.style.display = 'block';
+    }
+}
+
 
 
 function updateTonOptions(selectElement) {
@@ -145,6 +207,13 @@ function updateTonOptions(selectElement) {
             <option value="45.50">45.50</option>
             <option value="47.77">47.77</option>
         `;
+    } else if (typeValue === 'Fan') {
+        tonSelect.innerHTML = `
+            <option value="VD-15">VD-15</option>
+            <option value="VD-10">VD-10</option>
+            <option value="lineo-100QVO">lineo-100QVO</option>
+            <option value="CA-100MD">CA-100MD</option> 
+        `;
     } else {
         // Add default or other specific options based on type if necessary
         tonSelect.innerHTML = '<option value="Select TON">Select TON</option>';
@@ -184,23 +253,27 @@ async function initializeDataOptions() {
     try {
       const response = await fetch('/api/customers_si');
       const customers = await response.json();
-      console.log('Customers:', customers);
-  
-      populateDropdown('customer', customers, 'customer_id', 'customer_name');
-  
-      const customerDropdown = $('#customer');
-  
-      // Trigger change event to populate the quotation dropdown
-      if (customerDropdown.find('option').length > 0) {
-        customerDropdown.val(customerDropdown.find('option:first').val()).trigger('change');
-      }
-  
-      // Add event listener to the customer dropdown
-      customerDropdown.on('change', updateQuotationDropdown);
+        console.log('Customers (Before Sorting):', customers);
+
+        // Sort customers by customer_id in descending order
+        customers.sort((a, b) => b.customer_id - a.customer_id);
+        console.log('Customers (After Sorting):', customers);
+
+        populateDropdown('customer', customers, 'customer_id', 'customer_name');
+
+        const customerDropdown = $('#customer');
+
+        // Trigger change event to populate the quotation dropdown
+        if (customerDropdown.find('option').length > 0) {
+            customerDropdown.val(customerDropdown.find('option:first').val()).trigger('change');
+        }
+
+        // Add event listener to the customer dropdown
+        customerDropdown.on('change', updateQuotationDropdown);
     } catch (error) {
-      console.error('Error fetching customers:', error);
+        console.error('Error fetching customers:', error);
     }
-  }
+}
 
 async function updateQuotationDropdown() {
     const customerId = this.value;
@@ -248,37 +321,58 @@ window.onload = initializeDataOptions;
 
 async function handleSubmit(event) {
     event.preventDefault();
+    
+    // Show confirmation dialog
+    const confirmation = confirm("Are you sure you want to submit the supply data?");
+    
+    // If the user clicks "No" (Cancel), stop further execution
+    if (!confirmation) {
+        return;
+    }
 
     const customerId = document.getElementById('customer').value;
     const quotationId = document.getElementById('quotation').value;
-    const tableRows = document.querySelectorAll('#supplyInstTable tbody tr'); // Changed the selector here
+    const tableRows = document.querySelectorAll('#supplyInstTable tbody tr'); 
 
     const supply_instData = [];
 
     tableRows.forEach((row, index) => {
+        // Safely get the Type elements
         const typeElement = row.querySelector('select[name="Type[]"]');
+        const typeManualElement = row.querySelector('input[name="TypeManual[]"]');
+        
+        // Determine the type value (manual input or dropdown)
+        let typeValue = '';
+        if (typeManualElement && typeManualElement.style.display !== 'none' && typeManualElement.value) {
+            typeValue = typeManualElement.value;  // Manual input is used
+        } else if (typeElement) {
+            typeValue = typeElement.value;  // Dropdown is used
+        }
+
+        // Safely get the TON elements
         const tonElement = row.querySelector('select[name="TON[]"]');
+        const tonManualElement = row.querySelector('input[name="TONManual[]"]');
+        
+        // Determine the TON value (manual input or dropdown)
+        let tonValue = '';
+        if (tonManualElement && tonManualElement.style.display !== 'none' && tonManualElement.value) {
+            tonValue = tonManualElement.value;  // Manual input is used
+        } else if (tonElement) {
+            tonValue = tonElement.value;  // Dropdown is used
+        }
+
         const quantityElement = row.querySelector('input[name="Quantity[]"]');
         const unitPriceElement = row.querySelector('input[name="Unit Price[]"]');
         const totalPriceElement = row.querySelector('input[name="Total Price[]"]');
 
-        // Debugging output
-        console.log(`Row ${index}:`, {
-            typeElement,
-            tonElement,
-            quantityElement,
-            unitPriceElement,
-            totalPriceElement
-        });
-
-        // Ensure all elements are found before accessing their values
-        if (typeElement && tonElement && quantityElement && unitPriceElement && totalPriceElement) {
+        // Ensure all essential elements are found before accessing their values
+        if (quantityElement && unitPriceElement && totalPriceElement) {
             supply_instData.push({
-                type: typeElement.value,
-                ton: tonElement.value,
-                quantity: quantityElement.value,
-                unit_price: unitPriceElement.value,
-                total_price: totalPriceElement.value
+                type: typeValue || '',  // Default to empty if null
+                ton: tonValue || '',    // Default to empty if null
+                quantity: quantityElement.value || 0,
+                unit_price: unitPriceElement.value || 0,
+                total_price: totalPriceElement.value || 0
             });
         } else {
             console.error(`Error: Missing elements in row ${index}`);
@@ -308,12 +402,15 @@ async function handleSubmit(event) {
 
         const result = await response.json();
         alert('Data submitted successfully');
-        window.location.reload();
+        window.location.href = 'customer_project.html';
     } catch (error) {
         console.error('Error submitting form:', error);
         alert('Failed to submit data');
     }
 }
+
+
+
 function goBack() {
     window.history.back();
 }

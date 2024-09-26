@@ -54,6 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (response.ok) {
             const newCustomer = await response.json();
+            window.location.reload();
             if (editingCustomerId) {
                 updateCustomerInTable(newCustomer);
             } else {

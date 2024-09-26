@@ -36,7 +36,7 @@ function addRow(button) {
 
     cell1.innerHTML = '<select name="Location[]"><option value="Ground Floor">Ground Floor</option><option value="First Floor">First Floor</option><option value="Basement">Basement</option><option value="Mezzanine">Mezzanine</option><option value="Penthouse">Penthouse</option><option value="Out Majlis">Out Majlis</option><option value="Out Kitchen">Out Kitchen</option><option value="Outblock">Outblock</option></select>';
     cell2.innerHTML = '<input type="text" name="Serving Area[]">';
-    cell3.innerHTML = '<select name="Type[]" onchange="updateTonOptions(this)"><option value="ducted split">Ducted Split</option><option value="wall mounted">Wall Mounted</option><option value="cassette">Cassette</option><option value="floor stand">Floor Stand</option><option value="package units">Package Unit</option><option value="VRF ceiling concealed">VRF Ceiling Concealed</option>><option value="vrf outdoor unit">VRF Outdoor Unit</option></select>';
+    cell3.innerHTML = '<select name="Type[]" onchange="updateTonOptions(this)"><option value="ducted split">Ducted Split</option><option value="wall mounted">Wall Mounted</option><option value="cassette">Cassette</option><option value="floor stand">Floor Stand</option><option value="package units">Package Unit</option><option value="VRF ceiling concealed">VRF Ceiling Concealed</option><option value="vrf outdoor unit">VRF Outdoor Unit</option></select>';
     cell4.innerHTML = '<select name="TON[]"></select>';
     cell5.innerHTML = '<input type="number" name="Quantity[]">';
     cell6.innerHTML = '<button type="button" onclick="addRow(this)">+</button> <button type="button" onclick="deleteRow(this)">-</button>';
@@ -174,23 +174,27 @@ $(document).ready(function() {
     try {
       const response = await fetch('/api/customers_vi');
       const customers = await response.json();
-      console.log('Customers:', customers);
-  
-      populateDropdown('customer', customers, 'customer_id', 'customer_name');
-  
-      const customerDropdown = $('#customer');
-  
-      // Trigger change event to populate the quotation dropdown
-      if (customerDropdown.find('option').length > 0) {
-        customerDropdown.val(customerDropdown.find('option:first').val()).trigger('change');
-      }
-  
-      // Add event listener to the customer dropdown
-      customerDropdown.on('change', updateQuotationDropdown);
+        console.log('Customers (Before Sorting):', customers);
+
+        // Sort customers by customer_id in descending order
+        customers.sort((a, b) => b.customer_id - a.customer_id);
+        console.log('Customers (After Sorting):', customers);
+
+        populateDropdown('customer', customers, 'customer_id', 'customer_name');
+
+        const customerDropdown = $('#customer');
+
+        // Trigger change event to populate the quotation dropdown
+        if (customerDropdown.find('option').length > 0) {
+            customerDropdown.val(customerDropdown.find('option:first').val()).trigger('change');
+        }
+
+        // Add event listener to the customer dropdown
+        customerDropdown.on('change', updateQuotationDropdown);
     } catch (error) {
-      console.error('Error fetching customers:', error);
+        console.error('Error fetching customers:', error);
     }
-  }
+}
 
 async function updateQuotationDropdown() {
     const customerId = this.value;
@@ -238,7 +242,13 @@ window.onload = initializeDataOptions;
 
 async function handleSubmit(event) {
     event.preventDefault();
-
+     // Show confirmation dialog
+     const confirmation = confirm("Are you sure you want to submit the supply data?");
+    
+     // If the user clicks "No" (Cancel), stop further execution
+     if (!confirmation) {
+         return;
+     }
     const customerId = document.getElementById('customer').value;
     const quotationId = document.getElementById('quotation').value;
     const tableRows = document.querySelectorAll('#supplyInstTable tbody tr'); // Changed the selector here
@@ -299,7 +309,7 @@ async function handleSubmit(event) {
 
         const result = await response.json();
         alert('Data submitted successfully');
-        window.location.reload();
+        window.location.href = 'customer_project.html';
     } catch (error) {
         console.error('Error submitting form:', error);
         alert('Failed to submit data');

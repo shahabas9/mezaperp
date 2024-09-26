@@ -96,3 +96,16 @@ a{
     /* other styles */
 }
 
+button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    height: 35px;
+    width: 100px;
+    margin-top: 5px;
+}
+
+button:hover {
+    background-color: #45a049;
+}

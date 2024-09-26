@@ -53,23 +53,27 @@ async function initializeDataOptions() {
     try {
       const response = await fetch('/api/customers_amc');
       const customers = await response.json();
-      console.log('Customers:', customers);
-  
-      populateDropdown('customer', customers, 'customer_id', 'customer_name');
-  
-      const customerDropdown = $('#customer');
-  
-      // Trigger change event to populate the quotation dropdown
-      if (customerDropdown.find('option').length > 0) {
-        customerDropdown.val(customerDropdown.find('option:first').val()).trigger('change');
-      }
-  
-      // Add event listener to the customer dropdown
-      customerDropdown.on('change', updateQuotationDropdown);
+        console.log('Customers (Before Sorting):', customers);
+
+        // Sort customers by customer_id in descending order
+        customers.sort((a, b) => b.customer_id - a.customer_id);
+        console.log('Customers (After Sorting):', customers);
+
+        populateDropdown('customer', customers, 'customer_id', 'customer_name');
+
+        const customerDropdown = $('#customer');
+
+        // Trigger change event to populate the quotation dropdown
+        if (customerDropdown.find('option').length > 0) {
+            customerDropdown.val(customerDropdown.find('option:first').val()).trigger('change');
+        }
+
+        // Add event listener to the customer dropdown
+        customerDropdown.on('change', updateQuotationDropdown);
     } catch (error) {
-      console.error('Error fetching customers:', error);
+        console.error('Error fetching customers:', error);
     }
-  }
+}
   
   async function updateQuotationDropdown() {
     const customerId = this.value;
@@ -117,7 +121,13 @@ window.onload = initializeDataOptions;
 
 async function handleSubmit(event) {
     event.preventDefault();
-
+   // Show confirmation dialog
+   const confirmation = confirm("Are you sure you want to submit the supply data?");
+    
+   // If the user clicks "No" (Cancel), stop further execution
+   if (!confirmation) {
+       return;
+   }
     const customerId = document.getElementById('customer').value;
     const quotationId = document.getElementById('quotation').value;
     const tableRows = document.querySelectorAll('#supplyInstTable tbody tr'); // Changed the selector here
@@ -173,7 +183,7 @@ async function handleSubmit(event) {
 
         const result = await response.json();
         alert('Data submitted successfully');
-        window.location.reload();
+        window.location.href = 'customer_project.html';
     } catch (error) {
         console.error('Error submitting form:', error);
         alert('Failed to submit data');

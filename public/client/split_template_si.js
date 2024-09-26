@@ -25,21 +25,35 @@ function populateTable(data) {
     if (data.length > 0) {
         console.log("Customer Data: ", data[0]);
         const customerData = data[0];
-        document.getElementById('customerName').textContent = customerData.project_name;
-        document.getElementById('projectName').textContent = customerData.customer_name;
-        document.getElementById('customerMob').textContent = customerData.mobile_no;
-        document.getElementById('customerEmail').textContent = customerData.email;
-        document.getElementById('fromName').textContent = customerData.salesperson_name;
-        document.getElementById('fromMob').textContent = customerData.salesperson_contact;
-        document.getElementById('refNo').textContent = customerData.quotation_id;
-        document.getElementById('date').textContent = new Date().toLocaleDateString();
-
+        document.getElementById('customerName').textContent = customerData.customer_name || "\u00A0";
+        document.getElementById('projectName').textContent = customerData.project_name || "\u00A0";
+        document.getElementById('customerMob').textContent = customerData.mobile_no || "\u00A0";
+        document.getElementById('customerEmail').textContent = customerData.email || "\u00A0";
+        document.getElementById('fromName').textContent = customerData.salesperson_name || "\u00A0";
+        document.getElementById('fromMob').textContent = customerData.salesperson_contact || "\u00A0";
+        document.getElementById('refNo').textContent = customerData.quotation_id || "\u00A0";
+        document.getElementById('date').textContent = new Date().toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric'
+        });
         const tableBody = document.getElementById('supplyTableBody');
         const descriptions = {};
 
         let totalTonQuantity = 0;
         let totalQuantity = 0;
         let totalSum = 0;
+
+        const selectiveItems = [
+            'DUCTED SPLIT UNITS',
+            'WALL MOUNTED SPLIT UNITS',
+            'CASSETTE',
+            'FLOOR STAND',
+            'FAN',
+            'PACKAGE UNIT',
+            'VRF CEILING CONCEALED',
+            'VRF OUTDOOR UNITS'
+        ];
 
         data.forEach(item => {
             console.log("Item: ", item);
@@ -50,10 +64,17 @@ function populateTable(data) {
             descriptions[description].count++;
             descriptions[description].rows.push(item);
 
-            const tonQuantity = parseFloat(item.ton) * item.quantity;
-            totalQuantity += tonQuantity;
+            // Check if ton value is a valid number
+            const tonValue = parseFloat(item.ton);
+            const quantity = parseFloat(item.quantity);
+
+            if (!isNaN(tonValue)) {
+                const tonQuantity = tonValue * quantity;
+                totalQuantity += tonQuantity;
+                totalTonQuantity += quantity; // Only add valid quantity if ton is a valid number
+            }
+
             totalSum += parseFloat(item.total_price);
-            totalTonQuantity += parseFloat(item.quantity);
         });
 
         Object.keys(descriptions).forEach(description => {
@@ -64,11 +85,17 @@ function populateTable(data) {
                     const descriptionCell = document.createElement('td');
                     descriptionCell.setAttribute('rowspan', count);
                     descriptionCell.className = 'merged-cell';
-                    descriptionCell.innerHTML = `<b><span style="color:black;">Supply Only of</span></b><br><b style="color:red;"> ${description}</b>`;
+
+                    if (selectiveItems.includes(description)) {
+                        descriptionCell.innerHTML = `<b><span style="color:black;">Supply Only of</span></b><br><b style="color:red;"> ${description}</b>`;
+                    } else {
+                        descriptionCell.innerHTML = `<b style="color:red; text-transform:uppercase;">${description}</b>`;
+                    }
                     row.appendChild(descriptionCell);
                 }
+
+                // Create row with data
                 row.innerHTML += `
-                    
                     <td>${item.ton}</td>
                     <td>${item.quantity}</td>
                     <td>${item.unit_price.toLocaleString()}</td>
@@ -81,16 +108,13 @@ function populateTable(data) {
 
         // Add the row with merged cells for totals
         const totalRow = document.createElement('tr');
-        totalRow.id = 'totalRow'; // Assign an ID to this row for easy manipulation
         totalRow.innerHTML = `
             <td colspan="1"><b>Total</b></td>
             <td><b>${totalQuantity.toFixed(2)}</b></td>
-            <td><b>${totalTonQuantity.toFixed(2)}</b></td>
+            <td><b>${totalTonQuantity}</b></td>
             <td colspan="2"><b id="totalAmount">QAR ${totalSum.toLocaleString()}</b></td>
         `;
         tableBody.appendChild(totalRow);
-
-       
     }
 }
 

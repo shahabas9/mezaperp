@@ -35,7 +35,7 @@ function addRow(button) {
     var cell6 = newRow.insertCell(5);
     var cell7 = newRow.insertCell(6);
 
-    cell1.innerHTML = '<select name="Type[]" onchange="updateModelOptions(this)"><option value="duct split">Duct Split</option><option value="split">Split</option><option value="vrf indoor units">VRF Indoor Units</option><option value="vrf outdoor units">VRF Outdoor Units</option></select>';
+    cell1.innerHTML = '<select name="Type[]" onchange="updateModelOptions(this)"><option value="ducted split Unit">Ducted Split Unit</option><option value="wall mounted split units">Wall Mounted Split Units</option><option value="floorstand">Floor Stand</option><option value="cassette">Cassette</option><option value="vrf indoor units">VRF Indoor Units</option><option value="vrf outdoor units">VRF Outdoor Units</option><option value="air curtain">Air Curtain</option></select>';
     cell2.innerHTML = '<select name="Model Inoor/Outdoor[]" onchange="updateTonOptions(this)"></select>';
     cell3.innerHTML = '<select name="TON[]"></select>';
     cell4.innerHTML = '<input type="number" name="Quantity[]" oninput="updateTotal(this)">';
@@ -75,6 +75,15 @@ function updateModelOptions(selectElement) {
             <option value="MS-GS30/ MU-GS30">MS-GS30/ MU-GS30</option>
             <option value="MS-GS36/ MU-GS36">MS-GS36/ MU-GS36</option>
         `;
+    } else if (typeValue === 'cassette') {
+        modelSelect.innerHTML = `
+            <option value="PLY-P18 BLACM/SUY-P18VA">PLY-P18 BLACM/SUY-P18VA</option>
+            <option value="PLY-P24 BLACM/SUY-P24VA">PLY-P24 BLACM/SUY-P24VA</option>
+            <option value="PLY-P30 BLACM/SUY-P30VA">PLY-P30 BLACM/SUY-P30VA</option>
+            <option value="PLY-P36 BLACM/SUY-P36VA">PLY-P36 BLACM/SUY-P36VA</option>
+            <option value="PLY-P42 BLACM/SUY-P42VA">PLY-P42 BLACM/SUY-P42VA</option>
+            <option value="PLY-P48 BLACM/SUY-P48VA">PLY-P48 BLACM/SUY-P48VA</option>
+        `;
     } else if (typeValue === 'floorstand') {
         modelSelect.innerHTML = `
             <option value="PSA-RP71GA">PSA-RP71GA</option>
@@ -91,6 +100,14 @@ function updateModelOptions(selectElement) {
             <option value="PRC 500">PRC 500</option>
             <option value="PRC 600">PRC 600</option>
             <option value="PRC 900">PRC 900</option>
+        `; 
+    } else if (typeValue === 'air curtain') {
+        modelSelect.innerHTML = `
+            <option value="GK-2509 YSI (90 cm)">GK-2509 YSI (90 cm)</option>
+            <option value="GK 3509 CS (90 cm)">GK 3509 CS (90 cm)</option>
+            <option value="GK 2512 Y (120 cm)">GK 2512 Y (120 cm)</option>
+            <option value="GK 3512 DS (120 cm)">GK 3512 DS (120 cm)</option>
+            
         `; 
     } else if (typeValue === 'vrf indoor units') {
         modelSelect.innerHTML = `
@@ -153,6 +170,26 @@ function updateTonOptions(selectElement) {
 
     if (typeValue === 'PEY-P18JA / SUY-P18') {
         tonSelect.innerHTML = '<option value="1.5">1.5</option>';
+    } else if (typeValue === 'PLY-P18 BLACM/SUY-P18VA') {
+        tonSelect.innerHTML = '<option value="1.5">1.5</option>';
+    } else if (typeValue === 'PLY-P24 BLACM/SUY-P24VA') {
+        tonSelect.innerHTML = '<option value="2.5">2.5</option>';
+    } else if (typeValue === 'PLY-P30 BLACM/SUY-P30VA') {
+        tonSelect.innerHTML = '<option value="2.75">2.75</option>';
+    } else if (typeValue === 'PLY-P36 BLACM/SUY-P36VA') {
+        tonSelect.innerHTML = '<option value="3">3</option>';
+    } else if (typeValue === 'PLY-P42 BLACM/SUY-P42VA') {
+        tonSelect.innerHTML = '<option value="4">4</option>';
+    } else if (typeValue === 'PLY-P48 BLACM/SUY-P48VA') {
+        tonSelect.innerHTML = '<option value="4.25">4.25</option>';
+    } else if (typeValue === 'GK-2509 YSI (90 cm)') {
+        tonSelect.innerHTML = '<option value="90">90</option>';
+    } else if (typeValue === 'GK 3509 CS (90 cm)') {
+        tonSelect.innerHTML = '<option value="90">90</option>';
+    } else if (typeValue === 'GK 2512 Y (120 cm)') {
+        tonSelect.innerHTML = '<option value="120">120</option>';
+    }else if (typeValue === 'GK 3512 DS (120 cm)') {
+        tonSelect.innerHTML = '<option value="120">120</option>';
     } else if (typeValue === 'PEY-P24JA / SUY-P24') {
         tonSelect.innerHTML = '<option value="2.5">2.5</option>';
     } else if (typeValue === 'PEY-P30JA / SUY-P30') {
@@ -327,25 +364,30 @@ $(document).ready(function() {
 // Fetch and populate the customer dropdown on page load
 async function initializeDataOptions() {
     try {
-      const response = await fetch('/api/customers');
-      const customers = await response.json();
-      console.log('Customers:', customers);
-  
-      populateDropdown('customer', customers, 'customer_id', 'customer_name');
-  
-      const customerDropdown = $('#customer');
-  
-      // Trigger change event to populate the quotation dropdown
-      if (customerDropdown.find('option').length > 0) {
-        customerDropdown.val(customerDropdown.find('option:first').val()).trigger('change');
-      }
-  
-      // Add event listener to the customer dropdown
-      customerDropdown.on('change', updateQuotationDropdown);
+        const response = await fetch('/api/customers');
+        const customers = await response.json();
+        console.log('Customers (Before Sorting):', customers);
+
+        // Sort customers by customer_id in descending order
+        customers.sort((a, b) => b.customer_id - a.customer_id);
+        console.log('Customers (After Sorting):', customers);
+
+        populateDropdown('customer', customers, 'customer_id', 'customer_name');
+
+        const customerDropdown = $('#customer');
+
+        // Trigger change event to populate the quotation dropdown
+        if (customerDropdown.find('option').length > 0) {
+            customerDropdown.val(customerDropdown.find('option:first').val()).trigger('change');
+        }
+
+        // Add event listener to the customer dropdown
+        customerDropdown.on('change', updateQuotationDropdown);
     } catch (error) {
-      console.error('Error fetching customers:', error);
+        console.error('Error fetching customers:', error);
     }
-  }
+}
+
   
   async function updateQuotationDropdown() {
     const customerId = this.value;
@@ -392,6 +434,14 @@ async function initializeDataOptions() {
 
   async function handleSubmit(event) {
     event.preventDefault();
+
+    // Show confirmation dialog
+    const confirmation = confirm("Are you sure you want to submit the supply data?");
+    
+    // If the user clicks "No" (Cancel), stop further execution
+    if (!confirmation) {
+        return;
+    }
 
     const customerId = document.getElementById('customer').value;
     const quotationId = document.getElementById('quotation').value;
@@ -455,12 +505,15 @@ async function initializeDataOptions() {
 
         const result = await response.json();
         alert('Data submitted successfully');
-        window.location.reload();
+
+        // Redirect to customer_project.html after successful submission
+        window.location.href = 'customer_project.html';
     } catch (error) {
         console.error('Error submitting form:', error);
         alert('Failed to submit data');
     }
 }
+
 
 function goBack() {
     window.history.back();

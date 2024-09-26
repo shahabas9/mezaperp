@@ -31,13 +31,27 @@ hr {
     height: auto;
     margin-left: 42%;
 }
-.third-container{
-    display: flex;
-    justify-content: space-between;
-    align-items: normal;
-    height: 100px; /* Set the desired height */
-    gap: 1rem;
+.third-container {
+  display: grid;
+  grid-template-columns: 0.3fr 0.5fr 0.2fr 0.3fr; /* 4 equal columns for the structure */
+  column-gap: 0; /* Reduce horizontal space between the columns */
+  align-items: flex-start; /* Aligns items at the top */
+  margin-top: 15px;
+  margin-bottom: 0;
 }
+
+.third-container div {
+  display: flex;
+  flex-direction: column;
+  row-gap:1rem; /* Reduce vertical space between the text lines */
+}
+
+.third-container p {
+  margin: 0;
+  padding: 0;
+}
+
+
 .fourth-container{
     margin-top: 70px;
 }
@@ -141,3 +155,21 @@ body{
   margin-bottom: 10px;
 }
  
+#totalAmountContainer {
+  font-weight: bold;
+  margin-top: 20px;
+  text-align: right;
+  display: flex; /* Ensure proper layout */
+  justify-content: flex-end; /* Align text to the right */
+  align-items: center; /* Vertically align input field */
+}
+
+
+
+#amountInput {
+  font-weight: bold;
+  height: 0px;
+  font-size: 15.5px;
+  width: 70px;
+  margin-left: 10px; /* Space between text and input field */
+}

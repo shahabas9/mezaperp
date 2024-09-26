@@ -25,14 +25,18 @@ function populateTable(data) {
     if (data.length > 0) {
         console.log("Customer Data: ", data[0]);
         const customerData = data[0];
-        document.getElementById('customerName').textContent = customerData.project_name;
-        document.getElementById('projectName').textContent = customerData.customer_name;
-        document.getElementById('customerMob').textContent = customerData.mobile_no;
-        document.getElementById('customerEmail').textContent = customerData.email;
-        document.getElementById('fromName').textContent = customerData.salesperson_name;
-        document.getElementById('fromMob').textContent = customerData.salesperson_contact;
-        document.getElementById('refNo').textContent = customerData.quotation_id;
-        document.getElementById('date').textContent = new Date().toLocaleDateString();
+        document.getElementById('customerName').textContent = customerData.customer_name || "\u00A0";
+        document.getElementById('projectName').textContent = customerData.project_name || "\u00A0";
+        document.getElementById('customerMob').textContent = customerData.mobile_no || "\u00A0";
+        document.getElementById('customerEmail').textContent = customerData.email || "\u00A0";
+        document.getElementById('fromName').textContent = customerData.salesperson_name || "\u00A0";
+        document.getElementById('fromMob').textContent = customerData.salesperson_contact || "\u00A0";
+        document.getElementById('refNo').textContent = customerData.quotation_id || "\u00A0";
+        document.getElementById('date').textContent = new Date().toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric'
+        });
 
         const tableBody = document.getElementById('supplyTableBody');
         const descriptions = {};
@@ -84,15 +88,63 @@ function populateTable(data) {
         totalRow.innerHTML = `
             <td colspan="2"><b>Total</b></td>
             <td><b>${totalQuantity.toFixed(2)}</b></td>
-            <td><b>${totalTonQuantity.toFixed(2)}</b></td>
+            <td><b>${totalTonQuantity}</b></td>
             
-            <td colspan="2"><b>QAR ${totalSum.toLocaleString()}</b></td>
+            <td colspan="2"><b id="totalAmount">QAR ${totalSum.toLocaleString()}</b></td>
         `;
         tableBody.appendChild(totalRow);
 
         
     }
 }
+const amountInput = document.getElementById('amountInput');
+
+    amountInput.addEventListener('blur', formatAmount);
+    amountInput.addEventListener('input', clearFormatting);
+
+    function clearFormatting() {
+        this.value = this.value.replace(/,/g, '');
+    }
+
+    function formatAmount() {
+        const value = parseFloat(this.value.replace(/,/g, ''));
+        if (!isNaN(value)) {
+            this.value = value.toLocaleString();
+        }
+    }
+
+
+
+let totalSum = 0; // Define totalSum globally
+
+// Function to display the total sum
+function checkTotalDiscount() {
+    const amountInput = document.getElementById('amountInput');
+    const amountInputValue = amountInput.value.trim();
+    const totalAmountContainer = document.getElementById('totalAmountContainer');
+    const totalAmountElement = document.getElementById('totalAmount');
+
+    if (!totalAmountElement) {
+        console.error('totalAmount element not found');
+        return;
+    }
+
+    if (amountInputValue === '') {
+        // Clear the input and show the total without a strike-through
+        totalAmountContainer.style.display = 'none'; // Hide the discount line only when input is cleared
+        totalAmountElement.style.textDecoration = 'none';
+    } else {
+        // Show the discount line and apply the strike-through
+        totalAmountContainer.style.display = 'flex'; // Show the discount line
+        totalAmountElement.style.textDecoration = 'line-through';
+    }
+}
+
+// Ensure this runs after DOM is fully loaded
+window.onload = function() {
+    document.getElementById('amountInput').addEventListener('input', checkTotalDiscount);
+};
+
 
 
 

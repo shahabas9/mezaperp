@@ -96,11 +96,12 @@ function addRow(button, record = {}) {
 
     // Populate the cells with content
     const typeOptions = `
-        <option value="ducted split units">Ducted Split Units</option>
-        <option value="wall mounted split units">Wall Mounted Split Units</option>
-        <option value="floorstand">Floor Stand</option>
-        <option value="package unit">Package Unit</option>
-        <option value="vrf">VRF</option>
+    <option value="ducted split Unit">Ducted Split Unit</option><option value="wall mounted split units">Wall Mounted Split Units</option>
+    <option value="floorstand">Floor Stand</option>
+    <option value="cassette">Cassette</option>
+    <option value="vrf indoor units">VRF Indoor Units</option>
+    <option value="vrf outdoor units">VRF Outdoor Units</option>
+    <option value="air curtain">Air Curtain</option>
     `;
     cell1.innerHTML = `<select name="Type[]" onchange="updateModelOptions(this)">${typeOptions}</select>`;
     cell2.innerHTML = '<select name="Model Indoor/Outdoor[]" onchange="updateTonOptions(this)"></select>';
@@ -161,13 +162,13 @@ function updateModelOptions(selectElement, selectedModel = '') {
             "MS-GS30/ MU-GS30",
             "MS-GS36/ MU-GS36"
         ],
-        'vrf': [
-            "6.8",
-            "9.1",
-            "10",
-            "13.65",
-            "18.2",
-            "20"
+        'cassette': [
+            "PLY-P18 BLACM/SUY-P18VA",
+            "PLY-P24 BLACM/SUY-P24VA",
+            "PLY-P30 BLACM/SUY-P30VA",
+            "PLY-P36 BLACM/SUY-P36VA",
+            "PLY-P42 BLACM/SUY-P42VA",
+            "PLY-P48 BLACM/SUY-P48VA"
         ],
         'floorstand': [
             "PSA-RP71GA",
@@ -176,15 +177,68 @@ function updateModelOptions(selectElement, selectedModel = '') {
             "PSA-RP140GA"
         ],
         'package unit': [
-            "PUH-P8YAK",
-            "PUH-P10YAK",
-            "PUH-P12YAK",
-            "PUH-P15YAK",
-            "PUH-P20YAK",
-            "PUH-P25YAK",
-            "PUH-P30YAK"
+            "PRC 200",
+            "PRC 250",
+            "PRC 300",
+            "PRC 400",
+            "PRC 500",
+            "PRC 600",
+            "PRC 900"
+        ],
+        'air curtain': [
+            "GK-2509 YSI (90 cm)",
+            "GK 3509 CS (90 cm)",
+            "GK 2512 Y (120 cm)",
+            "GK 3512 DS (120 cm)"
+        ],
+        'vrf indoor units': [
+            "PEFY-P20VMAL-E",
+            "PEFY-P25VMAL-E",
+            "PEFY-P32VMAL-E",
+            "PEFY-P40VMAL-E",
+            "PEFY-P50VMAL-E",
+            "PEFY-P63VMAL-E",
+            "PEFY-P71VMAL-E",
+            "PEFY-P80VMAL-E",
+            "PEFY-P100VMAL-E",
+            "PEFY-P125VMAL-E",
+            "PEFY-P140VMAL-E",
+            "PEFY-P200VMHS-E",
+            "PEFY-P250VMHS-E"
+        ],
+        'vrf outdoor units': [
+            "PUCY-P200YKA",
+            "PUCY-P250YKA",
+            "PUCY-P300YKA",
+            "PUCY-P350YKA",
+            "PUCY-P400YKA",
+            "PUCY-P450YKA",
+            "PUCY-P500YKA",
+            "PUCY-P550YSKA",
+            "PUCY-P600YSKA",
+            "PUCY-P650YSKA",
+            "PUCY-P700YSKA",
+            "PUCY-P750YSKA",
+            "PUCY-P800YSKA",
+            "PUCY-P850YSKA",
+            "PUCY-P900YSKA",
+            "PUCY-P950YSKA",
+            "PUCY-P1000YSKA",
+            "PUCY-P1050YSKA",
+            "PUCY-P1100YSKA",
+            "PUCY-P1150YSKA",
+            "PUCY-P1200YSKA",
+            "PUCY-P1250YSKA",
+            "PUCY-P1300YSKA",
+            "PUCY-P1350YSKA",
+            "PUCY-P1400YSKA",
+            "PUCY-P1450YSKA",
+            "PUCY-P1500YSKA"
         ]
     };
+    
+    // Use this updated modelOptions for your function.
+    
 
     // Clear existing options
     modelSelect.innerHTML = '';
@@ -202,62 +256,87 @@ function updateModelOptions(selectElement, selectedModel = '') {
 function updateTonOptions(selectElement) {
     var tonSelect = selectElement.parentNode.nextElementSibling.querySelector('select[name="TON[]"]');
     var typeValue = selectElement.value;
-    
-    tonSelect.innerHTML = ''; // Clear existing options
 
-    if (typeValue === 'PEY-P18JA / SUY-P18') {
-        tonSelect.innerHTML = '<option value="1.5">1.5</option>';
-    } else if (typeValue === 'PEY-P24JA / SUY-P24') {
-        tonSelect.innerHTML = '<option value="2.5">2.5</option>';
-    } else if (typeValue === 'PEY-P30JA / SUY-P30') {
-        tonSelect.innerHTML = '<option value="2.75">2.75</option>';
-    } else if (typeValue === 'PEY-P36JA / SUY-P36') {
-        tonSelect.innerHTML = '<option value="3">3</option>';
-    } else if (typeValue === 'PEY-P45JG / PUY-P45') {
-        tonSelect.innerHTML = '<option value="4.26">4.26</option>';
-    } else if (typeValue === 'PEY-P60GAG / PUY-P60') {
-        tonSelect.innerHTML = '<option value="5">5</option>';
-    } else if (typeValue === 'PEV-P200 / PUV-P200') {
-        tonSelect.innerHTML = '<option value="6.66">6.66</option>';
-    } else if (typeValue === 'PEV-P250 / PUV-P250') {
-        tonSelect.innerHTML = '<option value="8.33">8.33</option>';
-    } else if (typeValue === 'MS-GS13/ MU-GS13') {
-        tonSelect.innerHTML = '<option value="1">1</option>';
-    } else if (typeValue === 'MS-GS18/ MU-GS18') {
-        tonSelect.innerHTML = '<option value="1.5">1.5</option>';
-    } else if (typeValue === 'MS-GS24/ MU-GS24') {
-        tonSelect.innerHTML = '<option value="2">2</option>';
-    } else if (typeValue === 'MS-GS30/ MU-GS30') {
-        tonSelect.innerHTML = '<option value="2.5">2.5</option>';
-    } else if (typeValue === 'MS-GS36/ MU-GS36') {
-        tonSelect.innerHTML = '<option value="3">3</option>'; 
-    } else if (typeValue === 'PSA-RP71GA') {
-        tonSelect.innerHTML = '<option value="2.3">2.3</option>'; 
-    } else if (typeValue === 'PSA-RP100GA') {
-        tonSelect.innerHTML = '<option value="3.25">3.25</option>'; 
-    } else if (typeValue === 'PSA-RP125GA') {
-        tonSelect.innerHTML = '<option value="4">4</option>'; 
-    } else if (typeValue === 'PSA-RP140GA') {
-        tonSelect.innerHTML = '<option value="4.35">4.35</option>'; 
-    } else if (typeValue === 'PRC 200') {
-        tonSelect.innerHTML = '<option value="6.8">6.8</option>'; 
-    } else if (typeValue === 'PRC 250') {
-        tonSelect.innerHTML = '<option value="9.1">9.1</option>'; 
-    } else if (typeValue === 'PRC 300') {
-        tonSelect.innerHTML = '<option value="10">10</option>'; 
-    } else if (typeValue === 'PRC 400') {
-        tonSelect.innerHTML = '<option value="13.65">13.65</option>'; 
-    } else if (typeValue === 'PRC 500') {
-        tonSelect.innerHTML = '<option value="18.2">18.2</option>'; 
-    } else if (typeValue === 'PRC 600') {
-        tonSelect.innerHTML = '<option value="20">20</option>'; 
-    } else if (typeValue === 'PRC 900') {
-        tonSelect.innerHTML = '<option value="28.5">28.5</option>'; 
-    } else {
-        // Add default or other specific options based on type if necessary
-        tonSelect.innerHTML = '<option value="Select Model">Select Model</option>';
+    // Mapping model types to their corresponding ton options
+    const modelTons = {
+        'PEY-P18JA / SUY-P18': ['1.5'],
+        'PLY-P18 BLACM/SUY-P18VA': ['1.5'],
+        'PLY-P24 BLACM/SUY-P24VA': ['2.5'],
+        'PLY-P30 BLACM/SUY-P30VA': ['2.75'],
+        'PLY-P36 BLACM/SUY-P36VA': ['3'],
+        'PLY-P42 BLACM/SUY-P42VA': ['4'],
+        'PLY-P48 BLACM/SUY-P48VA': ['4.25'],
+        'GK-2509 YSI (90 cm)': ['90'],
+        'GK 3509 CS (90 cm)': ['90'],
+        'GK 2512 Y (120 cm)': ['120'],
+        'GK 3512 DS (120 cm)': ['120'],
+        'PEY-P24JA / SUY-P24': ['2.5'],
+        'PEY-P30JA / SUY-P30': ['2.75'],
+        'PEY-P36JA / SUY-P36': ['3'],
+        'PEY-P45JG / PUY-P45': ['4.26'],
+        'PEY-P60GAG / PUY-P60': ['5'],
+        'PEV-P200 / PUV-P200': ['6.66'],
+        'PEV-P250 / PUV-P250': ['8.33'],
+        'MS-GS13/ MU-GS13': ['1'],
+        'MS-GS18/ MU-GS18': ['1.5'],
+        'MS-GS24/ MU-GS24': ['2'],
+        'MS-GS30/ MU-GS30': ['2.5'],
+        'MS-GS36/ MU-GS36': ['3'],
+        'PSA-RP71GA': ['2.3'],
+        'PSA-RP100GA': ['3.25'],
+        'PSA-RP125GA': ['4'],
+        'PSA-RP140GA': ['4.35'],
+        'PRC 200': ['6.8'],
+        'PRC 250': ['9.1'],
+        'PRC 300': ['10'],
+        'PRC 400': ['13.65'],
+        'PRC 500': ['18.2'],
+        'PRC 600': ['20'],
+        'PRC 900': ['28.5'],
+        'PEFY-P20VMAL-E': ['2.2', '0.63'],
+        'PEFY-P25VMAL-E': ['2.8', '0.80'],
+        'PEFY-P32VMAL-E': ['3.6', '1.02'],
+        'PEFY-P40VMAL-E': ['4.5', '1.28'],
+        'PEFY-P50VMAL-E': ['5.6', '1.59'],
+        'PEFY-P63VMAL-E': ['7.1', '2.02'],
+        'PEFY-P71VMAL-E': ['8', '2.27'],
+        'PEFY-P80VMAL-E': ['9', '2.56'],
+        'PEFY-P100VMAL-E': ['11.2', '3.18'],
+        'PEFY-P125VMAL-E': ['14', '3.98'],
+        'PEFY-P140VMAL-E': ['16', '4.55'],
+        'PEFY-P200VMHS-E': ['22.24', '6.37'],
+        'PEFY-P250VMHS-E': ['28', '7.96'],
+        'PUCY-P200YKA': ['22.24', '6.37'],
+        'PUCY-P250YKA': ['28', '7.96'],
+        'PUCY-P300YKA': ['33.5', '9.53'],
+        'PUCY-P350YKA': ['40', '11.37'],
+        'PUCY-P400YKA': ['44', '12.51'],
+        'PUCY-P450YKA': ['48', '13.65'],
+        'PUCY-P500YKA': ['56', '15.92'],
+        'PUCY-P550YSKA': ['61.5', '17.49'],
+        'PUCY-P600YSKA': ['68', '19.34'],
+        'PUCY-P650YSKA': ['72', '20.47'],
+        'PUCY-P700YSKA': ['76', '21.61'],
+        'PUCY-P750YSKA': ['81.5', '23.17'],
+        'PUCY-P800YSKA': ['88', '25.02'],
+        'PUCY-P850YSKA': ['92', '26.16']
+        // Add more mappings as needed
+    };
+
+    // Clear existing options in the ton select element
+    tonSelect.innerHTML = '';
+
+    // Populate ton options based on the selected model type
+    if (modelTons[typeValue]) {
+        modelTons[typeValue].forEach(function(ton) {
+            var option = document.createElement('option');
+            option.value = ton;
+            option.text = ton;
+            tonSelect.appendChild(option);
+        });
     }
 }
+
 
 
 function initializeModelOptions() {

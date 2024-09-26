@@ -133,3 +133,28 @@ th, td {
     background-color: #007bff;
     color: white;
   }
+  /* Ensure that radio buttons and labels are displayed inline without extra spacing */
+.radio-buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Adjust as needed */
+}
+
+.radio-buttons input[type="radio"] {
+    margin: 0; /* Remove default margin */
+    padding: 0; /* Remove default padding */
+}
+
+.radio-buttons label {
+    margin: 0; /* Remove default margin */
+    padding: 0; /* Remove default padding */
+    font-size: 16px; /* Adjust font size as needed */
+    cursor: pointer; /* Change cursor to pointer for better UX */
+}
+
+
+input[type="text"][disabled] {
+    background-color: #e9ecef; /* Styling for disabled input fields */
+    cursor: not-allowed; /* Change cursor to indicate non-editable field */
+}
+

@@ -150,11 +150,13 @@ app.get('/customers/:customerId', async (req, res) => {
 
 // Handle form submission for adding projects
 app.post('/add-project', async (req, res) => {
-  const { customer_id, project_name, project_type, category, subcategory,sales_person,contact } = req.body;
+  const { customer_id, project_name, project_type, category, subcategory,sales_person,contact,project_area } = req.body;
   try {
+    
+
     const projectResult = await pool.query(
-      'INSERT INTO project (customer_id, project_name, project_type, category, subcategory,salesperson_name,salesperson_contact) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-      [customer_id, project_name, project_type, category, subcategory,sales_person,contact]
+      'INSERT INTO project (customer_id, project_name, project_type, category, subcategory,salesperson_name,salesperson_contact,project_area) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+      [customer_id, project_name, project_type, category, subcategory,sales_person,contact,project_area]
     );
 
     const project = projectResult.rows[0];
@@ -165,14 +167,15 @@ app.post('/add-project', async (req, res) => {
   }
 });
 
+
 // Handle editing project details
 app.put('/edit-project/:id', async (req, res) => {
   const { id } = req.params;
-  const { customer_id, project_name, project_type, category, subcategory,sales_person,contact } = req.body;
+  const { customer_id, project_name, project_type, category, subcategory,sales_person,contact,project_area } = req.body;
   try {
     const result = await pool.query(
-      'UPDATE project SET customer_id = $1, project_name = $2, project_type = $3, category = $4, subcategory = $5, salesperson_name = $6, salesperson_contact = $7 WHERE project_id = $8 RETURNING *',
-      [customer_id, project_name, project_type, category, subcategory,sales_person,contact, id]
+      'UPDATE project SET customer_id = $1, project_name = $2, project_type = $3, category = $4, subcategory = $5, salesperson_name = $6, salesperson_contact = $7,project_area=$8 WHERE project_id = $9 RETURNING *',
+      [customer_id, project_name, project_type, category, subcategory,sales_person,contact,project_area, id]
     );
 
     const project = result.rows[0];
@@ -195,7 +198,7 @@ app.delete('/delete-project/:id', async (req, res) => {
   }
 });
 
-// Fetch all projects
+
 
 // Fetch all projects or search projects by quotation ID
 app.get('/projects', async (req, res) => {
@@ -209,7 +212,7 @@ app.get('/projects', async (req, res) => {
 
   if (quotation_id) {
       query += ' WHERE p.quotation_id ILIKE $1';
-      params = [quotation_id];
+      params = [`%${quotation_id}%`];
   } else if (customer_name) {
       query += ' WHERE c.customer_name ILIKE $1';
       params = [`%${customer_name}%`]; 
@@ -645,6 +648,87 @@ app.get('/api/cassettesi_template', async (req, res) => {
   }
 });
 
+app.get('/api/aircurtain_template', async (req, res) => {
+  const { quotationId } = req.query;
+
+  if (!quotationId) {
+    return res.status(400).json({ error: 'Quotation ID is required' });
+  }
+
+  try {
+    const result = await pool.query(`
+      SELECT
+        p.project_name AS project_name,
+        c.customer_name,
+        c.mobile_no,
+        c.email,
+        p.quotation_id,
+        p.salesperson_name,
+        p.salesperson_contact,
+        s.type,
+        s.model,
+        s.quantity,
+        s.unit_price,
+        s.total_price
+      FROM
+        customer c
+      JOIN
+        project p ON c.customer_id = p.customer_id
+      JOIN
+        supply s ON p.quotation_id = s.quotation_id
+      WHERE
+        p.quotation_id = $1 AND p.subcategory = 'air curtain'
+    `, [quotationId]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'No data found for the given quotation ID' });
+    }
+
+    res.json({ data: result.rows });
+  } catch (error) {
+    console.error('Error fetching data for cassette template:', error);
+    res.status(500).json({ error: 'Failed to fetch data' });
+  }
+});
+
+app.get('/api/custom_template', async (req, res) => {
+  const { quotationId } = req.query;
+
+  if (!quotationId) {
+    return res.status(400).json({ error: 'Quotation ID is required' });
+  }
+
+  try {
+    const result = await pool.query(`
+      SELECT
+        p.project_name AS project_name,
+        c.customer_name,
+        c.mobile_no,
+        c.email,
+        p.quotation_id,
+        p.salesperson_name,
+        p.salesperson_contact
+        
+      FROM
+        customer c
+      JOIN
+        project p ON c.customer_id = p.customer_id
+      
+      WHERE
+        p.quotation_id = $1 AND p.subcategory = 'custom'
+    `, [quotationId]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'No data found for the given quotation ID' });
+    }
+
+    res.json({ data: result.rows });
+  } catch (error) {
+    console.error('Error fetching data for cassette template:', error);
+    res.status(500).json({ error: 'Failed to fetch data' });
+  }
+});
+
 app.get('/api/ductsi_template', async (req, res) => {
   const { quotationId } = req.query;
 
@@ -872,6 +956,7 @@ app.get('/api/splitvilla_template', async (req, res) => {
         c.email,
         p.quotation_id,
         p.salesperson_name,
+        p.project_area,
         p.salesperson_contact,
         s.area,
         s.type,
@@ -916,6 +1001,7 @@ app.get('/api/ductvilla_template', async (req, res) => {
         c.email,
         p.quotation_id,
         p.salesperson_name,
+        p.project_area,
         p.salesperson_contact,
         s.area,
         s.type,
@@ -960,6 +1046,7 @@ app.get('/api/duct_split_villa_template', async (req, res) => {
         c.email,
         p.quotation_id,
         p.salesperson_name,
+        p.project_area,
         p.salesperson_contact,
         s.area,
         s.type,
@@ -2709,6 +2796,240 @@ app.get('/employees-expiring-soon-count', async (req, res) => {
       res.status(500).send('Server error');
   }
 });
+
+import { google } from 'googleapis';
+const oauth2Client = new google.auth.OAuth2(
+  '31715117103-9hpeqn94p8rvno7d8q60cht4sbspodtj.apps.googleusercontent.com', // Your Client ID
+  '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', // Your Client Secret
+  'http://localhost:3000/auth/google/callback' // Your Redirect URI
+);
+
+oauth2Client.setCredentials({
+  access_token: 'ya29.a0AcM612yKb81GIHvJ6VqHH08V5K0vFtodoOJPg9aQ6HX20Rt1PfbqBi1YMbc_ZKI_1uzfpBpGfgwn12bhNi-CbkbthGVzzoI5mXnS4W-sz5vMkD6zBSR57oNxo8196e2DwvVKmBr36JDTBkZ3g8LpXFuwZv3Ch7QNYpjD-MKHaCgYKAXESARMSFQHGX2MiadN5ErkkOpA0WDpdd8dd1A0175',
+  refresh_token: '1//031jeEF1DEqOnCgYIARAAGAMSNwF-L9Ir465puLnwBXMgdUzuHEHnpCrORPgBBTWz7wG0Vi6f3py-U4ZyCxVydVMCnyRrGIia-Z8'
+});
+// Step 1: Frontend redirects to Google OAuth URL
+app.get('/auth/google', (req, res) => {
+  
+
+  const authorizationUrl = oauth2Client.generateAuthUrl({
+    access_type: 'offline', // Necessary to receive a refresh token
+    scope: ['https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/documents'],
+  });
+
+  // Redirect the user to the Google Authorization URL
+  res.redirect(authorizationUrl);
+});
+global.tokens = null; // Initialize as null
+// Step 2: Backend exchanges the authorization code for tokens
+app.get('/auth/google/callback', async (req, res) => {
+  const { code } = req.query; // Get the authorization code from the query parameters
+
+  if (!code) {
+    return res.status(400).send('Authorization code is missing');
+  }
+
+  try {
+    const { tokens } = await oauth2Client.getToken(code);
+    
+    // Log the tokens
+    console.log('Access Token:', tokens.access_token);
+    console.log('Refresh Token:', tokens.refresh_token);
+
+    // Store tokens in a variable or database
+    // For simplicity, we'll store it in memory here
+    global.tokens = tokens;
+
+    // Set the credentials
+    oauth2Client.setCredentials(tokens);
+
+    // Send a success response
+    res.send('Authentication successful!');
+  } catch (error) {
+    console.error('Error retrieving access token:', error);
+    res.status(500).send('Error retrieving access token');
+  }
+});
+
+
+
+
+const drive = google.drive({ version: 'v3', auth: oauth2Client });
+
+export async function createGoogleDoc(req, res) {
+  const fileMetadata = {
+    'name': 'My New Quotation',
+    'mimeType': 'application/vnd.google-apps.document',
+  };
+
+  try {
+    const response = await drive.files.create({
+      resource: fileMetadata,
+      fields: 'id',
+    });
+    console.log('File ID:', response.data.id);
+    res.status(200).json({ fileId: response.data.id });
+  } catch (error) {
+    console.error('Error creating document:', error);
+    res.status(500).send('Error creating document');
+  }
+}
+
+
+
+async function refreshAccessToken() {
+  try {
+    const { credentials } = await oauth2Client.refreshToken(oauth2Client.credentials.refresh_token);
+    oauth2Client.setCredentials(credentials);
+    
+    // Update stored tokens
+    global.tokens = credentials; // Update global tokens
+    console.log('New Access Token:', credentials.access_token);
+    
+    // Optionally, save the new tokens to your database or environment variables
+  } catch (error) {
+    console.error('Error refreshing access token:', error);
+    throw error;
+  }
+}
+
+
+
+function isTokenExpired() {
+  const currentTime = new Date().getTime();
+  const expiryTime = oauth2Client.credentials.expiry_date;
+  return expiryTime <= currentTime;
+}
+
+
+
+app.post('/create-doc', createGoogleDoc);
+
+
+const docs = google.docs({ version: 'v1', auth: oauth2Client });
+
+// Function to fetch Google Doc content
+async function getDocumentContent(docId) {
+  try {
+    const response = await docs.documents.get({
+      documentId: docId,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching document content:', error);
+    throw error;
+  }
+}
+async function ensureValidToken() {
+  try {
+    const currentTime = new Date().getTime();
+    const expiryTime = oauth2Client.credentials.expiry_date;
+
+    if (!oauth2Client.credentials.access_token || expiryTime <= currentTime) {
+      // If the token is expired, refresh it
+      if (!oauth2Client.credentials.refresh_token) {
+        throw new Error('No refresh token available');
+      }
+
+      // Refresh the access token
+      const { credentials } = await oauth2Client.refreshAccessToken();
+      oauth2Client.setCredentials(credentials);
+
+      console.log('New Access Token:', credentials.access_token);
+    }
+  } catch (error) {
+    console.error('Error refreshing access token:', error);
+    throw error; // Propagate the error
+  }
+}
+
+// Example of using the function to get content
+app.get('/fetch-doc-content', async (req, res) => {
+  const docId = '1zhvwocfwzDLtuSG77JwWZeLTOKNelM1elfdbk6gFqSA'; // The ID of the document you want to fetch
+  try {
+    await ensureValidToken(); 
+    const docContent = await getDocumentContent(docId);
+    res.json(docContent); // Send the document content as a response
+  } catch (error) {
+    res.status(500).send('Error fetching document content');
+  }
+});
+
+app.get('/fetch-doc-supplyandinst', async (req, res) => {
+  const docId = '1oV0JbxYfxUWkvYvrGVaUDF1R5Hu5pXsUcLryQEGKjwQ'; // Document ID
+  try {
+    await ensureValidToken(); // Ensure Google Docs API access token is valid
+    const docContent = await getDocumentContent(docId); // Fetch the document content
+
+    // Initialize variables to hold the sections of content
+    let contentBeforeTable = [];
+    let contentAfterTable = [];
+    let isBeforeTable = true; // Flag to indicate which section we're in
+
+    // Iterate over the document content
+    docContent.body.content.forEach(element => {
+      if (element.paragraph && element.paragraph.elements) {
+        const paragraphText = element.paragraph.elements.map(e => e.textRun?.content || '').join('').trim();
+
+        // Check for marker headings
+        if (paragraphText === 'Start Before Table') {
+          isBeforeTable = true; // We are in the 'before table' section
+        } else if (paragraphText === 'Start After Table') {
+          isBeforeTable = false; // We are in the 'after table' section
+        } else {
+          // Push content into the appropriate section
+          if (isBeforeTable) {
+            contentBeforeTable.push(element); // Add this paragraph to 'before' section
+          } else {
+            contentAfterTable.push(element); // Add this paragraph to 'after' section
+          }
+        }
+      }
+    });
+
+    // Return the content to the front-end in JSON format (preserving original formatting)
+    res.json({
+      beforeTable: contentBeforeTable,
+      afterTable: contentAfterTable
+    });
+  } catch (error) {
+    console.error('Error fetching document content:', error);
+    res.status(500).send('Error fetching document content');
+  }
+});
+
+
+
+// Helper function to apply text styles
+function applyTextStyles(element) {
+  let text = element.textRun?.content || '';
+  if (element.textRun?.textStyle) {
+    const { bold, italic, underline, fontSize, foregroundColor } = element.textRun.textStyle;
+    let style = '';
+
+    if (bold) text = `<b>${text}</b>`;
+    if (italic) text = `<i>${text}</i>`;
+    if (underline) text = `<u>${text}</u>`;
+
+    if (fontSize?.magnitude) {
+      style += `font-size: ${fontSize.magnitude}pt; `;
+    }
+
+    if (foregroundColor?.color?.rgbColor) {
+      const { red = 0, green = 0, blue = 0 } = foregroundColor.color.rgbColor;
+      const rgb = `rgb(${Math.round(red * 255)}, ${Math.round(green * 255)}, ${Math.round(blue * 255)})`;
+      style += `color: ${rgb}; `;
+    }
+
+    if (style) {
+      text = `<span style="${style}">${text}</span>`;
+    }
+  }
+
+  return text;
+}
+
+
 
 
 app.listen(port, () => {

@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     try {
-        const response = await fetch(`/api/floorstand_template?quotationId=${quotationId}`);
+        const response = await fetch(`/api/aircurtain_template?quotationId=${quotationId}`);
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
@@ -25,14 +25,18 @@ function populateTable(data) {
     if (data.length > 0) {
         console.log("Customer Data: ", data[0]);
         const customerData = data[0];
-        document.getElementById('customerName').textContent = customerData.project_name;
-        document.getElementById('projectName').textContent = customerData.customer_name;
-        document.getElementById('customerMob').textContent = customerData.mobile_no;
-        document.getElementById('customerEmail').textContent = customerData.email;
-        document.getElementById('fromName').textContent = customerData.salesperson_name;
-        document.getElementById('fromMob').textContent = customerData.salesperson_contact;
-        document.getElementById('refNo').textContent = customerData.quotation_id;
-        document.getElementById('date').textContent = new Date().toLocaleDateString();
+        document.getElementById('customerName').textContent = customerData.customer_name || "\u00A0";
+        document.getElementById('projectName').textContent = customerData.project_name || "\u00A0";
+        document.getElementById('customerMob').textContent = customerData.mobile_no || "\u00A0";
+        document.getElementById('customerEmail').textContent = customerData.email || "\u00A0";
+        document.getElementById('fromName').textContent = customerData.salesperson_name || "\u00A0";
+        document.getElementById('fromMob').textContent = customerData.salesperson_contact || "\u00A0";
+        document.getElementById('refNo').textContent = customerData.quotation_id || "\u00A0";
+        document.getElementById('date').textContent = new Date().toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric'
+        });
 
         const tableBody = document.getElementById('supplyTableBody');
         const descriptions = {};
@@ -95,7 +99,7 @@ function populateTable(data) {
 }
 
 
-ocument.getElementById('printButton').addEventListener('click', function() {
+document.getElementById('printButton').addEventListener('click', function() {
     // Fetch the quotation ID and customer name
     const quotationId = document.getElementById('refNo').textContent.trim();
     const customerName = document.getElementById('projectName').textContent.trim();

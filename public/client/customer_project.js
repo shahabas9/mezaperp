@@ -27,7 +27,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         const response = await fetch(url);
         projects = await response.json();
 
-        projects.sort((a, b) => parseInt(b.quotation_id.split(' ')[1]) - parseInt(a.quotation_id.split(' ')[1]));
+        projects.sort((a, b) => {
+            const [idA, revA] = a.quotation_id.split('_');
+            const [idB, revB] = b.quotation_id.split('_');
+        
+            // Sort by the base Quotation ID in descending order
+            const numA = parseInt(idA.split(' ')[1]);
+            const numB = parseInt(idB.split(' ')[1]);
+            
+            if (numA !== numB) {
+                return numB - numA; // Descending order by base Quotation ID
+            }
+        
+            // If base Quotation IDs are equal, sort revisions in descending order
+            const revNumA = revA ? parseInt(revA.replace('RV', '')) : 0;
+            const revNumB = revB ? parseInt(revB.replace('RV', '')) : 0;
+            
+            return revNumB - revNumA; // Descending order by revision number
+        });
+        
         renderTable(currentPage);
         renderPagination();
     }
@@ -103,6 +121,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     async function fetchCustomers() {
         const response = await fetch('/customers');
         const customers = await response.json();
+    
+        // Sort customers by customer_id in descending order
+        customers.sort((a, b) => b.customer_id - a.customer_id);
+    
+        // Assuming customerNameSelect is the <select> element
         customers.forEach(customer => {
             const option = document.createElement('option');
             option.value = customer.customer_id;
@@ -110,6 +133,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             customerNameSelect.appendChild(option);
         });
     }
+    
 
     async function deleteProject(projectId) {
         const response = await fetch(`/delete-project/${projectId}`, { method: 'DELETE' });
@@ -148,18 +172,31 @@ document.addEventListener('DOMContentLoaded', async () => {
         projectForm.reset();
         projectForm.removeAttribute('data-project-id');
     });
-
+   
      // Form submission for adding/editing projects
      projectForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+    
+        // Show confirmation dialog
+        const confirmation = confirm("Are you sure you want to submit the project details?");
+        
+        // If the user clicks "No" (Cancel), close the form and do nothing
+        if (!confirmation) {
+            projectForm.classList.remove('show'); // Close the form (assuming 'show' class is used to display it)
+            return; // Stop further execution
+        }
+    
+        const quotationId = document.getElementById('quotation_id').value;
+        console.log('Quotation ID being sent:', quotationId);
         const formData = new FormData(projectForm);
         const projectId = projectForm.getAttribute('data-project-id'); // Get project ID from data attribute
         const customerName = document.getElementById('customer_name').value; // Get customer name separately
-
+    
         const projectData = {
             customer_id: formData.get('customer_name'),
             customer_name: customerName,
             project_name: formData.get('project_name'),
+            project_area: formData.get('project_area'),
             project_type: formData.get('project_type'),
             category: formData.get('category'),
             subcategory: formData.get('subcategory'),
@@ -167,7 +204,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             contact: formData.get('contact'),
             quotation_id: formData.get('quotation_id')
         };
-
+    
         let url;
         let method;
         if (projectId) {
@@ -179,7 +216,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             url = '/add-project';
             method = 'POST';
         }
-
+    
         const response = await fetch(url, {
             method,
             headers: {
@@ -187,10 +224,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             },
             body: JSON.stringify(projectData)
         });
-
+    
         if (response.ok) {
-            alert('Project details saved successfully.');
+            alert('Project details data saved successfully.');
             projectForm.reset();
+            window.location.reload();
             projectForm.classList.remove('show');
             const updatedProject = await response.json();
             if (projectId) {
@@ -198,17 +236,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             } else {
                 appendProjectRow(updatedProject);
             }
-            window.location.reload();
         } else {
-            alert('An error occurred while saving project details.');
+            alert('An error occurred while saving project details data.');
         }
     });
+    
 
     // Form submission for deleting projects
     projectTableBody.addEventListener('click', async (e) => {
         if (e.target.classList.contains('delete-btn')) {
             const projectId = e.target.dataset.projectId;
-            const confirmDelete = confirm('Are you sure you want to delete this project?');
+            const confirmDelete = confirm('Are you sure you want to delete this project details data?');
             if (confirmDelete) {
                 const response = await fetch(`/delete-project/${projectId}`, {
                     method: 'DELETE'
@@ -217,7 +255,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     alert('Project deleted successfully.');
                     document.getElementById(`projectRow_${projectId}`).remove();
                 } else {
-                    alert('An error occurred while deleting the project.');
+                    alert('An error occurred while deleting the project details data.');
                 }
             }
         } else if (e.target.classList.contains('edit-btn')) {
@@ -285,10 +323,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-
-
-    
-
     customerNameSelect.addEventListener('change', async () => {
         const customerId = customerNameSelect.value;
         if (customerId) {
@@ -305,6 +339,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     function fillFormForEdit(project) {
         customerNameSelect.value = project.customer_id;
         document.getElementById('project_name').value = project.project_name;
+        document.getElementById('project_area').value = project.project_area;
         document.getElementById('project_type').value = project.project_type;
         updateCategories();
         document.getElementById('category').value = project.category;
@@ -332,20 +367,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
 
         row.innerHTML = `
-            <td>${project.customer_name}</td>
+            <td>${formatText(project.customer_name)}</td>
             <td>${project.mobile_no}</td>
             <td>${project.quotation_id}</td>
             <td>${project.project_name}</td>
-            <td>${project.project_type}</td>
+            
             <td>${project.category}</td>
             <td>${formatText(project.subcategory)}</td>
             <td>${project.salesperson_name}</td>
-            <td>${project.salesperson_contact}</td>
+            
             <td>
                 <button class="edit-btn" data-project-id="${project.project_id}">Edit</button>
-                <button class="delete-btn" data-project-id="${project.project_id}">Delete</button>
                 <button class="modify-btn" data-project-id="${project.project_id}">Modify</button>
                 <button class="generate-btn" data-project-id="${project.project_id}">Generate</button>
+                <button class="delete-btn" data-project-id="${project.project_id}">Delete</button>
+                
             </td>
         `;
         projectTableBody.appendChild(row);
@@ -361,19 +397,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
     
         row.innerHTML = `
-            <td>${project.customer_name}</td>
+            <td>${formatText(project.customer_name)}</td>
             <td>${project.quotation_id || ''}</td>
             <td>${project.project_name}</td>
-            <td>${project.project_type}</td>
+            
             <td>${project.category}</td>
             <td>${formatText(project.subcategory)}</td>
             <td>${project.salesperson_name}</td>
-            <td>${project.salesperson_contact}</td>
+            
             <td>
                 <button class="edit-btn" data-project-id="${project.project_id}">Edit</button>
-                <button class="delete-btn" data-project-id="${project.project_id}">Delete</button>
                 <button class="modify-btn" data-project-id="${project.project_id}">Modify</button>
                 <button class="generate-btn" data-project-id="${project.project_id}">Generate</button>
+                <button class="delete-btn" data-project-id="${project.project_id}">Delete</button>
+                
             </td>
         `;
     }
@@ -383,6 +420,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     function fillFormForEdit(project) {
         document.getElementById('customer_name').value = project.customer_id;
         document.getElementById('project_name').value = project.project_name;
+        document.getElementById('project_area').value = project.project_area;
         document.getElementById('project_type').value = project.project_type;
         updateCategories();
         document.getElementById('category').value = project.category;
@@ -405,6 +443,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     async function fetchCustomers() {
         const response = await fetch('/customers');
         const customers = await response.json();
+    
+        // Sort customers by customer_id in descending order
+        customers.sort((a, b) => b.customer_id - a.customer_id);
+    
+        // Assuming customerNameSelect is the <select> element
         customers.forEach(customer => {
             const option = document.createElement('option');
             option.value = customer.customer_id;
@@ -412,6 +455,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             customerNameSelect.appendChild(option);
         });
     }
+    
 
     // Handle project type and category changes
     projectTypeSelect.addEventListener('change', updateCategories);
@@ -443,7 +487,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
     
         if (category === 'Supply') {
-            ['Ducted Split', 'VRF', 'FloorStand', 'Package Units'].forEach(optionText => {
+            ['Ducted Split', 'VRF', 'FloorStand', 'Package Units','Air Curtain'].forEach(optionText => {
                 addOption(subcategorySelect, optionText.toLowerCase(), formatOptionText(optionText));
             });
         } else if (category === 'Supply & Installation') {
@@ -451,7 +495,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 addOption(subcategorySelect, optionText.toLowerCase(), formatOptionText(optionText));
             });
         } else if (category === 'villa') {
-            ['Ducted Split', 'Split', 'VRF', 'Duct&Split', 'Warehouse'].forEach(optionText => {
+            ['Split','Ducted Split',  'VRF', 'Duct&Split', 'Warehouse'].forEach(optionText => {
                 addOption(subcategorySelect, optionText.toLowerCase(), formatOptionText(optionText));
             });
         } else if (category === 'Other') {
@@ -459,7 +503,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 addOption(subcategorySelect, optionText.toLowerCase().replace(/ /g, ''), formatOptionText(optionText));
             });
         } else if (category === 'other') {
-            ['BOQ', 'Spare Parts'].forEach(optionText => {
+            ['BOQ', 'Spare Parts','Custom'].forEach(optionText => {
                 addOption(subcategorySelect, optionText.toLowerCase().replace(/ /g, ''), formatOptionText(optionText));
             });
         }
@@ -508,8 +552,8 @@ document.addEventListener('click', function(event) {
     if (event.target.classList.contains('modify-btn')) {
         const projectId = event.target.getAttribute('data-project-id');
         const projectRow = document.getElementById(`projectRow_${projectId}`);
-        const category = projectRow.querySelector('td:nth-child(6)').textContent.trim();
-        const subCategory = projectRow.querySelector('td:nth-child(7)').textContent.trim();
+        const category = projectRow.querySelector('td:nth-child(5)').textContent.trim();
+        const subCategory = projectRow.querySelector('td:nth-child(6)').textContent.trim();
         const quotationId = projectRow.querySelector('td:nth-child(3)').textContent.trim();
 
         if (category === 'Supply') {
@@ -524,6 +568,8 @@ document.addEventListener('click', function(event) {
             window.location.href = `fan_edit.html?quotationId=${quotationId}`;
         }else if (subCategory === 'BOQ') {
             window.location.href = `boq_edit.html?quotationId=${quotationId}`;
+        }else if (subCategory === 'Custom') {
+            window.location.href = `https://docs.google.com/document/d/1zhvwocfwzDLtuSG77JwWZeLTOKNelM1elfdbk6gFqSA/edit`;
         }else if (subCategory === 'Spare Parts') {
             window.location.href = `spare_parts_edit.html?quotationId=${quotationId}`;
         }else {
@@ -536,8 +582,8 @@ document.addEventListener('click', function(event) {
     if (event.target.classList.contains('generate-btn')) {
         const projectId = event.target.getAttribute('data-project-id');
         const projectRow = document.getElementById(`projectRow_${projectId}`);
-        const category = projectRow.querySelector('td:nth-child(6)').textContent.trim();
-        const subcategory = projectRow.querySelector('td:nth-child(7)').textContent.trim();
+        const category = projectRow.querySelector('td:nth-child(5)').textContent.trim();
+        const subcategory = projectRow.querySelector('td:nth-child(6)').textContent.trim();
         const quotationId = projectRow.querySelector('td:nth-child(3)').textContent.trim();
 
         let redirectUrl = '';
@@ -550,6 +596,8 @@ document.addEventListener('click', function(event) {
                 redirectUrl = `duct_supply_template.html?quotationId=${quotationId}`;
             } else if (subcategory === 'Floorstand') {
                 redirectUrl = `floorstand_template.html?quotationId=${quotationId}`;
+            }else if (subcategory === 'Air Curtain') {
+                redirectUrl = `air_curtain.html?quotationId=${quotationId}`;
             } else if (subcategory === 'Package Units') {
                 redirectUrl = `packageunit_template.html?quotationId=${quotationId}`;
             } else if (subcategory === 'Vrf') {
@@ -585,6 +633,8 @@ document.addEventListener('click', function(event) {
             }
         } else if (subcategory === 'AMC') {
             redirectUrl = `amc_template.html?quotationId=${quotationId}`;
+        } else if (subcategory === 'Custom') {
+            redirectUrl = `custom_quotation.html?quotationId=${quotationId}`;
         }else if (subcategory === 'Fan') {
             redirectUrl =  `fan_template.html?quotationId=${quotationId}`;
         }else if (subcategory === 'BOQ') {

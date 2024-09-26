@@ -67,22 +67,26 @@ async function initializeDataOptions() {
   try {
     const response = await fetch('/api/customers_boq');
     const customers = await response.json();
-    console.log('Customers:', customers);
+        console.log('Customers (Before Sorting):', customers);
 
-    populateDropdown('customer', customers, 'customer_id', 'customer_name');
+        // Sort customers by customer_id in descending order
+        customers.sort((a, b) => b.customer_id - a.customer_id);
+        console.log('Customers (After Sorting):', customers);
 
-    const customerDropdown = $('#customer');
+        populateDropdown('customer', customers, 'customer_id', 'customer_name');
 
-    // Trigger change event to populate the quotation dropdown
-    if (customerDropdown.find('option').length > 0) {
-      customerDropdown.val(customerDropdown.find('option:first').val()).trigger('change');
+        const customerDropdown = $('#customer');
+
+        // Trigger change event to populate the quotation dropdown
+        if (customerDropdown.find('option').length > 0) {
+            customerDropdown.val(customerDropdown.find('option:first').val()).trigger('change');
+        }
+
+        // Add event listener to the customer dropdown
+        customerDropdown.on('change', updateQuotationDropdown);
+    } catch (error) {
+        console.error('Error fetching customers:', error);
     }
-
-    // Add event listener to the customer dropdown
-    customerDropdown.on('change', updateQuotationDropdown);
-  } catch (error) {
-    console.error('Error fetching customers:', error);
-  }
 }
 
 async function updateQuotationDropdown() {
@@ -128,7 +132,13 @@ function populateDropdown(dropdownId, items, valueKey, textKey) {
 
   async function handleSubmit(event) {
     event.preventDefault();
-
+    // Show confirmation dialog
+    const confirmation = confirm("Are you sure you want to submit the supply data?");
+    
+    // If the user clicks "No" (Cancel), stop further execution
+    if (!confirmation) {
+        return;
+    }
     const customerId = document.getElementById('customer').value;
     const quotationId = document.getElementById('quotation').value;
     const tableRows = document.querySelectorAll('#supplyInstTable tbody tr');
@@ -183,7 +193,7 @@ function populateDropdown(dropdownId, items, valueKey, textKey) {
 
         const result = await response.json();
         alert('Data submitted successfully');
-        window.location.reload();
+        window.location.href = 'customer_project.html';
     } catch (error) {
         console.error('Error submitting form:', error);
         alert('Failed to submit data');

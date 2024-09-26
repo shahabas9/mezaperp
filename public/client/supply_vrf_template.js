@@ -25,14 +25,18 @@ function populateTable(data) {
     if (data.length > 0) {
         console.log("Customer Data: ", data[0]);
         const customerData = data[0];
-        document.getElementById('customerName').textContent = customerData.project_name;
-        document.getElementById('projectName').textContent = customerData.customer_name;
-        document.getElementById('customerMob').textContent = customerData.mobile_no;
-        document.getElementById('customerEmail').textContent = customerData.email;
-        document.getElementById('fromName').textContent = customerData.salesperson_name;
-        document.getElementById('fromMob').textContent = customerData.salesperson_contact;
-        document.getElementById('refNo').textContent = customerData.quotation_id;
-        document.getElementById('date').textContent = new Date().toLocaleDateString();
+        document.getElementById('customerName').textContent = customerData.customer_name || "\u00A0";
+        document.getElementById('projectName').textContent = customerData.project_name || "\u00A0";
+        document.getElementById('customerMob').textContent = customerData.mobile_no || "\u00A0";
+        document.getElementById('customerEmail').textContent = customerData.email || "\u00A0";
+        document.getElementById('fromName').textContent = customerData.salesperson_name || "\u00A0";
+        document.getElementById('fromMob').textContent = customerData.salesperson_contact || "\u00A0";
+        document.getElementById('refNo').textContent = customerData.quotation_id || "\u00A0";
+        document.getElementById('date').textContent = new Date().toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric'
+        });
 
         const tableBody = document.getElementById('supplyTableBody');
         const descriptions = {};
