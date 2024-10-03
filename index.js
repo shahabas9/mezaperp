@@ -2575,7 +2575,7 @@ app.get('/projects_agr/:id', async (req, res) => {
   const { id } = req.params;
   try {
       const result = await pool.query(`
-          SELECT ap.sl_no, c.customer_name, p.quotation_id, ap.agreement_id, ap.id_number, ap.project_location, ap.project_type, ap.category, ap.subcategory
+          SELECT ap.sl_no, c.customer_name,c.mobile_no, p.quotation_id, ap.agreement_id, ap.id_number, ap.project_location, ap.project_type, ap.category, ap.subcategory
           FROM agreement_project ap
           JOIN customer c ON ap.customer_id = c.customer_id
           JOIN project p ON ap.quotation_id = p.quotation_id
@@ -2612,6 +2612,7 @@ app.get('/agreement', async (req, res) => {
           ap.category, 
           ap.subcategory, 
           c.customer_name, 
+          c.mobile_no,
           p.quotation_id
       FROM agreement_project ap
       JOIN project p ON ap.quotation_id = p.quotation_id
@@ -2805,8 +2806,8 @@ const oauth2Client = new google.auth.OAuth2(
 );
 
 oauth2Client.setCredentials({
-  access_token: 'ya29.a0AcM612yKb81GIHvJ6VqHH08V5K0vFtodoOJPg9aQ6HX20Rt1PfbqBi1YMbc_ZKI_1uzfpBpGfgwn12bhNi-CbkbthGVzzoI5mXnS4W-sz5vMkD6zBSR57oNxo8196e2DwvVKmBr36JDTBkZ3g8LpXFuwZv3Ch7QNYpjD-MKHaCgYKAXESARMSFQHGX2MiadN5ErkkOpA0WDpdd8dd1A0175',
-  refresh_token: '1//031jeEF1DEqOnCgYIARAAGAMSNwF-L9Ir465puLnwBXMgdUzuHEHnpCrORPgBBTWz7wG0Vi6f3py-U4ZyCxVydVMCnyRrGIia-Z8'
+  access_token: ' ya29.a0AcM612zWTAgdqwcz-6tx8W3_phTnCdeOFPaiMqW9iEgt2b4_uuDRWlK7MBvhcxFt0aLML494MvSESGGeeTUUaO2N531pG5tEdQREio7tyWiV5n1fcgEYwbOsHOvoqcgw5ToCj7mQXnHZG7l6jTLn2RBlpLPt3v-c7jzQBOQ9aCgYKAUISARMSFQHGX2Mi9j5oK9-BWPEb0P6x3kVPBA0175',
+  refresh_token: '1//03BjPGFIicqfMCgYIARAAGAMSNwF-L9IrSHb_JwweO0tRCKw6lbPAFQNHSbthUbq5t21cj9kFe8V7nZn-v8O6P3-aCapnCkWsSe8'
 });
 // Step 1: Frontend redirects to Google OAuth URL
 app.get('/auth/google', (req, res) => {
@@ -2998,39 +2999,229 @@ app.get('/fetch-doc-supplyandinst', async (req, res) => {
   }
 });
 
+app.post('/add-product', async (req, res) => {
+  const { product_name, model, capacity } = req.body;
+  try {
+      await pool.query(`
+          INSERT INTO product (product_name, model, capacity)
+          VALUES ($1, $2, $3)
+      `, [product_name, model, capacity]);
+      res.status(201).send('Project Added');
+  } catch (err) {
+      console.error(err);
+      res.status(500).send('Server Error');
+  }
+});
+
+app.put('/edit-product/:id', async (req, res) => {
+  const { id } = req.params;  // Should fetch the id correctly
+  const { product_name, model, capacity } = req.body;
+
+  console.log("Received Product ID:", id);  // Debugging the received product ID
+
+  try {
+      await pool.query(`
+          UPDATE product
+          SET product_name = $1, model = $2, capacity = $3
+          WHERE product_id = $4
+      `, [product_name, model, capacity, id]);  // Ensure id is used in the query
+      res.status(200).send('Product Updated');
+  } catch (err) {
+      console.error(err);
+      res.status(500).send('Server Error');
+  }
+});
 
 
-// Helper function to apply text styles
-function applyTextStyles(element) {
-  let text = element.textRun?.content || '';
-  if (element.textRun?.textStyle) {
-    const { bold, italic, underline, fontSize, foregroundColor } = element.textRun.textStyle;
-    let style = '';
+app.get('/products/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+      const result = await pool.query(`
+          SELECT 
+          product_id,
+          product_name, 
+          model,
+          capacity 
+          FROM product
+          
+          WHERE product_id = $1
+      `, [id]);
+      res.json(result.rows[0]);
+  } catch (err) {
+      console.error(err);
+      res.status(500).send('Server Error');
+  }
+});
 
-    if (bold) text = `<b>${text}</b>`;
-    if (italic) text = `<i>${text}</i>`;
-    if (underline) text = `<u>${text}</u>`;
+// Delete a project
+app.delete('/delete-product/:id', async (req, res) => {
+  const { id } = req.params;
+  console.log(`Deleting product with ID: ${id}`);
+  try {
+      await pool.query('DELETE FROM product WHERE product_id = $1', [id]);
+      res.status(200).send('Project Deleted');
+  } catch (err) {
+      console.error(err);
+      res.status(500).send('Server Error');
+  }
+});
 
-    if (fontSize?.magnitude) {
-      style += `font-size: ${fontSize.magnitude}pt; `;
-    }
+app.get('/products', async (req, res) => {
+  const agreementId = req.query.agreement_id;
+  let query = `
+      SELECT 
+        
+          product_id,
+          product_name, 
+          model,
+          capacity 
+          
+      FROM product 
+      
+  `;
+  let params = [];
 
-    if (foregroundColor?.color?.rgbColor) {
-      const { red = 0, green = 0, blue = 0 } = foregroundColor.color.rgbColor;
-      const rgb = `rgb(${Math.round(red * 255)}, ${Math.round(green * 255)}, ${Math.round(blue * 255)})`;
-      style += `color: ${rgb}; `;
-    }
-
-    if (style) {
-      text = `<span style="${style}">${text}</span>`;
-    }
+  if (agreementId) {
+      query += ' WHERE ap.agreement_id = $1';
+      params = [agreementId];
   }
 
-  return text;
-}
+  try {
+      const result = await pool.query(query, params);
+      res.json(result.rows);
+  } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'An error occurred while fetching projects.' });
+  }
+});
 
 
+app.get('/api/products', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT product_name, model, capacity FROM product');
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch products' });
+  }
+});
 
+app.post('/add-sales', async (req, res) => {
+  const { person_name, contact } = req.body;
+  try {
+      await pool.query(`
+          INSERT INTO sales (person_name, contact)
+          VALUES ($1, $2)
+      `, [person_name, contact]);
+      res.status(201).send('Project Added');
+  } catch (err) {
+      console.error(err);
+      res.status(500).send('Server Error');
+  }
+});
+
+app.put('/edit-sales/:id', async (req, res) => {
+  const { id } = req.params;  // Should fetch the id correctly
+  const { person_name, contact } = req.body;
+
+  console.log("Received Product ID:", id);  // Debugging the received product ID
+
+  try {
+      await pool.query(`
+          UPDATE sales
+          SET person_name = $1, contact = $2
+          WHERE sales_id = $3
+      `, [person_name, contact, id]);  // Ensure id is used in the query
+      res.status(200).send('Product Updated');
+  } catch (err) {
+      console.error(err);
+      res.status(500).send('Server Error');
+  }
+});
+
+
+app.get('/sales/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+      const result = await pool.query(`
+          SELECT 
+          sales_id,
+          person_name, 
+          contact
+           
+          FROM sales
+          
+          WHERE sales_id = $1
+      `, [id]);
+      res.json(result.rows[0]);
+  } catch (err) {
+      console.error(err);
+      res.status(500).send('Server Error');
+  }
+});
+
+// Delete a project
+app.delete('/delete-sales/:id', async (req, res) => {
+  const { id } = req.params;
+  console.log(`Deleting product with ID: ${id}`);
+  try {
+      await pool.query('DELETE FROM sales WHERE sales_id = $1', [id]);
+      res.status(200).send('Project Deleted');
+  } catch (err) {
+      console.error(err);
+      res.status(500).send('Server Error');
+  }
+});
+
+app.get('/sales', async (req, res) => {
+  const agreementId = req.query.agreement_id;
+  let query = `
+      SELECT 
+        
+          sales_id,
+          person_name, 
+          contact
+         
+          
+      FROM sales 
+      
+  `;
+  let params = [];
+
+  if (agreementId) {
+      query += ' WHERE ap.agreement_id = $1';
+      params = [agreementId];
+  }
+
+  try {
+      const result = await pool.query(query, params);
+      res.json(result.rows);
+  } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'An error occurred while fetching projects.' });
+  }
+});
+
+
+app.get('/api/sales', async (req, res) => {
+  try {
+      const result = await pool.query('SELECT person_name, contact FROM sales');
+      res.json(result.rows); // Send the data back as JSON
+  } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server Error');
+  }
+});
+
+app.get('/config.json', (req, res) => {
+  // Serve the config.json file
+  fs.readFile('./config.json', 'utf8', (err, data) => {
+      if (err) {
+          res.status(500).send('Error reading config file');
+      } else {
+          res.send(data);
+      }
+  });
+});
 
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);

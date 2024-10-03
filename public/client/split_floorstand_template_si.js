@@ -64,14 +64,13 @@ function populateTable(data) {
             descriptions[description].count++;
             descriptions[description].rows.push(item);
 
-            // Check if ton value is a valid number
             const tonValue = parseFloat(item.ton);
             const quantity = parseFloat(item.quantity);
 
             if (!isNaN(tonValue)) {
                 const tonQuantity = tonValue * quantity;
                 totalQuantity += tonQuantity;
-                totalTonQuantity += quantity; // Only add valid quantity if ton is a valid number
+                totalTonQuantity += quantity;
             }
 
             totalSum += parseFloat(item.total_price);
@@ -94,7 +93,6 @@ function populateTable(data) {
                     row.appendChild(descriptionCell);
                 }
 
-                // Create row with data
                 row.innerHTML += `
                     <td>${item.ton}</td>
                     <td>${item.quantity}</td>
@@ -106,7 +104,6 @@ function populateTable(data) {
             });
         });
 
-        // Add the row with merged cells for totals
         const totalRow = document.createElement('tr');
         totalRow.innerHTML = `
             <td colspan="1"><b>Total</b></td>
@@ -115,10 +112,8 @@ function populateTable(data) {
             <td colspan="2"><b id="totalAmount">QAR ${totalSum.toLocaleString()}</b></td>
         `;
         tableBody.appendChild(totalRow);
-          
         
-        
-        // Add the discount row
+        // Add the discount row (Initially hidden)
         const discountRow = document.createElement('tr');
         discountRow.innerHTML = `
             <td colspan="3" style="text-align: center;">
@@ -128,35 +123,37 @@ function populateTable(data) {
                 <b>QAR</b> <input type="text" id="amountInput" placeholder="Enter amount" class="no-border" style="font-weight: bold; height: 25px; font-size: 15.5px; width: 150px">
             </td>
         `;
-        discountRow.id = 'totalAmountContainer'; // Add ID for referencing
-        tableBody.appendChild(discountRow); // Initially visible, but user input controls behavior
+        discountRow.id = 'totalAmountContainer';
+        discountRow.style.display = 'none';  // Initially hidden
+        tableBody.appendChild(discountRow);
 
-        // Add event listeners to the input
+        // Add a discount button
+        const discountButton = document.createElement('button');
+        discountButton.textContent = 'Apply Discount';
+        discountButton.classList.add('hide-on-print');
+        discountButton.style.marginTop = '10px';
+        discountButton.addEventListener('click', () => {
+            discountRow.style.display = discountRow.style.display === 'none' ? '' : 'none';
+        });
+        tableBody.appendChild(discountButton);
+
         const amountInput = document.getElementById('amountInput');
         const totalAmountElement = document.getElementById('totalAmount');
-        const totalAmountContainer = document.getElementById('totalAmountContainer');
 
         if (amountInput) {
             amountInput.addEventListener('blur', formatAmount);
-            amountInput.addEventListener('input', checkTotalDiscount); // Check discount on input
+            amountInput.addEventListener('input', checkTotalDiscount);
         }
 
-        // Function to check the discount row and toggle strikethrough
         function checkTotalDiscount() {
             const amountInputValue = amountInput.value.trim();
-
             if (amountInputValue === '') {
-                // Clear the input, hide the discount row, and remove strikethrough
-                totalAmountContainer.style.display = 'none'; // Hide the discount row
-                totalAmountElement.style.textDecoration = 'none'; // Remove strikethrough
+                totalAmountElement.style.textDecoration = 'none';
             } else {
-                // Show the discount row and apply the strikethrough
-                totalAmountContainer.style.display = ''; // Keep the discount row visible
-                totalAmountElement.style.textDecoration = 'line-through'; // Strikethrough
+                totalAmountElement.style.textDecoration = 'line-through';
             }
         }
 
-        // Function to format the input value with commas
         function formatAmount() {
             const value = parseFloat(this.value.replace(/,/g, ''));
             if (!isNaN(value)) {
@@ -165,6 +162,27 @@ function populateTable(data) {
         }
     }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('./config.json')
+        .then(response => response.json())
+        .then(data => {
+            // Update contact details
+            document.getElementById('phoneNumber').textContent = data.phone;
+            document.getElementById('emailAddress').textContent = data.email;
+            document.getElementById('poBox').textContent = data.po_box;
+            document.getElementById('phoneNumberArabic').textContent = data.phone;
+            document.getElementById('emailAddressArabic').textContent = data.email;
+            document.getElementById('poBoxArabic').textContent = data.po_box_arabic;
+
+            // Update logos
+            document.getElementById('leftLogo').src = data.left_logo;
+            document.getElementById('centerLogo').src = data.center_logo;
+            document.getElementById('rightLogo').src = data.right_logo;
+        })
+        .catch(error => console.error('Error loading data:', error));
+});
+
 
 
 

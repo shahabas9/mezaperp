@@ -334,7 +334,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    salePersonSelect.addEventListener('change', updateContact);
+    
 
     function fillFormForEdit(project) {
         customerNameSelect.value = project.customer_id;
@@ -460,7 +460,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Handle project type and category changes
     projectTypeSelect.addEventListener('change', updateCategories);
     categorySelect.addEventListener('change', updateSubcategories);
-    salePersonSelect.addEventListener('change', updateContact);
+    
 
     function updateCategories() {
         const projectType = projectTypeSelect.value;
@@ -509,18 +509,33 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
     
-    function updateContact() {
-        const contact = salePersonSelect.value;
-        contactSelect.innerHTML = '';
+    fetch('/api/sales')
+        .then(response => response.json())
+        .then(data => {
+            // Populate the sales person select
+            data.forEach(sale => {
+                const option = document.createElement('option');
+                option.value = sale.person_name;
+                option.textContent = sale.person_name;
+                salePersonSelect.appendChild(option);
+            });
 
-        if (contact === 'Ahmad Khaled') {
-            addOption(contactSelect, '55666980', '55666980');
-        } else if (contact === 'Abdulrahman') {
-            addOption(contactSelect, '55666950', '55666950');
-        } else if (contact === 'Saad Alkhalil') {
-            addOption(contactSelect, '66222700', '66222700');
-        }
-    }
+            // Update contact when a sales person is selected
+            salePersonSelect.addEventListener('change', function() {
+                const selectedPerson = salePersonSelect.value;
+                contactSelect.innerHTML = ''; // Clear previous contacts
+
+                const selectedSale = data.find(sale => sale.person_name === selectedPerson);
+                if (selectedSale) {
+                    const option = document.createElement('option');
+                    option.value = selectedSale.contact;
+                    option.textContent = selectedSale.contact;
+                    contactSelect.appendChild(option);
+                }
+            });
+        })
+        .catch(error => console.error('Error fetching sales data:', error));
+
 
     function addOption(selectElement, value, text) {
         const option = document.createElement('option');
@@ -533,7 +548,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
      // Initialize the categories and subcategories
      updateCategories();
-     updateContact();
+     
 
     await fetchCustomers();
     await fetchProjects();
@@ -556,27 +571,35 @@ document.addEventListener('click', function(event) {
         const subCategory = projectRow.querySelector('td:nth-child(6)').textContent.trim();
         const quotationId = projectRow.querySelector('td:nth-child(3)').textContent.trim();
 
+        let redirectUrl = '';
+
         if (category === 'Supply') {
-            window.location.href = `supply_edit.html?quotationId=${quotationId}`;
+            redirectUrl = `supply_edit.html?quotationId=${quotationId}`;
         } else if (category === 'villa') {
-            window.location.href = `villa_edit.html?quotationId=${quotationId}`;
+            redirectUrl = `villa_edit.html?quotationId=${quotationId}`;
         } else if (category === 'Supply & Installation') {
-            window.location.href = `supply_inst_edit.html?quotationId=${quotationId}`;
-        }else if (subCategory === 'AMC') {
-            window.location.href = `amc_edit.html?quotationId=${quotationId}`;
-        }else if (subCategory === 'Fan') {
-            window.location.href = `fan_edit.html?quotationId=${quotationId}`;
-        }else if (subCategory === 'BOQ') {
-            window.location.href = `boq_edit.html?quotationId=${quotationId}`;
-        }else if (subCategory === 'Custom') {
-            window.location.href = `https://docs.google.com/document/d/1zhvwocfwzDLtuSG77JwWZeLTOKNelM1elfdbk6gFqSA/edit`;
-        }else if (subCategory === 'Spare Parts') {
-            window.location.href = `spare_parts_edit.html?quotationId=${quotationId}`;
-        }else {
+            redirectUrl = `supply_inst_edit.html?quotationId=${quotationId}`;
+        } else if (subCategory === 'AMC') {
+            redirectUrl = `amc_edit.html?quotationId=${quotationId}`;
+        } else if (subCategory === 'Fan') {
+            redirectUrl = `fan_edit.html?quotationId=${quotationId}`;
+        } else if (subCategory === 'BOQ') {
+            redirectUrl = `boq_edit.html?quotationId=${quotationId}`;
+        } else if (subCategory === 'Custom') {
+            redirectUrl = `https://docs.google.com/document/d/1zhvwocfwzDLtuSG77JwWZeLTOKNelM1elfdbk6gFqSA/edit`;
+        } else if (subCategory === 'Spare Parts') {
+            redirectUrl = `spare_parts_edit.html?quotationId=${quotationId}`;
+        } else {
             alert('Category not recognized. No action taken.');
+        }
+
+        // Open the URL in a new tab if a valid URL was generated
+        if (redirectUrl) {
+            window.open(redirectUrl, '_blank');  // Open in a new tab
         }
     }
 });
+
 
 document.addEventListener('click', function(event) {
     if (event.target.classList.contains('generate-btn')) {
@@ -647,7 +670,7 @@ document.addEventListener('click', function(event) {
 
         // Redirect if a valid URL was generated
         if (redirectUrl) {
-            window.location.href = redirectUrl;
+            window.open(redirectUrl, '_blank');  // Open in a new tab
         }
     }
 });

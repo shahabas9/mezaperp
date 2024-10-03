@@ -199,15 +199,23 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
 
-        // Event listener for customer selection
-        $('#customer_name').on('change', function() {
-            const customerId = $(this).val();
-            fetchQuotations(customerId);
-        });
+        // Existing search button event listener
+    searchBtn.addEventListener('click', async () => {
+        await performSearch();
+    });
 
-        // Initial data fetch
-        fetchCustomers();
-    }); 
+    // New event listener for the input fields
+    const inputFields = [document.getElementById('searchInput'), document.getElementById('searchName'), document.getElementById('searchMobile')];
+
+    inputFields.forEach(inputField => {
+        inputField.addEventListener('keydown', async (event) => {
+            if (event.key === 'Enter') {
+                await performSearch();
+            }
+        });
+    });
+   });
+    
 
 
     async function deleteProject(projectId) {
@@ -310,6 +318,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         row.id = `projectRow_${agreement.project_id}`;
         row.innerHTML = `
             <td>${agreement.customer_name}</td>
+            <td>${agreement.mobile_no}</td>
             <td>${agreement.quotation_id}</td>
             <td>${agreement.agreement_id}</td>
             <td>${agreement.id_number}</td>

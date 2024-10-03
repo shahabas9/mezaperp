@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details</title>
+    <link rel="stylesheet" href="./stylesheet/customer_project.css" />
+
+   
+
+</head>
+<body>
+    <h1>Product Details</h1>
+    <button onclick="goBack()" style="padding: 10px 14px;">Back</button>
+    <button id="homebutton"><a href="./Dashboard.html"  class="button-link">Home</a></button>
+    <div class="container">
+        
+        <input type="text" id="searchInput" placeholder="Enter product" />
+        <input type="text" id="searchName" placeholder="Enter model" />
+        
+        <button id="searchBtn">Search</button>
+        <button id="addProjectBtn">Add Product</button>
+        
+        <form id="projectForm" class="form-popup">
+            <button type="button" class="close-btn" id="closeFormBtn">X</button>
+
+            <label for="product_name">Product Name:</label>
+            <input type="text" id="product_name" name="product_name" placeholder="product name" >
+            
+            <label for="model">Model:</label>
+            <input type="text" id="model" name="model" placeholder="model name">
+
+            <label for="capacity">Capacity:</label>
+            <input type="text" id="capacity" name="capacity" placeholder="Capacity">
+
+           
+            <button type="submit">Submit</button>
+        </form>
+        <table id="projectTable">
+            <thead>
+                <tr>
+                    <th>Product Name</th>
+                    <th>Model</th>
+                    <th>Capacity</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="projectTableBody">
+                <!-- Project rows will be dynamically added here -->
+            </tbody>
+        </table>
+        <div id="pagination" class="pagination"></div>
+    </div>
+    </div>
+    <script src="./client/products.js"></script>
+</body>
+</html>

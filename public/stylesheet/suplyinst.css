@@ -159,7 +159,9 @@ body{
 
 @media print {
   #togglePoint,
-  .hide-print {
+  #edit-button,
+  .hide-print,
+  .hide-on-print {
       display: none;
   }
 }
