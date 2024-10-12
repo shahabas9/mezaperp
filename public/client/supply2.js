@@ -176,7 +176,7 @@ function updateTotal(element) {
     var unitPrice = parseFloat(priceInput.value) || 0;
     var quantity = parseFloat(quantityInput.value) || 0;
     
-    totalInput.value = (unitPrice * quantity).toFixed(2); // Calculate and set the total price
+    totalInput.value = (unitPrice * quantity); // Calculate and set the total price
 }
 
 // Handle form submission

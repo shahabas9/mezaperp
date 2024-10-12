@@ -215,6 +215,46 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
    });
+
+   async function performSearch() {
+    let agreementId = document.getElementById('searchInput').value.trim();
+    const customerName = document.getElementById('searchName').value.trim();
+    const mobileNumber = document.getElementById('searchMobile').value.trim();
+
+    let query = '';
+    let params = [];
+
+    if (agreementId !== '') {
+        // Normalize the agreement ID (similar to quotation normalization)
+        agreementId = agreementId.replace(/\s+/g, '').toUpperCase(); // Remove spaces and convert to uppercase
+
+        // Handle cases like "1", "01", "AGR001", "agr001", etc.
+        if (agreementId.startsWith('AGR')) {
+            // Ensure "AGR" has the correct number of digits
+            agreementId = 'AGR/' + agreementId.substring(3).padStart(3, '0');
+        } else {
+            // Assume it's a number and format it
+            agreementId = 'AGR/' + agreementId.padStart(3, '0');
+        }
+
+        query = `/agreement?agreement_id=${encodeURIComponent(agreementId)}`;
+    } else if (customerName !== '') {
+        query = `/agreement?customer_name=${encodeURIComponent(customerName)}`;
+    } else if (mobileNumber !== '') {
+        query = `/agreement?mobile_no=${encodeURIComponent(mobileNumber)}`;
+    } else {
+        // If no input is provided, fetch all agreements
+        await fetchProjects();
+        return;
+    }
+
+    const projects = await fetch(query).then(response => response.json());
+    projectTableBody.innerHTML = ''; // Clear existing rows
+    projects.forEach(project => {
+        appendProjectRow(project);
+    });
+}
+
     
 
 
@@ -396,3 +436,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     await fetchProjects(); // Fetch initial projects
    
 });
+
+
+function goBack() {
+    window.history.back();
+}

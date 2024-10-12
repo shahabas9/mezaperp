@@ -196,7 +196,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     searchBtn.addEventListener('click', async () => {
         await performSearch();
     });
-
+    
     const inputFields = [document.getElementById('searchInput'), document.getElementById('searchName')];
     inputFields.forEach(inputField => {
         inputField.addEventListener('keydown', async (event) => {
@@ -205,34 +205,28 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
     });
-
+    
     async function performSearch() {
-        let quotationId = document.getElementById('searchInput').value.trim();
-        const customerName = document.getElementById('searchName').value.trim();
-
+        let productName = document.getElementById('searchInput').value.trim();
+        const model = document.getElementById('searchName').value.trim();
+    
         let query = '';
-        if (quotationId !== '') {
-            quotationId = quotationId.replace(/\s+/g, '').toUpperCase();
-            if (quotationId.startsWith('QT')) {
-                quotationId = 'QT ' + quotationId.substring(2).padStart(3, '0');
-            } else {
-                quotationId = 'QT ' + quotationId.padStart(3, '0');
-            }
-            query = `/projects?quotation_id=${encodeURIComponent(quotationId)}`;
-        } else if (customerName !== '') {
-            query = `/projects?customer_name=${encodeURIComponent(customerName)}`;
+        if (productName !== '') {
+            productName = productName.replace(/\s+/g, '').toUpperCase();
+            query = `/products?product_name=${encodeURIComponent(productName)}`;
+        } else if (model !== '') {
+            query = `/products?model=${encodeURIComponent(model)}`;
         } else {
             await fetchProducts();
             return;
         }
-
+    
         const products = await fetch(query).then(response => response.json());
         projectTableBody.innerHTML = '';
         products.forEach(product => {
             appendProjectRow(product);
         });
     }
-
     function fillFormForEdit(product) {
         console.log("Editing Product ID:", product.product_id);  // Log product ID
         document.getElementById('product_name').value = product.product_name;

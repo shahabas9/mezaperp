@@ -109,3 +109,16 @@ button {
 button:hover {
     background-color: #45a049;
 }
+
+.logout-icon {
+    position: absolute;
+    top: 20px; /* Adjust as necessary */
+    right: 20px; /* Adjust as necessary */
+    font-size: 24px; /* Adjust size */
+    color: #000; /* Icon color */
+    text-decoration: none;
+}
+
+.logout-icon:hover {
+    color: #f00; /* Change color on hover */
+}

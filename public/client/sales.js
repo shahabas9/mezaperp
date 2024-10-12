@@ -195,7 +195,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     searchBtn.addEventListener('click', async () => {
         await performSearch();
     });
-
+    
     const inputFields = [document.getElementById('searchInput'), document.getElementById('searchName')];
     inputFields.forEach(inputField => {
         inputField.addEventListener('keydown', async (event) => {
@@ -204,27 +204,22 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
     });
-
+    
     async function performSearch() {
-        let quotationId = document.getElementById('searchInput').value.trim();
-        const customerName = document.getElementById('searchName').value.trim();
-
+        let personName = document.getElementById('searchInput').value.trim();
+        const contact = document.getElementById('searchName').value.trim();
+    
         let query = '';
-        if (quotationId !== '') {
-            quotationId = quotationId.replace(/\s+/g, '').toUpperCase();
-            if (quotationId.startsWith('QT')) {
-                quotationId = 'QT ' + quotationId.substring(2).padStart(3, '0');
-            } else {
-                quotationId = 'QT ' + quotationId.padStart(3, '0');
-            }
-            query = `/projects?quotation_id=${encodeURIComponent(quotationId)}`;
-        } else if (customerName !== '') {
-            query = `/projects?customer_name=${encodeURIComponent(customerName)}`;
+        if (personName !== '') {
+            personName = personName.replace(/\s+/g, '').toUpperCase();
+            query = `/sales?person_name=${encodeURIComponent(personName)}`;
+        } else if (contact !== '') {
+            query = `/sales?contact=${encodeURIComponent(contact)}`;
         } else {
             await fetchSales();
             return;
         }
-
+    
         const sales = await fetch(query).then(response => response.json());
         projectTableBody.innerHTML = '';
         sales.forEach(sale => {

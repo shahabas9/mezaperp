@@ -5,13 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <link rel="stylesheet" href="../stylesheet/Dashboard.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     
     <div class="header-container">
         
         <div><img class="logo-class" src="./images/logo.PNG" alt="Logo"></div>
-        <div><h1>Mezab Air Conditioning</h1></div>
+        <div>
+            <h1>Mezab Air Conditioning</h1>
+            <a href="/logout" class="logout-icon" title="Logout">
+                <i class="fas fa-sign-out-alt"></i> <!-- Font Awesome Logout Icon -->
+            </a>
+        </div>
         
     </div>
    <div class="container">
@@ -41,8 +47,13 @@
    <div class="second-container">
     <div class="customer">
         <a href="./information.html">
-        <img src="./images/remainder.jpg"></a>
+        <img src="./images/Product_description.svg"></a>
         <a href="./information.html">Products & Information</a>
+    </div>
+    <div class="customer">
+        <a href="./users.html">
+        <img src="./images/user-icons.svg"></a>
+        <a href="./users.html">User Registration</a>
     </div>
    </div> 
    <script src="./client/dashboard.js"></script>

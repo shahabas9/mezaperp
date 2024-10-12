@@ -4,7 +4,9 @@ import pkg from 'pg';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
-import fetch from 'node-fetch';
+import bcrypt from "bcrypt";
+import session from 'express-session';
+
 
 const { Pool } = pkg;
 
@@ -26,13 +28,91 @@ const pool = new Pool({
 });
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+
+
+
+// Session setup
+app.use(session({
+  secret: 'mezab',  // Replace with a secure key
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false }  // Set to true if using HTTPS
+}));
+
+// Body parser
+app.use(express.urlencoded({ extended: true }));
+
+// Middleware to check if the user is authenticated
+function checkAuthenticated(req, res, next) {
+  if (req.session.user) {
+      return next();
+  }
+  res.redirect('/');  // Redirect to login page if not authenticated
+}
+
+// Restrict access to HTML files only
+app.use((req, res, next) => {
+  if (req.path.endsWith('.html')) {
+    return checkAuthenticated(req, res, next);  // Check authentication only for HTML files
+  }
+  next();
+});
+
+// Serve static files (stylesheets, images, JS files)
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Serve the HTML file
+// Serve login page
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, './public', 'Dashboard.html'));
+    res.sendFile(path.join(__dirname, './public', 'login.html'));
 });
+
+// Login route
+app.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+
+  try {
+      const result = await pool.query('SELECT * FROM users WHERE username = $1 OR email = $1', [username]);
+      const user = result.rows[0];
+
+      if (!user) {
+          return res.redirect('/');
+      }
+
+      const passwordMatch = await bcrypt.compare(password, user.password);
+      if (!passwordMatch) {
+          return res.redirect('/');
+      }
+
+      // Store relevant user information in the session
+      req.session.user = {
+        id: user.id,
+        username: user.username,
+        role: user.role  // Store the role in session for role-based access
+    }; // Store user in session
+      res.redirect('/dashboard');
+  } catch (err) {
+      console.error('Error during login:', err);
+      res.status(500).send('Error logging in');
+  }
+});
+
+// Dashboard route (protected)
+app.get('/dashboard', checkAuthenticated, (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));  // Serve dashboard.html
+});
+
+// Logout route
+app.get('/logout', (req, res) => {
+  req.session.destroy(err => {
+      if (err) {
+          return res.status(500).send('Error logging out');
+      }
+      res.redirect('/');
+  });
+});
+
+
+
 
 //Customer page
 
@@ -2601,7 +2681,7 @@ app.delete('/delete-project_agr/:id', async (req, res) => {
 });
 
 app.get('/agreement', async (req, res) => {
-  const agreementId = req.query.agreement_id;
+  const { agreement_id, customer_name, mobile_no } = req.query;
   let query = `
       SELECT 
           ap.sl_no as project_id, 
@@ -2620,9 +2700,15 @@ app.get('/agreement', async (req, res) => {
   `;
   let params = [];
 
-  if (agreementId) {
-      query += ' WHERE ap.agreement_id = $1';
-      params = [agreementId];
+  if (agreement_id) {
+      query += ' WHERE ap.agreement_id ILIKE $1';
+      params = [`%${agreement_id}%`];
+  } else if (customer_name) {
+      query += ' WHERE c.customer_name ILIKE $1';
+      params = [`%${customer_name}%`]; 
+  } else if (mobile_no) {
+      query += ' WHERE c.mobile_no ILIKE $1';
+      params = [`%${mobile_no}%`];
   }
 
   try {
@@ -2630,7 +2716,7 @@ app.get('/agreement', async (req, res) => {
       res.json(result.rows);
   } catch (err) {
       console.error(err);
-      res.status(500).json({ error: 'An error occurred while fetching projects.' });
+      res.status(500).send('Server error');
   }
 });
 
@@ -2800,94 +2886,88 @@ app.get('/employees-expiring-soon-count', async (req, res) => {
 
 import { google } from 'googleapis';
 const oauth2Client = new google.auth.OAuth2(
-  '31715117103-9hpeqn94p8rvno7d8q60cht4sbspodtj.apps.googleusercontent.com', // Your Client ID
-  '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', // Your Client Secret
+  '753216353534-cit7m4tnltpfoii207aapj6ee2dchjo2.apps.googleusercontent.com', // Your Client ID
+  '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', // Your Client Secret
   'http://localhost:3000/auth/google/callback' // Your Redirect URI
 );
 
-oauth2Client.setCredentials({
-  access_token: ' ya29.a0AcM612zWTAgdqwcz-6tx8W3_phTnCdeOFPaiMqW9iEgt2b4_uuDRWlK7MBvhcxFt0aLML494MvSESGGeeTUUaO2N531pG5tEdQREio7tyWiV5n1fcgEYwbOsHOvoqcgw5ToCj7mQXnHZG7l6jTLn2RBlpLPt3v-c7jzQBOQ9aCgYKAUISARMSFQHGX2Mi9j5oK9-BWPEb0P6x3kVPBA0175',
-  refresh_token: '1//03BjPGFIicqfMCgYIARAAGAMSNwF-L9IrSHb_JwweO0tRCKw6lbPAFQNHSbthUbq5t21cj9kFe8V7nZn-v8O6P3-aCapnCkWsSe8'
-});
+// oauth2Client.setCredentials({
+//   access_token: 'ya29.a0AcM612xdBPGGHXxrGACIgegBpbzCr02ensqt2UNXeZZbtDLqtqDvfhwrDOfx_kGuuAsvR3NkLUXlgA96QWpLTxqzURBJ_pQ6eQeuKrH2Vddo9t9Y5fF2LZ40xSqHdpBJw0_r37L3HCWrKzn2cJeN0ROwUM6bcApmUmKEJPFraCgYKAZYSARISFQHGX2MiTj_Ph7zeWMuvXQNGw0-qdw0175',
+//   refresh_token: '1//03fu5890Pt-dOCgYIARAAGAMSNwF-L9Ir8ueH2Dnuweugx9uwm1V8nHzOniet1M-Xf3RFe3MeCaXYGwHubTgPziIKc8wbfxD-HNY'
+// });
 // Step 1: Frontend redirects to Google OAuth URL
 app.get('/auth/google', (req, res) => {
   
 
   const authorizationUrl = oauth2Client.generateAuthUrl({
-    access_type: 'offline', // Necessary to receive a refresh token
-    scope: ['https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/documents'],
+    access_type: 'offline', // Get a refresh token
+    scope: [
+      'https://www.googleapis.com/auth/drive',
+      'https://www.googleapis.com/auth/documents',
+      'https://www.googleapis.com/auth/userinfo.profile' // Ensure this scope is included
+    ]
   });
+  
 
   // Redirect the user to the Google Authorization URL
   res.redirect(authorizationUrl);
 });
 global.tokens = null; // Initialize as null
 // Step 2: Backend exchanges the authorization code for tokens
+
 app.get('/auth/google/callback', async (req, res) => {
-  const { code } = req.query; // Get the authorization code from the query parameters
+  const { code } = req.query;
 
   if (!code) {
     return res.status(400).send('Authorization code is missing');
   }
 
   try {
+    // Exchange the authorization code for tokens
     const { tokens } = await oauth2Client.getToken(code);
-    
-    // Log the tokens
-    console.log('Access Token:', tokens.access_token);
-    console.log('Refresh Token:', tokens.refresh_token);
 
-    // Store tokens in a variable or database
-    // For simplicity, we'll store it in memory here
-    global.tokens = tokens;
-
-    // Set the credentials
+    // Set the tokens in the OAuth2 client credentials
     oauth2Client.setCredentials(tokens);
 
-    // Send a success response
-    res.send('Authentication successful!');
+    // At this point, oauth2Client has the access_token for making requests
+
+    // Fetch user info from Google
+    const oauth2 = google.oauth2({ auth: oauth2Client, version: 'v2' });
+    const userInfo = await oauth2.userinfo.get();
+
+    // You can now get the Google user ID and other info
+    const userId = userInfo.data.id;
+    console.log('Google User ID:', userId);
+
+    // Store the userId and tokens as needed
+    req.session.userId = userId; // Store userId in session
+    await saveTokensToDatabase(tokens, userId); // Save tokens in the database with userId
+
+    res.send('Authentication successful, user info retrieved!');
   } catch (error) {
-    console.error('Error retrieving access token:', error);
-    res.status(500).send('Error retrieving access token');
+    console.error('Error retrieving access token or user information:', error);
+    res.status(500).send('Error retrieving access token or user information');
   }
 });
 
 
 
 
+
+
 const drive = google.drive({ version: 'v3', auth: oauth2Client });
 
-export async function createGoogleDoc(req, res) {
-  const fileMetadata = {
-    'name': 'My New Quotation',
-    'mimeType': 'application/vnd.google-apps.document',
-  };
 
+async function refreshAccessToken(userId) {
   try {
-    const response = await drive.files.create({
-      resource: fileMetadata,
-      fields: 'id',
-    });
-    console.log('File ID:', response.data.id);
-    res.status(200).json({ fileId: response.data.id });
-  } catch (error) {
-    console.error('Error creating document:', error);
-    res.status(500).send('Error creating document');
-  }
-}
-
-
-
-async function refreshAccessToken() {
-  try {
-    const { credentials } = await oauth2Client.refreshToken(oauth2Client.credentials.refresh_token);
+    const { credentials } = await oauth2Client.refreshAccessToken();
     oauth2Client.setCredentials(credentials);
-    
-    // Update stored tokens
-    global.tokens = credentials; // Update global tokens
+
     console.log('New Access Token:', credentials.access_token);
-    
-    // Optionally, save the new tokens to your database or environment variables
+
+    // Save the new tokens (including refresh token, access token, and expiry date) in the database
+    await saveTokensToDatabase(credentials, userId);
+
   } catch (error) {
     console.error('Error refreshing access token:', error);
     throw error;
@@ -2895,16 +2975,6 @@ async function refreshAccessToken() {
 }
 
 
-
-function isTokenExpired() {
-  const currentTime = new Date().getTime();
-  const expiryTime = oauth2Client.credentials.expiry_date;
-  return expiryTime <= currentTime;
-}
-
-
-
-app.post('/create-doc', createGoogleDoc);
 
 
 const docs = google.docs({ version: 'v1', auth: oauth2Client });
@@ -2921,7 +2991,68 @@ async function getDocumentContent(docId) {
     throw error;
   }
 }
-async function ensureValidToken() {
+async function saveTokensToDatabase(tokens, userId) {
+  const query = `
+      INSERT INTO oauth_tokens (user_id, refresh_token, access_token, expiry_date)
+      VALUES ($1, $2, $3, $4)
+      ON CONFLICT (user_id) DO UPDATE 
+      SET refresh_token = $2, access_token = $3, expiry_date = $4;
+  
+  `;
+  const values = [userId, tokens.refresh_token, tokens.access_token, new Date(tokens.expiry_date)];
+
+  try {
+      await pool.query(query, values); // Replace with your database query logic
+      console.log('Tokens saved to the database.');
+  } catch (error) {
+      console.error('Error saving tokens to database:', error);
+  }
+}
+
+async function getTokensFromDatabase(userId) {
+  const query = 'SELECT refresh_token, access_token, expiry_date FROM oauth_tokens WHERE user_id = $1';
+  const values = [userId];
+
+  try {
+      const res = await pool.query(query, values); // Replace with your database query logic
+      if (res.rows.length > 0) {
+          return res.rows[0]; // Return the first row containing tokens
+      }
+      return null; // No tokens found
+  } catch (error) {
+      console.error('Error retrieving tokens from database:', error);
+      return null;
+  }
+}
+
+// Retrieve saved tokens and set them to oauth2Client when the server starts
+async function initializeOAuthClient(userId) {
+  try {
+    const tokens = await getTokensFromDatabase(userId);
+    
+    if (!tokens || !tokens.refresh_token) {
+      throw new Error('No refresh token found in the database for the user.');
+    }
+
+    // Set the retrieved tokens in the oauth2Client
+    oauth2Client.setCredentials({
+      refresh_token: tokens.refresh_token,
+      access_token: tokens.access_token,
+      expiry_date: tokens.expiry_date
+    });
+
+    console.log('OAuth2 client initialized with saved tokens.');
+  } catch (error) {
+    console.error('Error initializing OAuth client:', error);
+  }
+}
+
+// Call this function when your server starts, using the appropriate userId
+initializeOAuthClient('117342449732908078456'); // Replace with the actual userId to retrieve tokens
+
+
+
+async function ensureValidToken(userId) {
   try {
     const currentTime = new Date().getTime();
     const expiryTime = oauth2Client.credentials.expiry_date;
@@ -2937,6 +3068,9 @@ async function ensureValidToken() {
       oauth2Client.setCredentials(credentials);
 
       console.log('New Access Token:', credentials.access_token);
+
+      // Save the new tokens (including the new access token and expiry date) in the database
+      await saveTokensToDatabase(credentials, userId);
     }
   } catch (error) {
     console.error('Error refreshing access token:', error);
@@ -2944,11 +3078,13 @@ async function ensureValidToken() {
   }
 }
 
+
+
 // Example of using the function to get content
 app.get('/fetch-doc-content', async (req, res) => {
-  const docId = '1zhvwocfwzDLtuSG77JwWZeLTOKNelM1elfdbk6gFqSA'; // The ID of the document you want to fetch
+  const docId = '1ZYHFpMYIa0qC9xri07ArQabEhZWAlWlu5UZinkzE8t0'; // The ID of the document you want to fetch
   try {
-    await ensureValidToken(); 
+    await ensureValidToken('117342449732908078456'); 
     const docContent = await getDocumentContent(docId);
     res.json(docContent); // Send the document content as a response
   } catch (error) {
@@ -2956,10 +3092,12 @@ app.get('/fetch-doc-content', async (req, res) => {
   }
 });
 
-app.get('/fetch-doc-supplyandinst', async (req, res) => {
-  const docId = '1oV0JbxYfxUWkvYvrGVaUDF1R5Hu5pXsUcLryQEGKjwQ'; // Document ID
+
+
+app.get('/fetch-doc-supplyductsplit', async (req, res) => {
+  const docId = '10vtP6f0OkW5D6bK5-QDBfCWgaDlx8nqlE2kXU9VdBdE'; // Document ID
   try {
-    await ensureValidToken(); // Ensure Google Docs API access token is valid
+    await ensureValidToken('117342449732908078456'); // Ensure Google Docs API access token is valid
     const docContent = await getDocumentContent(docId); // Fetch the document content
 
     // Initialize variables to hold the sections of content
@@ -2998,7 +3136,6 @@ app.get('/fetch-doc-supplyandinst', async (req, res) => {
     res.status(500).send('Error fetching document content');
   }
 });
-
 app.post('/add-product', async (req, res) => {
   const { product_name, model, capacity } = req.body;
   try {
@@ -3067,23 +3204,26 @@ app.delete('/delete-product/:id', async (req, res) => {
 });
 
 app.get('/products', async (req, res) => {
-  const agreementId = req.query.agreement_id;
+  const productName = req.query.product_name;
+  const model = req.query.model;
+
   let query = `
       SELECT 
-        
           product_id,
           product_name, 
           model,
           capacity 
-          
       FROM product 
-      
   `;
+  
   let params = [];
-
-  if (agreementId) {
-      query += ' WHERE ap.agreement_id = $1';
-      params = [agreementId];
+  
+  if (productName) {
+      query += ' WHERE product_name ILIKE $1';
+      params.push(`%${productName}%`);
+  } else if (model) {
+      query += ' WHERE model ILIKE $1';
+      params.push(`%${model}%`);
   }
 
   try {
@@ -3091,7 +3231,7 @@ app.get('/products', async (req, res) => {
       res.json(result.rows);
   } catch (err) {
       console.error(err);
-      res.status(500).json({ error: 'An error occurred while fetching projects.' });
+      res.status(500).json({ error: 'An error occurred while fetching products.' });
   }
 });
 
@@ -3173,23 +3313,25 @@ app.delete('/delete-sales/:id', async (req, res) => {
 });
 
 app.get('/sales', async (req, res) => {
-  const agreementId = req.query.agreement_id;
+  const personName = req.query.person_name;
+  const contact = req.query.contact;
+
   let query = `
       SELECT 
-        
           sales_id,
           person_name, 
           contact
-         
-          
-      FROM sales 
-      
+      FROM sales
   `;
+  
   let params = [];
-
-  if (agreementId) {
-      query += ' WHERE ap.agreement_id = $1';
-      params = [agreementId];
+  
+  if (personName) {
+      query += ' WHERE person_name ILIKE $1';
+      params.push(`%${personName}%`);
+  } else if (contact) {
+      query += ' WHERE contact ILIKE $1';
+      params.push(`%${contact}%`);
   }
 
   try {
@@ -3197,9 +3339,10 @@ app.get('/sales', async (req, res) => {
       res.json(result.rows);
   } catch (err) {
       console.error(err);
-      res.status(500).json({ error: 'An error occurred while fetching projects.' });
+      res.status(500).json({ error: 'An error occurred while fetching sales data.' });
   }
 });
+
 
 
 app.get('/api/sales', async (req, res) => {
@@ -3222,6 +3365,122 @@ app.get('/config.json', (req, res) => {
       }
   });
 });
+
+
+app.post('/add-users', async (req, res) => {
+  const { person_name, password, email,role } = req.body;
+
+  try {
+      // Hash the password
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      const result = await pool.query(
+          'INSERT INTO users (username, password, email,role) VALUES ($1, $2, $3,$4) RETURNING *',
+          [person_name, hashedPassword, email,role]
+      );
+
+      res.status(201).json({ message: 'User created successfully', user: result.rows[0] });
+  } catch (error) {
+      console.error('Error adding user:', error);
+      res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+
+app.put('/edit-users/:id', async (req, res) => {
+  const { id } = req.params;
+  const { person_name, email, role ,password} = req.body;
+
+  try {
+      // Hash the new password if provided
+      let hashedPassword = null;
+      if (password) {
+          hashedPassword = await bcrypt.hash(password, 10);
+      }
+
+      const result = await pool.query(
+          'UPDATE users SET username = $1, email = $2 ,role = $3,password = COALESCE($4, password) WHERE id = $5 RETURNING *',
+          [person_name, email,role, hashedPassword, id]
+      );
+
+      res.status(200).json({ message: 'User updated successfully', user: result.rows[0] });
+  } catch (error) {
+      console.error('Error updating user:', error);
+      res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+
+app.get('/users/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+      const result = await pool.query(`
+          SELECT 
+          id,
+          username, 
+          password,
+          email,
+          role
+           
+          FROM users
+          
+          WHERE id = $1
+      `, [id]);
+      res.json(result.rows[0]);
+  } catch (err) {
+      console.error(err);
+      res.status(500).send('Server Error');
+  }
+});
+
+// Delete a project
+app.delete('/delete-users/:id', async (req, res) => {
+  const { id } = req.params;
+  console.log(`Deleting product with ID: ${id}`);
+  try {
+      await pool.query('DELETE FROM users WHERE id = $1', [id]);
+      res.status(200).send('Project Deleted');
+  } catch (err) {
+      console.error(err);
+      res.status(500).send('Server Error');
+  }
+});
+
+app.get('/users', async (req, res) => {
+  const username = req.query.username;
+  const contact = req.query.contact;
+
+  let query = `
+      SELECT 
+          id,
+          username, 
+          password,
+          email,
+          role
+      FROM users
+  `;
+  
+  let params = [];
+  
+  if (username) {
+      query += ' WHERE username ILIKE $1';
+      params.push(`%${username}%`);
+  } 
+
+  try {
+      const result = await pool.query(query, params);
+      res.json(result.rows);
+  } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'An error occurred while fetching sales data.' });
+  }
+});
+
+
+
+
+
+
 
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);

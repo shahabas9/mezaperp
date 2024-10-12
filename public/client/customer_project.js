@@ -586,7 +586,7 @@ document.addEventListener('click', function(event) {
         } else if (subCategory === 'BOQ') {
             redirectUrl = `boq_edit.html?quotationId=${quotationId}`;
         } else if (subCategory === 'Custom') {
-            redirectUrl = `https://docs.google.com/document/d/1zhvwocfwzDLtuSG77JwWZeLTOKNelM1elfdbk6gFqSA/edit`;
+            redirectUrl = `https://docs.google.com/document/d/1ZYHFpMYIa0qC9xri07ArQabEhZWAlWlu5UZinkzE8t0/edit`;
         } else if (subCategory === 'Spare Parts') {
             redirectUrl = `spare_parts_edit.html?quotationId=${quotationId}`;
         } else {
