@@ -427,7 +427,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         updateSubcategories();
         document.getElementById('subcategory').value = project.subcategory;
         document.getElementById('sales_person').value = project.salesperson_name;
-        updateContact();
+        
         document.getElementById('contact').value = project.salesperson_contact;
         document.getElementById('quotation_id').value = project.quotation_id;
 

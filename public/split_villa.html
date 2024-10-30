@@ -57,23 +57,19 @@
             <p><b><span id="date">Field 4</span></b></p>
         </div>
     </div>
-    <div class="fourth-container">
-        <p dir="rtl" style="font-size: 20px;">
-            <b> <u>‫أ - ‬مجالا لعمل ‬‬: </u></b>
-            <ol dir="rtl" style="font-size: 20px;">
-                <p>
-                    <li>
-                        ‫توريد‬ ‬‫وتركيب‬ ‫وحدات‬ تكي‬‬‫يف ‫هواء‬ ‫نوع‬ ‫ <b style="color:red;">‫ميتسوبيش‬‬ي‬ ‫‬ ‫إ‬ليكتريك </b>‫‫صنع‬ ‫في‬ تايلاند ‫حسب‬ ‬  ‫الجد‫ا‬‫ول‬ ‫التالي‫ة‬‫  :
-                    </li>
-                </p>
-            </ol>
-        </p>
+    <div id="content-before-table" style="margin-top: 80px; " > <!-- Editable content from Google Docs goes here --> 
+    </div>
+    <div id="edit-button">
+        <a href="https://docs.google.com/document/d/16QNipq_YkLp7mu6u7oek11VulAg4IgLpKSZBvvau2fI/edit?tab=t.0#heading=h.39sw6fo06xku">
+            <button type="button">Edit</button>
+        </a>
+    </div>
         <div id="tables-container">
             <div id="basementWrapper" style="margin-top: 10px;">
                 <h3><b><u>Basement Floor:</u></b></h3>
                 <table id="basementTable">
                     <thead>
-                        <tr>
+                        <tr style="background-color: #b8cce4;">
                             <th class="serving-area">Serving Area</th>
                             <th class="quantity">Quantity</th>
                             <th class="ton">TON</th>
@@ -87,7 +83,7 @@
                 <h3><b><u>Mezzanine Floor:</u></b></h3>
                 <table id="mezzanineTable">
                     <thead>
-                        <tr>
+                        <tr style="background-color: #b8cce4;">
                             <th class="serving-area">Serving Area</th>
                             <th class="quantity">Quantity</th>
                             <th class="ton">TON</th>
@@ -101,7 +97,7 @@
                 <h3><b><u>Ground Floor:</u></b></h3>
                 <table id="groundTable">
                     <thead>
-                        <tr>
+                        <tr style="background-color: #b8cce4;">
                             <th class="serving-area">Serving Area</th>
                             <th class="quantity">Quantity</th>
                             <th class="ton">TON</th>
@@ -115,7 +111,7 @@
                 <h3><b><u>First Floor:</u></b></h3>
                 <table id="firstTable">
                     <thead>
-                        <tr>
+                        <tr style="background-color: #b8cce4;">
                             <th class="serving-area">Serving Area</th>
                             <th class="quantity">Quantity</th>
                             <th class="ton">TON</th>
@@ -129,7 +125,7 @@
                 <h3><b><u>Penthouse Floor:</u></b></h3>
                 <table id="penthouseTable">
                     <thead>
-                        <tr>
+                        <tr style="background-color: #b8cce4;">
                             <th class="serving-area">Serving Area</th>
                             <th class="quantity">Quantity</th>
                             <th class="ton">TON</th>
@@ -143,7 +139,7 @@
                 <h3><b><u>Out Majlis:</u></b></h3>
                 <table id="outmajlisTable">
                     <thead>
-                        <tr>
+                        <tr style="background-color: #b8cce4;">
                             <th class="serving-area">Serving Area</th>
                             <th class="quantity">Quantity</th>
                             <th class="ton">TON</th>
@@ -157,7 +153,7 @@
                 <h3><b><u>Out Kitchen:</u></b></h3>
                 <table id="outkitchenTable">
                     <thead>
-                        <tr>
+                        <tr style="background-color: #b8cce4;">
                             <th class="serving-area">Serving Area</th>
                             <th class="quantity">Quantity</th>
                             <th class="ton">TON</th>
@@ -171,7 +167,7 @@
                 <h3><b><u>Out Block:</u></b></h3>
                 <table id="outblockTable">
                     <thead>
-                        <tr>
+                        <tr style="background-color: #b8cce4;">
                             <th class="serving-area">Serving Area</th>
                             <th class="quantity">Quantity</th>
                             <th class="ton">TON</th>
@@ -183,15 +179,21 @@
             </div>
         </div>
         <div style="text-align: center;">
-            <div id="totalQuantityContainer" style="font-weight: bold; margin-top: 20px; display: inline-block;margin-left: 60px;"></div>
-            <div id="totalTonContainer" style="font-weight: bold; margin-top: 20px; display: inline-block;margin-left: 60px;"></div>
-        </div>
+            <table style="font-weight: bold; margin-top: 0; width: 100%;">
+                <tr style="background-color: #b8cce4;">
+                    <td style="width: 40%;">Total Quantity </td>
+                    <td id="totalQuantityContainer" style="width: 15%;"></td>
+                    <td id="totalTonContainer" style="width: 15%;"></td>
+                    <td style="width: 30%;">Total Tonnage </td>
+                </tr>
+            </table>
+        </div> 
         <!-- Add this HTML structure for the summary table -->
         <div style="margin-top: 25px;">
             <table id="summaryTable">
                 <h3 dir="rtl"><u>ب ‫‪-‬‬ ‫جدول‬ ‫الأسعار :</u></h3>
                 <thead>
-                    <tr>
+                    <tr style="background-color: #b8cce4;">
                         <th class="total-price">Total Price</th>
                         <th class="unit-price">Unit Price</th>
                         <th>Quantity</th>
@@ -205,6 +207,7 @@
             </table>
         </div>
         
+        
         <p id="summaryAmountContainer" class="container">
             <span id="summaryCurrency" class="currency">ر.ق</span>
             <input type="text" id="summaryDiscountInput" placeholder="Enter discount amount" class="amount-input">
@@ -212,115 +215,8 @@
         </p>
         
         
-        <p dir="rtl" style="font-size: 20px;">
-            <b><u>ملاحظة:</u></b>
-        </p>
-        <p>
-            <ul dir="rtl" style="font-size: 20px;">
-                <select id="togglePoint" onchange="toggleText()">
-                    <option value="show">Include</option>
-                    <option value="hide">Do not include</option>
-                </select>
-                <div id="optionalText"><li>
-                    
-                        ‫توريد‬ ‫وتركيب‬ ‫5 متر ‫مواسير‬ ‫نحاس‬ ‫لكل‬ ‫وحدة‬ ‫تكييف‬ والأمتار الإضافية ‫ستحسب‬  ‫ب- 
-                        <input type="number" value="100" style="width: 48px; font-weight: bold; font-size: inherit; border: none; text-align: center;" />‬‬‬‬ ري‬‫ا‫ل ‫للمتر‬ الإضافي‬
-                    </li></div>
-                <p><li>
-                    ‫سيتم‬ ‫احتساب‬ ‫تكلفة‬ ‫حامل‬ ‫الحائط‬ ‫للوحدة‬ ‫الخارجية‬‬ ‫ب-300 ريال ‫لكل‬ ‫وحدة‬ ‫(إذا‬‬‬‬‬‬ ‫لزم‬ ‫الأمر )‬ ‫ ‫‪‬
-                </li></p>
-            </ul>
-        </p>
-        <p dir="rtl" style="font-size: 20px;">
-            <b><u>‫مدة ‫الصلاحية‬:</u></b>
-        </p>
-        <p>
-            <ul dir="rtl" style="font-size: 20px;">
-                <p><li>‫هذا‬ ‫العرض‬ ‫ساري‬ ‫لمدة‬ ‫شهر‬ ‫واحد‬ ‫فقط‬</li></p>
-                <p><li> ‫عند‬ ‫توقيع‬ ‫العقد‪،‬‬ ‫سنلتزم‬ ‫بالسعر‬ ‫المتفق‬ ‫عليه‬ ‫لمدة‬ ‫سنتين‬‬</li></p>
-            </ul>
-            
-        </p>
-        <p dir="rtl" style="font-size: 20px;">
-            <b><u> ‫ت ‫‪-‬‬ ‫ ‫شروط‬‬ الدفع‬:</u></b>
-        </p>
-        <p>
-            <ol dir="rtl" style="font-size: 20px;">
-                <p><li>
-                    ‫‪30‬‬% ‫دفعة‬ ‫مقدمة
-                </li></p>
-                <p><li>
-                    %30‬‬‬ ‫بعد ‫الإنتهاء ‫من‬ ‫توريد ‫وتركيب‬ ‫مواسير‬ ‫النحاس
-                </li></p>
-                <p><li>
-                    %40 ‫تدفع ‫قبل‬ ‫توريد‬ ‫وحدات‬ ‫التكييف‬ ‫إلى‬ ‫الموقع
-                </li></p>
-            </ol>
-            
-        </p>
-        <p dir="rtl" style="font-size: 20px;">
-            <b><u>ث - ‫الإستثناءات‬:‬ </u></b>( ‫الأ ‫عمال‬ ‫الخ‫ا‬‬‫‫ر‬‬‬‫جة‬ ‫عن‬ ‫مجال‬ ‫عملنا‬ )
-        </p>
-        <p>
-            <ol dir="rtl" style="font-size: 20px;">
-                <li>
-                    <b>‫الأعمال‬ ‫المد‫نية:‬ ‬</b>
-                    <ul>
-                        <p><li>
-                            ‫التنقير‬ , ‫التكسير‬ , ‫التقطيع‬
-                        </li></p>
-                        <p><li>
-                            ‫ملىء‬ ‫الفر‬ ‫اغات‬ ‫والصبغ‬ و‫‫أ‬ ‫عمال‬ ‫الديكورات‬ ‬
-                        </li></p>
-                        <p><li>
-                            عم‬‫ل‬ ‫‫قاعدة‬ ‫خر‬ ‫سانية‬ ‫للوحدة‬ ‫الخارجية‬
-                        </li></p>
-                        <p><li>
-                            ‫توفير‬ ‫ ‫مجاري‬ ‫خاصة‬ (PVC) ‫لأنابيب ‫النحاس‬‬
-                        </li></p>
-                    </ul>
-                </li>
-                <li>
-                    <p><b>‫الأ‬عمال‫‬‬  ‫الكهربائية:</b></p>
-                    <ul>
-                        <p><li>
-                            مفاتيح‬ ‫الكهرباء‬ ‫الخارجية‬ (ISOLATOR) ‫وتمديد‬ ‫أسلاكها
-                        </li></p>
-                        <p><li>
-                            ‫‬‫‫مفاتيح‬ ‫الكهرباء‬‫‬ ‫للوحدات ‫الداخلية‬ ‫وتمديد‬ ‫أسلاكها
-                        </li></p>
-                        <p><li>
-                            ‫مواسير‬ ‫بلاستيك‬ ‫ألجهزة‬‫ ‫التحكم‬‬
-                        </li></p>
-                    </ul>
-                </li>
-                <li>
-                    <b>الأ‬عمال‬ ‫الصحية‬:</b>
-                    <ul>
-                        <p><li>
-                            ‫تمديد‬ ‫أ‬نابيب ‫لصرف‬ ‫ميا‫ه‬ ‫تكثيف‬ ‫المكيف‬ ‫‫إ‬‬‬‫لى‬ ‫‫أ‬قرب ‫مكان‬ ‫لصرف‬ ‫الميا‫ه‬‬‬ ‫
-                        </li></p>
-                    </ul>
-                </li>
-                <p><li>
-                    ‫تحكم‬ ‫مركزي‬, ‫أو‬ ‫مخارج‬ ‫بدون‬ ‫إطار‬ ‫أو‬ ‫عزل‬ ‫مجاري‬ ‫الهواء‬ ‫أو‬   ‫‬‫أي‬ ‫شيء‬ ‫آخر‬ ‫خارج‬ ‫مجال‬ ‫عملنا‬
-                </li></p>
-            </ol>
-             
-        </p>
-        <p dir="rtl" style="font-size: 20px;">
-            <b><u>‫ج‬- ‫الضمان‬:</u></b>
-        </p>
-        <p>
-            <ul dir="rtl" style="font-size: 20px;">
-                <p><li>
-                    سنة‬ ‫واحدة‬ ‫على‬ ‫التكييف ‫مع‬ ‫العمالة‬ ‫يبدأ‬ ‫من‬ ‫تاريخ‬ ‫التشغيل‬ ‫أو‬ 18 ‫شهر‬ ‫من‬ ‫تاريخ‬ ‫توريد‬ ‫وحدات‬ ‫التكييف‬ الخارجية ‫أيهما‬ ‫يأتي‬ أ‬ولاً.
-                </li></p>
-                    <li>
-                        ‫‫خمس‬ ‫سنوات‬ ‫على‬ ‫‫ال‬ضاغط ( ‫الكمبروسر ‬)‬ ‫تبدأ‬ ‫من‬ ‫بداية‬ ‫مدة‬ ‫الفقرة‬ ‫السابقة‬ ‫من‬ ‫دون‬ ‫أجر‬ ‫الأيد‬ي ‫ال‬عاملة.‬ ‫
-                </li>
-            </ul>
-        </p>
+        <div id="content-after-table" > <!-- Editable content from Google Docs goes here --> 
+        </div>
         <p style="margin-left: 20px;"><b>‬ ‫وشكراً‬‫لكم،</b></p>    
     </div>
     <div class="fifth-container">

@@ -3093,7 +3093,6 @@ app.get('/fetch-doc-content', async (req, res) => {
 });
 
 
-
 app.get('/fetch-doc-supplyductsplit', async (req, res) => {
   const docId = '10vtP6f0OkW5D6bK5-QDBfCWgaDlx8nqlE2kXU9VdBdE'; // Document ID
   try {
@@ -3136,6 +3135,523 @@ app.get('/fetch-doc-supplyductsplit', async (req, res) => {
     res.status(500).send('Error fetching document content');
   }
 });
+
+app.get('/fetch-doc-supplyfloorstand', async (req, res) => {
+  const docId = '1dKZswYvGQss1-duUiJ-LWOwADV3zLfEnfs0e5ObbMZY'; // Document ID
+  try {
+    await ensureValidToken('117342449732908078456'); // Ensure Google Docs API access token is valid
+    const docContent = await getDocumentContent(docId); // Fetch the document content
+
+    // Initialize variables to hold the sections of content
+    let contentBeforeTable = [];
+    let contentAfterTable = [];
+    let isBeforeTable = true; // Flag to indicate which section we're in
+
+    // Iterate over the document content
+    docContent.body.content.forEach(element => {
+      if (element.paragraph && element.paragraph.elements) {
+        const paragraphText = element.paragraph.elements.map(e => e.textRun?.content || '').join('').trim();
+
+        // Check for marker headings
+        if (paragraphText === 'Start Before Table') {
+          isBeforeTable = true; // We are in the 'before table' section
+        } else if (paragraphText === 'Start After Table') {
+          isBeforeTable = false; // We are in the 'after table' section
+        } else {
+          // Push content into the appropriate section
+          if (isBeforeTable) {
+            contentBeforeTable.push(element); // Add this paragraph to 'before' section
+          } else {
+            contentAfterTable.push(element); // Add this paragraph to 'after' section
+          }
+        }
+      }
+    });
+
+    // Return the content to the front-end in JSON format (preserving original formatting)
+    res.json({
+      beforeTable: contentBeforeTable,
+      afterTable: contentAfterTable
+    });
+  } catch (error) {
+    console.error('Error fetching document content:', error);
+    res.status(500).send('Error fetching document content');
+  }
+});
+
+app.get('/fetch-doc-supplyaircurtain', async (req, res) => {
+  const docId = '1L26ifR3svColgzBIe_POtXVT2R5Now1cWD85Hmxw3rw'; // Document ID
+  try {
+    await ensureValidToken('117342449732908078456'); // Ensure Google Docs API access token is valid
+    const docContent = await getDocumentContent(docId); // Fetch the document content
+
+    // Initialize variables to hold the sections of content
+    let contentBeforeTable = [];
+    let contentAfterTable = [];
+    let isBeforeTable = true; // Flag to indicate which section we're in
+
+    // Iterate over the document content
+    docContent.body.content.forEach(element => {
+      if (element.paragraph && element.paragraph.elements) {
+        const paragraphText = element.paragraph.elements.map(e => e.textRun?.content || '').join('').trim();
+
+        // Check for marker headings
+        if (paragraphText === 'Start Before Table') {
+          isBeforeTable = true; // We are in the 'before table' section
+        } else if (paragraphText === 'Start After Table') {
+          isBeforeTable = false; // We are in the 'after table' section
+        } else {
+          // Push content into the appropriate section
+          if (isBeforeTable) {
+            contentBeforeTable.push(element); // Add this paragraph to 'before' section
+          } else {
+            contentAfterTable.push(element); // Add this paragraph to 'after' section
+          }
+        }
+      }
+    });
+
+    // Return the content to the front-end in JSON format (preserving original formatting)
+    res.json({
+      beforeTable: contentBeforeTable,
+      afterTable: contentAfterTable
+    });
+  } catch (error) {
+    console.error('Error fetching document content:', error);
+    res.status(500).send('Error fetching document content');
+  }
+});
+
+app.get('/fetch-doc-supplyvrf', async (req, res) => {
+  const docId = '17nmL5tQ3aiBEnXwtG9o-Ehnmr4xVjmoWvlZRm7BHVSA'; // Document ID
+  try {
+    await ensureValidToken('117342449732908078456'); // Ensure Google Docs API access token is valid
+    const docContent = await getDocumentContent(docId); // Fetch the document content
+
+    // Initialize variables to hold the sections of content
+    let contentBeforeTable = [];
+    let contentAfterTable = [];
+    let isBeforeTable = true; // Flag to indicate which section we're in
+
+    // Iterate over the document content
+    docContent.body.content.forEach(element => {
+      if (element.paragraph && element.paragraph.elements) {
+        const paragraphText = element.paragraph.elements.map(e => e.textRun?.content || '').join('').trim();
+
+        // Check for marker headings
+        if (paragraphText === 'Start Before Table') {
+          isBeforeTable = true; // We are in the 'before table' section
+        } else if (paragraphText === 'Start After Table') {
+          isBeforeTable = false; // We are in the 'after table' section
+        } else {
+          // Push content into the appropriate section
+          if (isBeforeTable) {
+            contentBeforeTable.push(element); // Add this paragraph to 'before' section
+          } else {
+            contentAfterTable.push(element); // Add this paragraph to 'after' section
+          }
+        }
+      }
+    });
+
+    // Return the content to the front-end in JSON format (preserving original formatting)
+    res.json({
+      beforeTable: contentBeforeTable,
+      afterTable: contentAfterTable
+    });
+  } catch (error) {
+    console.error('Error fetching document content:', error);
+    res.status(500).send('Error fetching document content');
+  }
+});
+
+app.get('/fetch-doc-ductsi', async (req, res) => {
+  const docId = '12QJIHg8VrozqBEgPDdysxYtevpCroy-E6fi4oox4Vug'; // Document ID
+  try {
+    await ensureValidToken('117342449732908078456'); // Ensure Google Docs API access token is valid
+    const docContent = await getDocumentContent(docId); // Fetch the document content
+
+    // Initialize variables to hold the sections of content
+    let contentBeforeTable = [];
+    let contentAfterTable = [];
+    let isBeforeTable = true; // Flag to indicate which section we're in
+
+    // Iterate over the document content
+    docContent.body.content.forEach(element => {
+      if (element.paragraph && element.paragraph.elements) {
+        const paragraphText = element.paragraph.elements.map(e => e.textRun?.content || '').join('').trim();
+
+        // Check for marker headings
+        if (paragraphText === 'Start Before Table') {
+          isBeforeTable = true; // We are in the 'before table' section
+        } else if (paragraphText === 'Start After Table') {
+          isBeforeTable = false; // We are in the 'after table' section
+        } else {
+          // Push content into the appropriate section
+          if (isBeforeTable) {
+            contentBeforeTable.push(element); // Add this paragraph to 'before' section
+          } else {
+            contentAfterTable.push(element); // Add this paragraph to 'after' section
+          }
+        }
+      }
+    });
+
+    // Return the content to the front-end in JSON format (preserving original formatting)
+    res.json({
+      beforeTable: contentBeforeTable,
+      afterTable: contentAfterTable
+    });
+  } catch (error) {
+    console.error('Error fetching document content:', error);
+    res.status(500).send('Error fetching document content');
+  }
+});
+
+app.get('/fetch-doc-splitsi', async (req, res) => {
+  const docId = '14_JHijOOo1az3P3qkV-wLimQUeqkPMs-wbmhhmOlxQg'; // Document ID
+  try {
+    await ensureValidToken('117342449732908078456'); // Ensure Google Docs API access token is valid
+    const docContent = await getDocumentContent(docId); // Fetch the document content
+
+    // Initialize variables to hold the sections of content
+    let contentBeforeTable = [];
+    let contentAfterTable = [];
+    let isBeforeTable = true; // Flag to indicate which section we're in
+
+    // Iterate over the document content
+    docContent.body.content.forEach(element => {
+      if (element.paragraph && element.paragraph.elements) {
+        const paragraphText = element.paragraph.elements.map(e => e.textRun?.content || '').join('').trim();
+
+        // Check for marker headings
+        if (paragraphText === 'Start Before Table') {
+          isBeforeTable = true; // We are in the 'before table' section
+        } else if (paragraphText === 'Start After Table') {
+          isBeforeTable = false; // We are in the 'after table' section
+        } else {
+          // Push content into the appropriate section
+          if (isBeforeTable) {
+            contentBeforeTable.push(element); // Add this paragraph to 'before' section
+          } else {
+            contentAfterTable.push(element); // Add this paragraph to 'after' section
+          }
+        }
+      }
+    });
+
+    // Return the content to the front-end in JSON format (preserving original formatting)
+    res.json({
+      beforeTable: contentBeforeTable,
+      afterTable: contentAfterTable
+    });
+  } catch (error) {
+    console.error('Error fetching document content:', error);
+    res.status(500).send('Error fetching document content');
+  }
+});
+
+app.get('/fetch-doc-floorstandsi', async (req, res) => {
+  const docId = '1Buj2fQpTsyuxYRLa1N_4XDjNiWCRTQRBcfloEJXlnZ4'; // Document ID
+  try {
+    await ensureValidToken('117342449732908078456'); // Ensure Google Docs API access token is valid
+    const docContent = await getDocumentContent(docId); // Fetch the document content
+
+    // Initialize variables to hold the sections of content
+    let contentBeforeTable = [];
+    let contentAfterTable = [];
+    let isBeforeTable = true; // Flag to indicate which section we're in
+
+    // Iterate over the document content
+    docContent.body.content.forEach(element => {
+      if (element.paragraph && element.paragraph.elements) {
+        const paragraphText = element.paragraph.elements.map(e => e.textRun?.content || '').join('').trim();
+
+        // Check for marker headings
+        if (paragraphText === 'Start Before Table') {
+          isBeforeTable = true; // We are in the 'before table' section
+        } else if (paragraphText === 'Start After Table') {
+          isBeforeTable = false; // We are in the 'after table' section
+        } else {
+          // Push content into the appropriate section
+          if (isBeforeTable) {
+            contentBeforeTable.push(element); // Add this paragraph to 'before' section
+          } else {
+            contentAfterTable.push(element); // Add this paragraph to 'after' section
+          }
+        }
+      }
+    });
+
+    // Return the content to the front-end in JSON format (preserving original formatting)
+    res.json({
+      beforeTable: contentBeforeTable,
+      afterTable: contentAfterTable
+    });
+  } catch (error) {
+    console.error('Error fetching document content:', error);
+    res.status(500).send('Error fetching document content');
+  }
+});
+
+app.get('/fetch-doc-cassettesi', async (req, res) => {
+  const docId = '1_ygpmxY0OIbXxHZVxjqnRhISYmgG773MkIl56yQM7zo'; // Document ID
+  try {
+    await ensureValidToken('117342449732908078456'); // Ensure Google Docs API access token is valid
+    const docContent = await getDocumentContent(docId); // Fetch the document content
+
+    // Initialize variables to hold the sections of content
+    let contentBeforeTable = [];
+    let contentAfterTable = [];
+    let isBeforeTable = true; // Flag to indicate which section we're in
+
+    // Iterate over the document content
+    docContent.body.content.forEach(element => {
+      if (element.paragraph && element.paragraph.elements) {
+        const paragraphText = element.paragraph.elements.map(e => e.textRun?.content || '').join('').trim();
+
+        // Check for marker headings
+        if (paragraphText === 'Start Before Table') {
+          isBeforeTable = true; // We are in the 'before table' section
+        } else if (paragraphText === 'Start After Table') {
+          isBeforeTable = false; // We are in the 'after table' section
+        } else {
+          // Push content into the appropriate section
+          if (isBeforeTable) {
+            contentBeforeTable.push(element); // Add this paragraph to 'before' section
+          } else {
+            contentAfterTable.push(element); // Add this paragraph to 'after' section
+          }
+        }
+      }
+    });
+
+    // Return the content to the front-end in JSON format (preserving original formatting)
+    res.json({
+      beforeTable: contentBeforeTable,
+      afterTable: contentAfterTable
+    });
+  } catch (error) {
+    console.error('Error fetching document content:', error);
+    res.status(500).send('Error fetching document content');
+  }
+});
+
+app.get('/fetch-doc-splitfloorsi', async (req, res) => {
+  const docId = '1fQ2Aqsf735kPW0n4zI0HT3OyXOucR0KVMbyydmPxu2M'; // Document ID
+  try {
+    await ensureValidToken('117342449732908078456'); // Ensure Google Docs API access token is valid
+    const docContent = await getDocumentContent(docId); // Fetch the document content
+
+    // Initialize variables to hold the sections of content
+    let contentBeforeTable = [];
+    let contentAfterTable = [];
+    let isBeforeTable = true; // Flag to indicate which section we're in
+
+    // Iterate over the document content
+    docContent.body.content.forEach(element => {
+      if (element.paragraph && element.paragraph.elements) {
+        const paragraphText = element.paragraph.elements.map(e => e.textRun?.content || '').join('').trim();
+
+        // Check for marker headings
+        if (paragraphText === 'Start Before Table') {
+          isBeforeTable = true; // We are in the 'before table' section
+        } else if (paragraphText === 'Start After Table') {
+          isBeforeTable = false; // We are in the 'after table' section
+        } else {
+          // Push content into the appropriate section
+          if (isBeforeTable) {
+            contentBeforeTable.push(element); // Add this paragraph to 'before' section
+          } else {
+            contentAfterTable.push(element); // Add this paragraph to 'after' section
+          }
+        }
+      }
+    });
+
+    // Return the content to the front-end in JSON format (preserving original formatting)
+    res.json({
+      beforeTable: contentBeforeTable,
+      afterTable: contentAfterTable
+    });
+  } catch (error) {
+    console.error('Error fetching document content:', error);
+    res.status(500).send('Error fetching document content');
+  }
+});
+
+app.get('/fetch-doc-villaduct', async (req, res) => {
+  const docId = '1ayOH4dqOe9kKRJq6ygOeT3VbR5hvhjxgjR6NXDkseoo'; // Document ID
+  try {
+    await ensureValidToken('117342449732908078456'); // Ensure Google Docs API access token is valid
+    const docContent = await getDocumentContent(docId); // Fetch the document content
+
+    // Initialize variables to hold the sections of content
+    let contentBeforeTable = [];
+    let contentAfterTable = [];
+    let isBeforeTable = true; // Flag to indicate which section we're in
+
+    // Iterate over the document content
+    docContent.body.content.forEach(element => {
+      if (element.paragraph && element.paragraph.elements) {
+        const paragraphText = element.paragraph.elements.map(e => e.textRun?.content || '').join('').trim();
+
+        // Check for marker headings
+        if (paragraphText === 'Start Before Table') {
+          isBeforeTable = true; // We are in the 'before table' section
+        } else if (paragraphText === 'Start After Table') {
+          isBeforeTable = false; // We are in the 'after table' section
+        } else {
+          // Push content into the appropriate section
+          if (isBeforeTable) {
+            contentBeforeTable.push(element); // Add this paragraph to 'before' section
+          } else {
+            contentAfterTable.push(element); // Add this paragraph to 'after' section
+          }
+        }
+      }
+    });
+
+    // Return the content to the front-end in JSON format (preserving original formatting)
+    res.json({
+      beforeTable: contentBeforeTable,
+      afterTable: contentAfterTable
+    });
+  } catch (error) {
+    console.error('Error fetching document content:', error);
+    res.status(500).send('Error fetching document content');
+  }
+});
+
+app.get('/fetch-doc-villasplit', async (req, res) => {
+  const docId = '16QNipq_YkLp7mu6u7oek11VulAg4IgLpKSZBvvau2fI'; // Document ID
+  try {
+    await ensureValidToken('117342449732908078456'); // Ensure Google Docs API access token is valid
+    const docContent = await getDocumentContent(docId); // Fetch the document content
+
+    // Initialize variables to hold the sections of content
+    let contentBeforeTable = [];
+    let contentAfterTable = [];
+    let isBeforeTable = true; // Flag to indicate which section we're in
+
+    // Iterate over the document content
+    docContent.body.content.forEach(element => {
+      if (element.paragraph && element.paragraph.elements) {
+        const paragraphText = element.paragraph.elements.map(e => e.textRun?.content || '').join('').trim();
+
+        // Check for marker headings
+        if (paragraphText === 'Start Before Table') {
+          isBeforeTable = true; // We are in the 'before table' section
+        } else if (paragraphText === 'Start After Table') {
+          isBeforeTable = false; // We are in the 'after table' section
+        } else {
+          // Push content into the appropriate section
+          if (isBeforeTable) {
+            contentBeforeTable.push(element); // Add this paragraph to 'before' section
+          } else {
+            contentAfterTable.push(element); // Add this paragraph to 'after' section
+          }
+        }
+      }
+    });
+
+    // Return the content to the front-end in JSON format (preserving original formatting)
+    res.json({
+      beforeTable: contentBeforeTable,
+      afterTable: contentAfterTable
+    });
+  } catch (error) {
+    console.error('Error fetching document content:', error);
+    res.status(500).send('Error fetching document content');
+  }
+});
+
+app.get('/fetch-doc-villaductsplit', async (req, res) => {
+  const docId = '15J7bWlHte4HGPAoafJxlOErTHgv_ngc6w7YGYADE6Gs'; // Document ID
+  try {
+    await ensureValidToken('117342449732908078456'); // Ensure Google Docs API access token is valid
+    const docContent = await getDocumentContent(docId); // Fetch the document content
+
+    // Initialize variables to hold the sections of content
+    let contentBeforeTable = [];
+    let contentAfterTable = [];
+    let isBeforeTable = true; // Flag to indicate which section we're in
+
+    // Iterate over the document content
+    docContent.body.content.forEach(element => {
+      if (element.paragraph && element.paragraph.elements) {
+        const paragraphText = element.paragraph.elements.map(e => e.textRun?.content || '').join('').trim();
+
+        // Check for marker headings
+        if (paragraphText === 'Start Before Table') {
+          isBeforeTable = true; // We are in the 'before table' section
+        } else if (paragraphText === 'Start After Table') {
+          isBeforeTable = false; // We are in the 'after table' section
+        } else {
+          // Push content into the appropriate section
+          if (isBeforeTable) {
+            contentBeforeTable.push(element); // Add this paragraph to 'before' section
+          } else {
+            contentAfterTable.push(element); // Add this paragraph to 'after' section
+          }
+        }
+      }
+    });
+
+    // Return the content to the front-end in JSON format (preserving original formatting)
+    res.json({
+      beforeTable: contentBeforeTable,
+      afterTable: contentAfterTable
+    });
+  } catch (error) {
+    console.error('Error fetching document content:', error);
+    res.status(500).send('Error fetching document content');
+  }
+});
+
+app.get('/fetch-doc-villavrf', async (req, res) => {
+  const docId = '1-lduI0veKClBXootz0JnWhRsx-K2BO3PVZ2cGoopCFw'; // Document ID
+  try {
+    await ensureValidToken('117342449732908078456'); // Ensure Google Docs API access token is valid
+    const docContent = await getDocumentContent(docId); // Fetch the document content
+
+    // Initialize variables to hold the sections of content
+    let contentBeforeTable = [];
+    let contentAfterTable = [];
+    let isBeforeTable = true; // Flag to indicate which section we're in
+
+    // Iterate over the document content
+    docContent.body.content.forEach(element => {
+      if (element.paragraph && element.paragraph.elements) {
+        const paragraphText = element.paragraph.elements.map(e => e.textRun?.content || '').join('').trim();
+
+        // Check for marker headings
+        if (paragraphText === 'Start Before Table') {
+          isBeforeTable = true; // We are in the 'before table' section
+        } else if (paragraphText === 'Start After Table') {
+          isBeforeTable = false; // We are in the 'after table' section
+        } else {
+          // Push content into the appropriate section
+          if (isBeforeTable) {
+            contentBeforeTable.push(element); // Add this paragraph to 'before' section
+          } else {
+            contentAfterTable.push(element); // Add this paragraph to 'after' section
+          }
+        }
+      }
+    });
+
+    // Return the content to the front-end in JSON format (preserving original formatting)
+    res.json({
+      beforeTable: contentBeforeTable,
+      afterTable: contentAfterTable
+    });
+  } catch (error) {
+    console.error('Error fetching document content:', error);
+    res.status(500).send('Error fetching document content');
+  }
+});
+
 app.post('/add-product', async (req, res) => {
   const { product_name, model, capacity } = req.body;
   try {

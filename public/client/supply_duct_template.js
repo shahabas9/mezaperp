@@ -185,7 +185,7 @@ async function fetchGoogleDocsContent() {
   }
   
   // Convert Google Docs JSON to HTML
-  function convertGoogleDocsJsonToHtml(docContentArray) {
+function convertGoogleDocsJsonToHtml(docContentArray) {
     let htmlContent = '';
     let inList = false;
     let currentListType = ''; // To track the current list type (ul or ol)

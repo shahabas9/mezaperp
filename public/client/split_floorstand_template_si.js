@@ -106,21 +106,21 @@ function populateTable(data) {
 
         const totalRow = document.createElement('tr');
         totalRow.innerHTML = `
-            <td colspan="1"><b>Total</b></td>
-            <td><b>${totalQuantity.toFixed(2)}</b></td>
-            <td><b>${totalTonQuantity}</b></td>
-            <td colspan="2"><b id="totalAmount">QAR ${totalSum.toLocaleString()}</b></td>
+            <td colspan="1" style="background-color: #b8cce4; color: black;"><b>Total</b></td>
+            <td style="background-color: #b8cce4; color: black;"><b>${totalQuantity.toFixed(2)}</b></td>
+            <td style="background-color: #b8cce4; color: black;"><b>${totalTonQuantity}</b></td>
+            <td colspan="2" style="background-color: #b8cce4; color: black;"><b id="totalAmount">QAR ${totalSum.toLocaleString()}</b></td>
         `;
         tableBody.appendChild(totalRow);
         
         // Add the discount row (Initially hidden)
         const discountRow = document.createElement('tr');
         discountRow.innerHTML = `
-            <td colspan="3" style="text-align: center;">
+            <td colspan="3" style="text-align: center;background-color: darkblue; color: white">
                 <b>Total Amount After Discount</b>
             </td>
-            <td colspan="2" style="text-align: center;">
-                <b>QAR</b> <input type="text" id="amountInput" placeholder="Enter amount" class="no-border" style="font-weight: bold; height: 25px; font-size: 15.5px; width: 150px">
+            <td colspan="2" style="text-align: center;background-color: darkblue; color: white">
+                <b>QAR</b> <input type="text" id="amountInput" placeholder="Enter amount" class="no-border" style="font-weight: bold;color: white; height: 25px; font-size: 15.5px; width: 150px">
             </td>
         `;
         discountRow.id = 'totalAmountContainer';
@@ -230,7 +230,7 @@ function goBack() {
 async function fetchGoogleDocsContent() {
     try {
       // Fetch content from your backend route that retrieves Google Docs content
-      const response = await fetch('/fetch-doc-supplyandinst'); // Your API route
+      const response = await fetch('/fetch-doc-splitfloorsi'); // Your API route
       const docContent = await response.json(); // Parse the JSON response
   
       // Convert JSON content to HTML
@@ -250,68 +250,97 @@ async function fetchGoogleDocsContent() {
   // Convert Google Docs JSON to HTML
   function convertGoogleDocsJsonToHtml(docContentArray) {
     let htmlContent = '';
-    let inList = false; // To track if we're inside a list
-    
+    let inList = false;
+    let currentListType = ''; // To track the current list type (ul or ol)
+
     // Iterate over each element in the document content array
     docContentArray.forEach(element => {
-      // Handle paragraphs
-      if (element.paragraph) {
-        const paragraphText = element.paragraph.elements.map(e => {
-          let text = e.textRun?.content || '';
-  
-          // Handle text styles (like bold, italic, underline, etc.)
-          if (e.textRun?.textStyle) {
-            const { bold, italic, underline, fontSize, foregroundColor, strikethrough } = e.textRun.textStyle;
-  
-            if (bold) text = `<b>${text}</b>`;
-            if (italic) text = `<i>${text}</i>`;
-            if (underline) text = `<u>${text}</u>`;
-            if (strikethrough) text = `<del>${text}</del>`; // Strikethrough
-  
-            let style = '';
-            if (fontSize?.magnitude) {
-              style += `font-size: ${fontSize.magnitude}pt; `;
+        // Handle paragraphs
+        if (element.paragraph) {
+            const paragraphText = element.paragraph.elements.map(e => {
+                let text = e.textRun?.content || '';
+
+                // Handle text styles (like bold, italic, underline, etc.)
+                if (e.textRun?.textStyle) {
+                    const { bold, italic, underline, fontSize, foregroundColor, backgroundColor, strikethrough } = e.textRun.textStyle;
+
+                    if (bold) text = `<b>${text}</b>`;
+                    if (italic) text = `<i>${text}</i>`;
+                    if (underline) text = `<u>${text}</u>`;
+                    if (strikethrough) text = `<del>${text}</del>`;
+
+                    let style = '';
+                    if (fontSize?.magnitude) {
+                        style += `font-size: ${fontSize.magnitude}pt; `;
+                    }
+                    if (foregroundColor?.color?.rgbColor) {
+                        const { red = 0, green = 0, blue = 0 } = foregroundColor.color.rgbColor;
+                        const rgb = `rgb(${Math.round(red * 255)}, ${Math.round(green * 255)}, ${Math.round(blue * 255)})`;
+                        style += `color: ${rgb}; `;
+                    }
+                    if (backgroundColor?.color?.rgbColor) {
+                        const { red = 0, green = 0, blue = 0 } = backgroundColor.color.rgbColor;
+                        const bgRgb = `rgb(${Math.round(red * 255)}, ${Math.round(green * 255)}, ${Math.round(blue * 255)})`;
+                        style += `background-color: ${bgRgb}; `;
+                    }
+
+                    if (style) {
+                        text = `<span style="${style}">${text}</span>`;
+                    }
+                }
+
+                return text;
+            }).join('');
+
+            // Get paragraph style (line spacing, indent, space above/below)
+            const paragraphStyle = element.paragraph.paragraphStyle || {};
+            const lineSpacing = paragraphStyle.lineSpacing ? paragraphStyle.lineSpacing / 100 : 1.0; // Convert to CSS scale (default 1.0 if not provided)
+            const spaceAbove = paragraphStyle.spaceAbove?.magnitude || 0;
+            const spaceBelow = paragraphStyle.spaceBelow?.magnitude || 0;
+            const indentFirstLine = paragraphStyle.indentFirstLine?.magnitude || 0;
+            const indentStart = paragraphStyle.indentStart?.magnitude || 0;
+
+            // Handle bullet or numbered lists
+            if (element.paragraph.bullet) {
+                const listId = element.paragraph.bullet.listId;
+
+                // Check if the listId indicates an ordered list
+                const isOrderedList = listId.startsWith("kix.") && element.paragraph.bullet.textStyle?.bold;
+
+                const listType = isOrderedList ? 'ol' : 'ul';
+                
+                // If the list type changes, close the previous list and start a new one
+                if (listType !== currentListType) {
+                    if (inList) {
+                        htmlContent += `</${currentListType}>`;
+                    }
+                    htmlContent += `<${listType}>`;
+                    currentListType = listType;
+                    inList = true;
+                }
+
+                htmlContent += `<li style="line-height: ${lineSpacing}; margin-top: ${spaceAbove}pt; margin-bottom: ${spaceBelow}pt; text-indent: ${indentFirstLine}pt;">${paragraphText}</li>`;
+            } else {
+                // If we're out of the list, close any open list tags
+                if (inList) {
+                    htmlContent += `</${currentListType}>`;
+                    inList = false;
+                    currentListType = ''; // Reset list type
+                }
+
+                // Apply line spacing, space above/below, and indentation
+                htmlContent += `<p style="line-height: ${lineSpacing}; margin-top: ${spaceAbove}pt; margin-bottom: ${spaceBelow}pt; text-indent: ${indentFirstLine}pt; padding-left: ${indentStart}pt;">${paragraphText}</p>`;
             }
-            if (foregroundColor?.color?.rgbColor) {
-              const { red = 0, green = 0, blue = 0 } = foregroundColor.color.rgbColor;
-              const rgb = `rgb(${Math.round(red * 255)}, ${Math.round(green * 255)}, ${Math.round(blue * 255)})`;
-              style += `color: ${rgb}; `;
-            }
-  
-            if (style) {
-              text = `<span style="${style}">${text}</span>`;
-            }
-          }
-  
-          return text;
-        }).join('');
-  
-        // Handle bullet or numbered lists
-        if (element.paragraph.bullet) {
-          const listType = element.paragraph.bullet.listId.includes('ordered') ? 'ol' : 'ul';
-          if (!inList) {
-            htmlContent += `<${listType}>`;
-            inList = true;
-          }
-          htmlContent += `<li>${paragraphText}</li>`;
-        } else {
-          if (inList) {
-            htmlContent += '</ul>'; // Close list when paragraph is not part of a list
-            inList = false;
-          }
-          const indentFirstLine = element.paragraph.paragraphStyle?.indentFirstLine?.magnitude || 0;
-          htmlContent += `<p style="text-indent: ${indentFirstLine}pt;">${paragraphText}</p>`;
         }
-      }
     });
-  
-    // Close any open list
+
+    // Close any open list at the end
     if (inList) {
-      htmlContent += '</ul>';
+        htmlContent += `</${currentListType}>`;
     }
-  
+
     return htmlContent;
-  }
+}
   
   // Call the function to fetch and display the content
   fetchGoogleDocsContent();

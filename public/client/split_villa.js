@@ -32,7 +32,7 @@ function populateTable(data) {
         document.getElementById('customerName').textContent = customerData.customer_name || "\u00A0";
         document.getElementById('projectName').textContent = customerData.project_name || "\u00A0";
         document.getElementById('customerMob').textContent = customerData.mobile_no || "\u00A0";
-        document.getElementById('ProjectArea').textContent = customerData.project_area || "\u00A0";
+        document.getElementById('projectArea').textContent = customerData.project_area || "\u00A0";
         document.getElementById('fromName').textContent = customerData.salesperson_name || "\u00A0";
         document.getElementById('fromMob').textContent = customerData.salesperson_contact || "\u00A0";
         document.getElementById('refNo').textContent = customerData.quotation_id || "\u00A0";
@@ -93,8 +93,8 @@ function populateTable(data) {
             totalTonQuantity += locationTotal.totalTonQuantity;
         });
 
-        document.getElementById('totalQuantityContainer').textContent = `Total Quantity: ${totalQuantity}`;
-        document.getElementById('totalTonContainer').textContent = `Total Ton: ${totalTonQuantity.toFixed(2)} Ton`;
+        document.getElementById('totalQuantityContainer').textContent = ` ${totalQuantity}`;
+        document.getElementById('totalTonContainer').textContent = ` ${totalTonQuantity.toFixed(2)} `;
 
         const locationNames = {
             basement: 'الطابق السفلي',
@@ -113,10 +113,10 @@ function populateTable(data) {
             if (totals[location]) {
                 const totalRow = document.createElement('tr');
                 totalRow.innerHTML = `
-                    <td><strong>${locationNames[location]}</strong></td>
-                    <td><strong>${totals[location].quantity}</strong></td>
-                    <td><strong>${totals[location].totalTonQuantity.toFixed(2)}</strong></td>
-                    <td><strong>‫المجموع</strong></td>
+                    <td style="background-color: darkblue; color: white;"><strong>${locationNames[location]}</strong></td>
+                    <td style="background-color: darkblue; color: white;"><strong>${totals[location].quantity}</strong></td>
+                    <td style="background-color: darkblue; color: white;"><strong>${totals[location].totalTonQuantity.toFixed(2)}</strong></td>
+                    <td style="background-color: darkblue; color: white;"><strong>‫المجموع</strong></td>
                 `;
                 tables[location].appendChild(totalRow);
             }
@@ -218,11 +218,11 @@ function generateSummaryTable(data) {
     // Create the total row
     const totalRow = document.createElement('tr');
     totalRow.innerHTML = `
-        <td id="totalPriceSum" class="total-price-strike">0 ر.ق‬</td>
-        <td></td>
-        <td><b>${totalQuantity}</b></td>
-        <td></td>
-        <td><b>‫المجموع</b></td>
+        <td id="totalPriceSum" class="total-price-strike" style="background-color: darkblue; color: white;">0 ر.ق‬</td>
+        <td style="background-color: darkblue; color: white;"></td>
+        <td style="background-color: darkblue; color: white;"><b>${totalQuantity}</b></td>
+        <td style="background-color: darkblue; color: white;"></td>
+        <td style="background-color: darkblue; color: white;"><b>‫المجموع</b></td>
     `;
     summaryTableBody.appendChild(totalRow);
 
@@ -326,3 +326,128 @@ const amountInput = document.getElementById('summaryDiscountInput');
 function goBack() {
     window.history.back();
 }
+
+async function fetchGoogleDocsContent() {
+    try {
+      // Fetch content from your backend route that retrieves Google Docs content
+      const response = await fetch('/fetch-doc-villasplit'); // Your API route
+      const docContent = await response.json(); // Parse the JSON response
+  
+      // Convert JSON content to HTML
+      const beforeTableHtml = convertGoogleDocsJsonToHtml(docContent.beforeTable);
+      const afterTableHtml = convertGoogleDocsJsonToHtml(docContent.afterTable);
+  
+      // Insert the converted HTML into the designated sections before and after the table
+      document.getElementById('content-before-table').innerHTML = beforeTableHtml; // Insert the "before table" content
+      document.getElementById('content-after-table').innerHTML = afterTableHtml; // Insert the "after table" content
+  
+    } catch (error) {
+      console.error('Error fetching Google Docs content:', error);
+      document.getElementById('docContent').innerText = 'Failed to load content.';
+    }
+  }
+  
+  // Convert Google Docs JSON to HTML
+  function convertGoogleDocsJsonToHtml(docContentArray) {
+    let htmlContent = '';
+    let inList = false;
+    let currentListType = ''; // Track current list type (ul or ol)
+    let currentNestingLevel = 0; // Track current nesting level
+
+    docContentArray.forEach(element => {
+        if (element.paragraph) {
+            const paragraphText = element.paragraph.elements.map(e => {
+                let text = e.textRun?.content || '';
+
+                // Handle text styles
+                if (e.textRun?.textStyle) {
+                    const { bold, italic, underline, fontSize, foregroundColor, backgroundColor, strikethrough } = e.textRun.textStyle;
+
+                    if (bold) text = `<b>${text}</b>`;
+                    if (italic) text = `<i>${text}</i>`;
+                    if (underline) text = `<u>${text}</u>`;
+                    if (strikethrough) text = `<del>${text}</del>`;
+
+                    let style = '';
+                    if (fontSize?.magnitude) style += `font-size: ${fontSize.magnitude}pt; `;
+                    if (foregroundColor?.color?.rgbColor) {
+                        const { red = 0, green = 0, blue = 0 } = foregroundColor.color.rgbColor;
+                        style += `color: rgb(${Math.round(red * 255)}, ${Math.round(green * 255)}, ${Math.round(blue * 255)}); `;
+                    }
+                    if (backgroundColor?.color?.rgbColor) {
+                        const { red = 0, green = 0, blue = 0 } = backgroundColor.color.rgbColor;
+                        style += `background-color: rgb(${Math.round(red * 255)}, ${Math.round(green * 255)}, ${Math.round(blue * 255)}); `;
+                    }
+
+                    if (style) text = `<span style="${style}">${text}</span>`;
+                }
+
+                return text;
+            }).join('');
+
+            const paragraphStyle = element.paragraph.paragraphStyle || {};
+            const lineSpacing = paragraphStyle.lineSpacing ? paragraphStyle.lineSpacing / 100 : 1.0;
+            const spaceAbove = paragraphStyle.spaceAbove?.magnitude || 0;
+            const spaceBelow = paragraphStyle.spaceBelow?.magnitude || 0;
+            const indentFirstLine = paragraphStyle.indentFirstLine?.magnitude || 0;
+            const indentStart = paragraphStyle.indentStart?.magnitude || 0;
+
+            let alignment = paragraphStyle.alignment ? paragraphStyle.alignment.toLowerCase() : 'right';
+            let direction = paragraphStyle.direction === 'RIGHT_TO_LEFT' ? 'rtl' : 'ltr';
+
+            // Handle lists using bullet properties
+            if (element.paragraph.bullet) {
+                const nestingLevel = element.paragraph.bullet.nestingLevel || 0;
+
+                // Check for the presence of a bullet list
+                const isOrderedList = element.paragraph.bullet && element.paragraph.bullet.listId && element.paragraph.bullet.listId.startsWith("kix.");
+                const listType = (isOrderedList && nestingLevel === 0) ? 'ol' : 'ul';
+                
+
+                // Handle nesting level changes
+                while (currentNestingLevel < nestingLevel) {
+                    htmlContent += `<ul style="list-style-type:disc; text-align: ${alignment}; direction: ${direction};">`;
+                    currentNestingLevel++;
+                }
+
+                while (currentNestingLevel > nestingLevel) {
+                    htmlContent += `</ul>`;
+                    currentNestingLevel--;
+                }
+
+                // Only switch between `ol` and `ul` if outside of a nested list
+                if (nestingLevel === 0 && listType !== currentListType) {
+                    if (inList) {
+                        htmlContent += `</${currentListType}>`;
+                    }
+                    htmlContent += `<${listType} style="text-align: ${alignment}; direction: ${direction};">`;
+                    currentListType = listType;
+                    inList = true;
+                }
+
+                htmlContent += `<li style="line-height: ${lineSpacing}; margin-top: ${spaceAbove}pt; margin-bottom: ${spaceBelow}pt; text-indent: ${indentFirstLine}pt; padding-left: ${indentStart}pt;">${paragraphText}</li>`;
+            } else {
+                if (inList) {
+                    htmlContent += `</${currentListType}>`;
+                    inList = false;
+                    currentListType = '';
+                    currentNestingLevel = 0;
+                }
+
+                htmlContent += `<p style="line-height: ${lineSpacing}; margin-top: ${spaceAbove}pt; margin-bottom: ${spaceBelow}pt; text-indent: ${indentFirstLine}pt; padding-left: ${indentStart}pt; text-align: ${alignment}; direction: ${direction};">${paragraphText}</p>`;
+            }
+        }
+    });
+
+    // Close any remaining open lists
+    while (currentNestingLevel > 0) {
+        htmlContent += `</ul>`;
+        currentNestingLevel--;
+    }
+
+    return htmlContent;
+}
+
+  
+  // Call the function to fetch and display the content
+  fetchGoogleDocsContent();
